@@ -1,7 +1,5 @@
-// キャラメイク（5問）と、答えを条件に当てる部分。
-//
-// 質問の一覧はここに持っています。画面側は QUESTIONS を map して描くだけで、
-// 質問を増やすときも画面を触らずに済みます。
+// キャラメイクの5問と、答えを条件に当てる部分。
+// 画面は QUESTIONS を map するだけ。質問を増やすときもここだけ直せばいい。
 
 import type { Profile, ProfileKey } from "./types";
 import { isDateString } from "./dates";
@@ -74,10 +72,7 @@ export function emptyProfile(): Profile {
   return {};
 }
 
-/**
- * 保存された値や URL から来た値を Profile にする。
- * 知らないキーと、型が合わない値は捨てる（古い保存データで画面が壊れないように）。
- */
+/** 保存された値を Profile にする。知らないキーと型が合わない値は捨てる */
 export function normalizeProfile(raw: unknown): Profile {
   const out: Profile = {};
   if (typeof raw !== "object" || raw === null) return out;
@@ -120,12 +115,7 @@ export function isComplete(profile: Profile): boolean {
   return missingAnswers(profile).length === 0;
 }
 
-// ── 条件の当て方 ────────────────────────────────────────────
-
-/**
- * 3値で判定する。
- * まだ答えていない項目を「違う」と扱うと、必要な手続きが消えてしまうので unknown を分ける。
- */
+/** 3値で判定する。答えていない項目を「違う」にすると必要な手続きが消えるため */
 export type Match = "yes" | "no" | "unknown";
 
 export function matchCond(cond: Partial<Profile>, me: Profile): Match {

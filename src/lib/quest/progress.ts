@@ -1,9 +1,5 @@
-// 進捗。全部この形の値を作り直して返すだけの関数です（元の値は書き換えません）。
-// React の useState / useReducer にそのまま入ります。
-//
-// 「終わった日」を日付で持っているのは、
-// マイナンバーカードの住所変更のように「転入届をした日から90日」で期限が決まるものがあるためです。
-// true / false で持つと、この期限が計算できなくなります。
+// 進捗。元の値は書き換えず、新しい値を返す（useState にそのまま入る）。
+// 完了は true/false ではなく日付で持つ（「転入届の90日後」の起算に要るため）。
 
 import type { Progress, Quest } from "./types";
 import { isDateString } from "./dates";
@@ -70,11 +66,7 @@ export function isDone(progress: Progress, id: string): boolean {
   return progress.doneAt[id] !== undefined;
 }
 
-/**
- * チェックを付けていいか。
- * 鍵がかかっているものにチェックを付けるのは止めません（本人が別ルートで済ませた場合があるため）。
- * 代わりに、確認を出すべきかどうかをここで返します。
- */
+/** 鍵つきにチェックを付けるとき、確認を出すなら文言を返す（止めはしない） */
 export function confirmBeforeComplete(quest: Quest): string | null {
   if (!quest.lock.locked) return null;
   return `「${quest.lock.blockedByNames.join("」「")}」が終わっていません。それでも終わったことにしますか？`;

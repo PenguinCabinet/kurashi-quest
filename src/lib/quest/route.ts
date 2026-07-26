@@ -1,12 +1,5 @@
-// 役所攻略シート。
-//
-// 「同じ場所でやれるものをまとめて、この順番で回れば1回で終わる」を作ります。
-// ゲーム性の中心がここなので、順番・持ち物・所要時間・つまずく箇所を全部この関数から出します。
-//
-// 順番の決め方
-//   1. 前提のある手続きを先に置く（転入届 → マイナンバーカードの住所変更 → 年金）
-//   2. 同じ場所（placeKey）のものを1か所にまとめる
-//   3. 家でできるもの（Web・電話）は最後に置く。出かける回数に数えない
+// 役所攻略シート。同じ場所のものをまとめて、前提のある順に並べる。
+// 家でできるもの（Web・電話）は最後で、出かける回数に数えない。
 
 import type { Procedure, Profile, Quest, RouteSheet, RouteStop } from "./types";
 import { mergeBring, nonPhysical } from "./bring";
@@ -16,11 +9,7 @@ import { formatJa } from "./dates";
 /** 家でできる場所の placeKey。データ側でこれを付けてもらう */
 const AT_HOME_KEYS = new Set(["online", "phone", "web"]);
 
-/**
- * 場所の表示名。窓口ではなく建物の名前を出す。
- * 市民課と国民年金の窓口は別でも、同じ市役所なので1回の外出でまとめたい。
- * ここに無い placeKey は「どこで」の1文目で代用する。
- */
+/** 場所の表示名。窓口名ではなく建物名（市民課と年金窓口は同じ市役所なのでまとめたい） */
 const PLACE_LABELS: Record<string, string> = {
   "city-hall": "市役所",
   "prev-city-hall": "前に住んでいた市の市役所",
@@ -30,10 +19,7 @@ const PLACE_LABELS: Record<string, string> = {
   web: "家（Web）",
 };
 
-/**
- * 攻略シートを作る。
- * 終わったもの・要らないものは入れません（これから回る順番なので）。
- */
+/** 攻略シートを作る。終わったもの・要らないものは入れない */
 export function buildRoute(quests: Quest[], me: Profile): RouteSheet {
   const todo = sortByRequires(visibleQuests(quests).filter((q) => !q.done));
 
@@ -86,10 +72,7 @@ export function buildRoute(quests: Quest[], me: Profile): RouteSheet {
   };
 }
 
-/**
- * 前提を満たす順に並べる。
- * 同じ条件なら phase（引越し前 → 当日 → 14日以内）→ order の順。
- */
+/** 前提を満たす順に並べる。同じ条件なら phase → order の順 */
 export function sortByRequires(quests: Quest[]): Quest[] {
   const inList = new Set(quests.map((q) => q.id));
   const rest = [...quests].sort(byPhaseThenOrder);
@@ -115,13 +98,8 @@ export function sortByRequires(quests: Quest[]): Quest[] {
 }
 
 /**
- * 回る場所の順番を決める。
- *
- * 「家でできるものは最後」を単純な並べ替えでやると、
- * 家でやる手続き（ライフラインの停止など）が他の手続きの前提になっている場合に、
- * 前提が最後に来てしまいます。順番がこのシートの売りなので、そこは崩さない。
- *
- * 前提を満たした場所の中から、外に出る用事 → 家 の順で選んでいきます。
+ * 回る場所の順番。前提を満たした場所の中から、外出 → 家 の順に選ぶ。
+ * 単純に「家は最後」にすると、家でやる手続きが他の前提のとき順番が壊れる。
  */
 function orderStops(stops: RouteStop[]): RouteStop[] {
   const stopOfQuest = new Map<string, number>();
@@ -176,11 +154,7 @@ function byPhaseThenOrder(a: Quest, b: Quest): number {
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
 
-/**
- * 同じ場所かどうかの判定キー。
- * データに placeKey があればそれを使う。無ければ「どこで」の1文目で代用する
- * （"市役所の市民課。転入届と同じ窓口" と "市役所の市民課" を同じ場所とみなすため）。
- */
+/** 同じ場所かの判定キー。placeKey が無ければ「どこで」の1文目で代用する */
 export function placeKeyOf(p: Procedure): string {
   if (p.where.placeKey) return p.where.placeKey;
   return firstSentence(p.where.text);
@@ -198,9 +172,7 @@ function firstSentence(text: string): string {
 }
 
 function isAtHome(key: string, p: Procedure): boolean {
-  // placeKey が入っていれば、それだけで判断する。
-  // 「郵便局の窓口。または e転居（オンライン）」のように、
-  // 本文にオンラインの話が混ざっていても場所は郵便局なので、文字で判断すると間違う。
+  // placeKey があればそれだけで判断する（本文にオンラインの話が混ざると文字では誤判定する）
   if (p.where.placeKey) return AT_HOME_KEYS.has(key);
   return /Web|web|ウェブ|サイト|オンライン|電話|マイナポータル/.test(p.where.text);
 }

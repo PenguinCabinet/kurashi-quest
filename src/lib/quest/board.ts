@@ -1,9 +1,5 @@
-// クエストログ画面がこれ1つで描ける、という関数。
-//
+// 画面1枚分をまとめて作る。期限も順番も持ち物もここで計算済み。
 //   const board = buildBoard(data, profile, progress, "2026-07-28");
-//
-// あとは board.phases を map してチェックボックスを並べれば、画面ができます。
-// 計算は全部この中で終わっているので、画面側で期限や順番を考える必要はありません。
 
 import type { Board, ProcedureFile, Profile, Progress } from "./types";
 import { isDateString } from "./dates";
@@ -47,10 +43,7 @@ export function buildBoard(
   };
 }
 
-/**
- * 「7個のうち2個は、知らないと調べようもない手続きです」の文。
- * 発表とトップ画面で使う一行。
- */
+/** 「7個のうち2個は、知らないと調べようもない手続きです」の一行 */
 export function hiddenLine(board: Board): string | null {
   const { total, hidden } = board.stats;
   if (hidden === 0) return null;

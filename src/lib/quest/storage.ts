@@ -1,11 +1,6 @@
-// 保存。ログインもDBも無いので、答えと進捗はブラウザに置くだけです。
-//
-// localStorage を直接呼ばずにアダプタ越しにしているのは3つの理由です。
-//   ・Next.js はサーバ側でも同じコードを動かすので、window が無い場所で落ちる
-//   ・Safari のプライベートモードは setItem で例外を投げる
-//   ・テストで localStorage を用意したくない
-//
-// 画面側は useEffect の中で loadState() を呼んでください（最初の描画はサーバでも動く形にするため）。
+// 保存。ログインもDBも無いので、答えと進捗はブラウザに置くだけ。
+// localStorage を直接呼ばないのは、サーバ側に window が無いのと、Safari のプライベートモードが例外を投げるため。
+// 画面側は useEffect の中で読むこと。
 
 import type { Profile, Progress } from "./types";
 import { normalizeProfile } from "./profile";

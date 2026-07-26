@@ -1,9 +1,4 @@
-// 持ち物。
-//
-// 1つの手続きに必要なもの（やり方カード用）と、
-// 複数の手続きをまとめて回るときに持っていくもの（役所攻略シート用）を作ります。
-//
-// 「役所に1回で終わらせる」がこのアプリの売りなので、まとめる側が本番です。
+// 持ち物。1手続き分（やり方カード用）と、まとめたもの（攻略シート用）を作る。
 
 import type { BringItem, BringLine, Procedure, Profile } from "./types";
 import { matchCond } from "./profile";
@@ -16,10 +11,7 @@ export function bringFor(p: Procedure, me: Profile): BringLine[] {
   return sortBring(dedupe(lines));
 }
 
-/**
- * 複数の手続きの持ち物を1つのリストにする。
- * 同じものは1行にまとめて、neededFor に「何のために持つか」を全部入れる。
- */
+/** 複数の手続きの持ち物を1つにする。同じものは1行にまとめ、neededFor に用途を入れる */
 export function mergeBring(procedures: Procedure[], me: Profile): BringLine[] {
   const lines: Line[] = [];
   for (const p of procedures) {
@@ -40,23 +32,13 @@ export function unverifiedBring(lines: BringLine[]): BringLine[] {
   return lines.filter((l) => !l.verified);
 }
 
-// ── 中身 ────────────────────────────────────────────────────
-
-/**
- * その持ち物が要るか。
- * 条件に使う項目にまだ答えていない場合は「要る」に倒す。
- * 持っていったのに使わなかった、は困らないが、忘れて出直すのは困るため。
- */
+/** その持ち物が要るか。答えていない項目があるときは「要る」に倒す（忘れて出直す方が困る） */
 function needsItem(b: BringItem, me: Profile): boolean {
   if (!b.showIf) return true;
   return matchCond(b.showIf, me) !== "no";
 }
 
-/**
- * sameAs が付いているものは、まとめる時のキーを付け替える。
- * 別名の側（sameAs あり）は primary:false にして、
- * 本来の名前の行が1つでもあれば、そちらの言い方を残す。
- */
+/** sameAs 付き（別名）は primary:false。本来の名前の行があれば、そちらの言い方を残す */
 type Line = BringLine & { primary: boolean };
 
 function toLine(b: BringItem, procedureId: string): Line {
@@ -85,14 +67,12 @@ function dedupe(lines: Line[]): BringLine[] {
     // 1か所でも未確認なら未確認あつかい（安全側）
     found.verified = found.verified && line.verified;
 
-    // 別名で入っていたものに、本来の言い方が来たら、そちらを表に出す
     if (!found.primary && line.primary) {
       found.label = line.label;
       found.physical = line.physical;
       found.primary = true;
     }
-    // 注記はどちらも残す。まとめた側の説明（「基礎年金番号通知書でも可」など）を
-    // 落とすと、代わりになるものが分からなくなるため
+    // 注記はどちらも残す（代わりになるものの説明が消えるため）
     found.note = joinNotes(found.note, line.note);
   }
   return [...byId.values()].map(({ primary: _p, ...line }) => line);
@@ -105,10 +85,7 @@ function joinNotes(a: string | undefined, b: string | undefined): string | undef
   return `${a}。${b}`;
 }
 
-/**
- * 並び順: 物 → 物でないもの（暗証番号など）。
- * 同じ区分の中では、多くの手続きで要るものを上に。
- */
+/** 物 → 物でないもの（暗証番号など）の順。同じなら多くの手続きで要るものを上に */
 function sortBring(lines: BringLine[]): BringLine[] {
   return [...lines].sort((a, b) => {
     if (a.physical !== b.physical) return a.physical ? -1 : 1;

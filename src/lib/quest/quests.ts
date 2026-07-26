@@ -1,13 +1,5 @@
-// クエスト生成。ここがこのアプリの本体です。
-//
-// やっていること
-//   1. その人に必要な手続きだけを選ぶ（迷ったら出す）
-//   2. 期限の文言を、実際の日付と残り日数に変える
-//   3. 前提が終わっていない手続きに鍵をかける（転入届の前に他をやっても受け付けてもらえない）
-//   4. 本人が存在を知らない手続きに印を付ける（隠しクエスト）
-//
-// 今日の日付は必ず引数で渡します。中で new Date() を呼ぶと、
-// テストが日によって落ちるうえ、サーバとブラウザで結果が変わって画面がちらつくため。
+// クエスト生成。出し分け・期限・順番はここ。
+// today は必ず引数で受ける（中で new Date() を呼ぶとテストが日によって落ちるため）。
 
 import type {
   BoardStats,
@@ -44,13 +36,7 @@ const URGENCY_RANK: Record<Urgency, number> = {
   unknown: 6,
 };
 
-// ── 出し分け ────────────────────────────────────────────────
-
-/**
- * その人に必要か。
- * 方針は「迷ったら出す」。判定に使う項目にまだ答えていないときは unsure にして、消さずに出す。
- * 出さなかった間違いは本人が気づけないが、余計に出した間違いは1タップで消せるため。
- */
+/** その人に必要か。迷ったら出す（答えていない項目があれば unsure にして消さない） */
 export function decideNeed(p: Procedure, me: Profile): Need {
   if (p.skipIf) {
     const { message, ...cond } = p.skipIf;
@@ -103,8 +89,6 @@ export function describeCond(cond: Partial<Profile>): string {
   return parts.length > 0 ? parts.join("で") : "一部の人";
 }
 
-// ── 期限 ────────────────────────────────────────────────────
-
 /** 期限の文言を、実際の日付と残り日数にする */
 export function resolveDeadline(
   p: Procedure,
@@ -116,9 +100,7 @@ export function resolveDeadline(
   const d = p.deadline;
   const base = (dueOn: string | null, soft: boolean, note?: string): DeadlineInfo => {
     const daysLeft = dueOn ? diffDays(today, dueOn) : null;
-    // 目安の期限は過ぎても overdue にしない（本当の期限と区別するため）。
-    // ただし残り日数はマイナスになるので、そのままだと画面が「あと-6日」と出せてしまう。
-    // 過ぎていることは note に書く。
+    // 目安の期限は過ぎても overdue にしない。ただし残り日数はマイナスになるので note で補う
     const passed =
       soft && daysLeft !== null && daysLeft < 0
         ? "目安の日を過ぎています。厳密な期限ではありませんが、早めに出してください"
@@ -180,14 +162,9 @@ function urgencyOf(daysLeft: number | null, soft: boolean): Urgency {
   return "later";
 }
 
-// ── 順番（鍵） ──────────────────────────────────────────────
-
 /**
  * 前提が終わっていなければ鍵をかける。
- *
- * ただし「その人には出ていない前提」は待ちません。
- * 要らないと判定された手続きや、本人が消した手続きは画面に出ないので、
- * それを待たせると開ける手段が無くなり、そのクエストが永久に到達不能になります。
+ * ただし画面に出ていない前提（要らない・本人が消した）は待たない。永久に開かなくなるため。
  */
 export function lockOf(
   p: Procedure,
@@ -216,8 +193,6 @@ export function lockOf(
     ignoredNames: ignored.map(nameOf),
   };
 }
-
-// ── 組み立て ────────────────────────────────────────────────
 
 export function toQuest(
   p: Procedure,

@@ -1,18 +1,5 @@
-// シミュレーション（窓口の練習）。
-//
-// 手順を1歩ずつ進め、詰まりポイントで「これ持ってますか？」と聞き、
-// 持っていなければ その場で出直しにします。
-//
-// このアプリは出直しを防ぐアプリなので、練習の中で一度だけ出直させるのがいちばん効く体験です。
-// 使うデータは役所攻略シートと同じ（steps と bring）で、新しいデータは要りません。
-//
-// 画面側の使い方
-//   let sim = startSimulation(p);
-//   sim = advance(sim, p);              // 「次へ」
-//   if (sim.status === "asking")        // 持ち物を聞く画面を出す
-//     sim = answerItem(sim, p, sim.question.itemId, true);
-//   if (sim.status === "stuck")         // 出直し画面を出す
-//     sim = restart(sim);
+// 窓口の練習。手順を1歩ずつ進め、持ち物が無いところで止めて出直しにする。
+// 使うデータは攻略シートと同じ（steps と bring）。使い方は README を参照。
 
 import type { Procedure, SimQuestion, SimState, Step } from "./types";
 
@@ -68,10 +55,7 @@ export function resetSimulation(sim: SimState, p: Procedure): SimState {
   return { ...startSimulation(p), attempts: sim.attempts + 1 };
 }
 
-/**
- * いまの持ち物の答えのままだと、どこで止まるか。
- * 攻略シートに「このままだと⑤で止まります」と出す用。止まらなければ null。
- */
+/** いまの答えのままだとどこで止まるか。止まらなければ null */
 export function predictStuck(
   p: Procedure,
   answers: Record<string, boolean>,
@@ -101,8 +85,6 @@ export function ratio(sim: SimState, p: Procedure): number {
   if (p.steps.length === 0) return 1;
   return Math.min(1, Math.max(0, sim.stepN / p.steps.length));
 }
-
-// ── 中身 ────────────────────────────────────────────────────
 
 /** stepN に入る。その歩の詰まり判定までやる */
 function enter(sim: SimState, p: Procedure, stepN: number): SimState {

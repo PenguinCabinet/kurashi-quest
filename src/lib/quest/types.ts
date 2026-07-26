@@ -1,14 +1,5 @@
-// 引越しクエスト — 型定義
-//
-// 前半: procedures.json（手続きを調べる人が触るファイル）の型
-// 後半: 画面に渡す型（ロジックが組み立てて返すもの）
-//
-// 画面側はこのファイルの型だけ見れば足ります。procedures.json を直接読む必要はありません。
-//
-// steps / stuckIf は TODO画面では使いませんが、あとからシミュレーションを足すとき
-// データを作り直さずに済むよう最初から入れてあります。
-
-// ── データの型 ──────────────────────────────────────────────
+// 型定義。前半が procedures.json の形、後半が画面に渡す形。
+// steps / stuckIf は TODO画面では使わないが、後からシミュレーションを足せるよう先に入れてある。
 
 /** キャラメイクの答え。全部あとから埋まる前提なので、すべて任意。 */
 export type Profile = {
@@ -37,22 +28,14 @@ export type Deadline =
 /** 未確認の値には verified:false と todo を付ける。画面では「要確認」を出す */
 export type Checked<T> = { text: T; verified: boolean; todo?: string };
 
-/**
- * どこでやるか。
- * placeKey が同じものは「同じ場所で続けてやれる」＝1回の外出でまとめられる。
- * 未設定なら text の1文目から推測するが、攻略シートの精度が落ちるので入れてほしい。
- */
+/** どこでやるか。placeKey が同じものは1回の外出でまとめられる */
 export type WhereField = Checked<string> & { placeKey?: string };
 
 export type BringItem = {
   id: string;
   label: string;
   note?: string;
-  /**
-   * 別の手続きにある、実質同じ持ち物の id。
-   * 攻略シートで持ち物をまとめるとき、同じものが2行に見えないようにする。
-   * 例: 年金窓口の「マイナンバーカード（または基礎年金番号通知書）」→ sameAs: "mynumber-card"
-   */
+  /** 別の手続きにある同じ持ち物の id。まとめたとき2行に見えないようにする */
   sameAs?: string;
   /** 物でないもの（暗証番号など）。忘れやすいので画面で区別する。既定は物あつかい */
   physical?: boolean;
@@ -118,13 +101,7 @@ export type ProcedureFile = {
   procedures: Procedure[];
 };
 
-// ── 画面に渡す型 ────────────────────────────────────────────
-
-/**
- * その人に必要かどうか。
- * 方針は「迷ったら出す」。判定できないものは unsure にして出す。
- * 出さなかった間違いは本人が気づけないが、余計に出した間違いは1タップで消せるため。
- */
+/** その人に必要かどうか。判定できないものは unsure にして、消さずに出す */
 export type Need = {
   status: "show" | "unsure" | "notNeeded";
   /** notNeeded のとき「あなたは要りません」の理由。unsure のとき何が分からないか */
@@ -166,11 +143,7 @@ export type LockInfo = {
   blockedBy: string[];
   /** 同じ順の表示名。「転入届を出す」 */
   blockedByNames: string[];
-  /**
-   * 前提だが、その人には出ていないもの（要らない／本人が消した）の id。
-   * 画面に無いものを待たせると永久に開かないので、鍵には数えない。
-   * 「転入届は要らない判断なので、そのまま進めます」と添えたいとき用。
-   */
+  /** 前提だが、その人には出ていないもの（要らない／消した）の id。鍵には数えない */
   ignored: string[];
   /** 同じ順の表示名 */
   ignoredNames: string[];
@@ -288,8 +261,6 @@ export type Board = {
   next: Quest | null;
   route: RouteSheet;
 };
-
-// ── シミュレーション ────────────────────────────────────────
 
 export type SimStatus =
   /** 次に進める */

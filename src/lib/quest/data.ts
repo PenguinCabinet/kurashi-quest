@@ -1,10 +1,6 @@
 // procedures.json の読み込みと検証。
-//
-// ロジックは JSON を自分で import しません（テストからも Next からも同じ形で使えるように）。
 // 画面側:  import raw from "@/data/procedures.json";  const data = loadProcedures(raw);
-//
-// 手続きを調べる人が項目を足したり id を打ち間違えたとき、画面が黙って空になるのが一番困るので、
-// 壊れているものは loadProcedures で例外にして、直すべき箇所を全部出します。
+// id の打ち間違いなどは例外にする（画面が黙って空になるより落ちた方が早く直せる）。
 
 import type { ProcedureFile, Procedure, ProfileKey } from "./types";
 import { isDateString } from "./dates";
@@ -284,8 +280,6 @@ export function validateProcedures(raw: unknown): ValidationResult {
 
   return { errors, warnings, unverified };
 }
-
-// ── 中で使う小物 ────────────────────────────────────────────
 
 function isObject(v: unknown): v is Record<string, any> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
