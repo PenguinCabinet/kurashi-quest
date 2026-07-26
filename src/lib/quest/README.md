@@ -1,0 +1,150 @@
+# 引越しクエスト — ロジック層
+
+画面が無くても動く部分を全部ここに入れてあります。React も Next.js も import していないので、
+画面側は関数を呼ぶだけです。**期限の計算・順番・持ち物・出し分けを画面側で書く必要はありません。**
+
+```
+src/lib/quest/         ロジック（このフォルダ）
+src/data/procedures.json   手続きのデータ（データ担当が触るファイル）
+tests/quest/           テスト
+test.sh                テスト実行（npm install 不要）
+```
+
+import は `@/lib/quest` から。中のファイルを直接 import しなくて大丈夫です
+（`tsconfig.json` の `@/*` が `src/*` を指している前提。create-next-app の既定どおりです）。
+
+## いちばん短い使い方
+
+```tsx
+import raw from "@/data/procedures.json";
+import { loadProcedures, buildBoard, toggle, emptyProgress } from "@/lib/quest";
+
+const data = loadProcedures(raw);              // 1回だけでいい
+const board = buildBoard(data, profile, progress, "2026-07-28");
+
+board.phases.map((group) => (
+  <section key={group.phase}>
+    <h2>{group.label}</h2>                     {/* 引越し前 / 14日以内 */}
+    {group.quests.map((q) => (
+      <label key={q.id}>
+        <input
+          type="checkbox"
+          checked={q.done}
+          disabled={false}
+          onChange={() => setProgress(toggle(progress, q.id, today))}
+        />
+        {q.name}
+        {q.hidden && <span>隠しクエスト</span>}
+        {q.lock.locked && <span>先に「{q.lock.blockedByNames[0]}」</span>}
+        <small>{q.deadline.label}（{q.deadline.dueOn} / あと{q.deadline.daysLeft}日）</small>
+      </label>
+    ))}
+  </section>
+));
+```
+
+`board` に入っているもの:
+
+| 中身 | 使う画面 |
+|---|---|
+| `board.phases` | クエストログ（期限別のまとまり） |
+| `board.quests` | 出すクエスト全部（`phases` と同じものが平らに入っている） |
+| `board.notNeeded` | 「あなたは要りません」の一覧。消さずに理由付きで見せる |
+| `board.stats` | 6個中4個が隠しクエスト、残り5件、期限切れ1件 など |
+| `board.next` | 次にやるべき1件（トップに大きく出す用） |
+| `board.route` | 役所攻略シート |
+| `board.missingAnswers` | キャラメイクの残りの質問 |
+
+## 画面ごとの呼び方
+
+### キャラメイク
+
+```tsx
+import { QUESTIONS, answer, isComplete } from "@/lib/quest";
+
+QUESTIONS.map((q) => q.kind === "choice"
+  ? q.options.map((o) => <button onClick={() => setProfile(answer(profile, q.key, o.value))}>{o.label}</button>)
+  : <input type="date" onChange={(e) => setProfile(answer(profile, q.key, e.target.value))} />);
+```
+
+質問の増減はこのファイル（`src/profile.ts`）だけで済みます。画面は触らなくて大丈夫です。
+`options[].art` にキャラ画像用の名前が入っているので、デザインが上がったら差し替えてください。
+
+### やり方カード
+
+`quest.procedure.steps` と `quest.bring` をそのまま出すだけです。
+`quest.unverified` に `["どこで", "何て言う"]` のような未確認の項目名が入っているので、
+そこは「要確認」と出してください（発表で聞かれたとき、嘘をつかない作りだと説明できます）。
+
+### 役所攻略シート
+
+```tsx
+board.route.stops.map((stop) => (
+  <div key={stop.placeKey}>
+    <h3>{stop.place}（{stop.minutes}分）</h3>       {/* 市役所 / 郵便局 / 家（Webか電話） */}
+    <ol>{stop.quests.map((q) => <li>{q.name}「{q.sayThis}」</li>)}</ol>
+    <ul>{stop.bring.map((b) => <li>{b.label}{!b.physical && "（物ではありません）"}</li>)}</ul>
+  </div>
+));
+board.route.warnings.map((w) => <p>{w}</p>);
+```
+
+- 同じ場所（`placeKey`）の手続きは1か所にまとまり、**前提のある順**に並んでいます（転入届 → カードの住所変更 → 年金）
+- 持ち物は手続きをまたいで1行にまとめてあり、`neededFor` に何のために持つかが入っています
+- 家でできるものは最後、`route.trips` が出かける回数です
+
+### シミュレーション（練習）
+
+```tsx
+let sim = startSimulation(quest.procedure);
+sim = advance(sim, p);                                   // 「次へ」
+if (sim.status === "asking")  /* 「{sim.question.label} 持ってますか？」を出す */
+  sim = answerItem(sim, p, sim.question.itemId, true);
+if (sim.status === "stuck")   /* 「{sim.stuckAt.message}」＋出直しボタン */
+  sim = restart(sim);
+```
+
+`status` は `running` / `asking` / `stuck` / `cleared` の4つだけです。
+使うデータは攻略シートと同じ（`steps` と `bring`）なので、新しいデータは要りません。
+
+### 保存
+
+```tsx
+useEffect(() => {                       // サーバ側では localStorage が無いので useEffect の中で
+  const s = browserStorage();
+  setProfile(loadProfile(s));
+  setProgress(loadProgress(s));
+}, []);
+```
+
+`browserStorage()` はサーバ側や Safari のプライベートモードでは `null` を返します。
+`null` を渡しても全部の関数が動くので、分岐は要りません（保存されないだけ）。
+
+## 決めごと（ここだけ守ってもらえれば壊れません）
+
+1. **今日の日付は引数で渡す。** ロジックの中で `new Date()` を呼んでいません。サーバとブラウザで結果が変わって画面がちらつくのと、テストが日によって落ちるのを避けるためです。`const today = new Date().toISOString().slice(0, 10)` を画面側で1回作ってください。
+2. **値は書き換えず、新しい値が返る。** `toggle` などは新しい `progress` を返すので、`setProgress(toggle(...))` でそのまま動きます。
+3. **迷ったら出す。** 答えていない項目があるクエストは消さずに `need.status === "unsure"` で出ます。理由が `need.message` に入っているので、小さく添えてください。消したい人は `dismiss()` で消せます。
+4. **要らないものも消えない。** `board.notNeeded` に理由付きで残ります（「マイナンバーカードを持っていないので要りません」）。存在ごと消すと、本人が判断を間違ったときに気づけません。
+5. **データが壊れていたら起動時に落ちる。** `loadProcedures` が直すべき箇所を全部並べて例外を投げます。画面が黙って空になるより、開発中に落ちた方が早く直せます。
+
+## データ担当へ
+
+- `verified: false` の項目は画面に「要確認」と出ます。確認できたら `true` にしてください。残りは `validateProcedures(raw).unverified` で一覧になります
+- `where.placeKey` は「同じ場所でまとめる」判定に使います（`city-hall` / `prev-city-hall` / `post-office` / `online`）。無いと攻略シートの精度が落ちます
+- `steps` の `stuckIf.missing` は、その手続きの `bring` にある id しか書けません（テストで落ちます）
+- 手続きを増やすときは `steps` と `stuckIf` まで入れてください。あとから足すと全件やり直しになります
+
+## テスト
+
+```bash
+./test.sh        # 61件。npm install も tsc も要りません（Node 24 以上）
+```
+
+型チェックは Next.js プロジェクトに入れたあと `npx tsc --noEmit` で通ります（strict で確認済み）。
+
+## まだ決まっていないこと
+
+- **対象自治体**（`procedures.json` の `targetCity` が `◯◯市` のまま）。決まると窓口名と制度が確定します
+- **使える制度**（家賃補助・無料健診）はまだデータにありません。手続きとは別の型になるので、やるなら追加で作ります
+- **年齢を聞くか**。いまは聞いていないので、20歳以上向けの年金の手続きが「判定できません」付きで全員に出ます。1問足せば消えます
