@@ -122,3 +122,45 @@ test("未確認の項目が画面に渡る", () => {
   assert.ok(q.unverified.includes("どこで"));
   assert.ok(q.unverified.includes("何て言う"));
 });
+
+test("前提が「あなたは要りません」の人には、鍵をかけない（開ける手段が画面に無いため）", () => {
+  // 転入届を「車を持っている人だけ」にして、車なしの学生には出ない状態を作る
+  const modified = structuredClone(data);
+  modified.procedures.find((p) => p.id === "tennyu-todoke")!.showIf = { vehicle: "car" };
+
+  const all = buildQuests(modified, student, emptyProgress(), TODAY);
+  assert.equal(find(all, "tennyu-todoke").need.status, "notNeeded");
+
+  const mynumber = find(all, "mynumber-address");
+  assert.equal(mynumber.lock.locked, false, "画面に出ていない前提を待たせると永久に開かない");
+  assert.deepEqual(mynumber.lock.blockedBy, []);
+  assert.deepEqual(mynumber.lock.ignoredNames, ["転入届を出す"], "待たなかった理由は残す");
+});
+
+test("前提を本人が消したときも、鍵をかけない", () => {
+  const progress = { ...emptyProgress(), dismissed: ["tennyu-todoke"] };
+  const all = buildQuests(data, student, progress, TODAY);
+
+  assert.ok(!visibleQuests(all).some((q) => q.id === "tennyu-todoke"), "消したものは一覧から消える");
+  const mynumber = find(all, "mynumber-address");
+  assert.equal(mynumber.lock.locked, false);
+  assert.deepEqual(mynumber.lock.ignored, ["tennyu-todoke"]);
+});
+
+test("前提が普通に残っているときは、これまでどおり鍵がかかる", () => {
+  const mynumber = find(buildQuests(data, student, emptyProgress(), TODAY), "mynumber-address");
+  assert.equal(mynumber.lock.locked, true);
+  assert.deepEqual(mynumber.lock.blockedByNames, ["転入届を出す"]);
+  assert.deepEqual(mynumber.lock.ignored, []);
+});
+
+test("目安の期限は過ぎても「期限切れ」と言わないが、過ぎたことは分かる", () => {
+  // 郵便の転送届は「引越しの前後。早いほどよい」＝ 厳密な期限ではない
+  const all = buildQuests(data, student, emptyProgress(), TODAY);
+  const yubin = find(all, "yubin-tenso").deadline;
+
+  assert.equal(yubin.soft, true);
+  assert.ok(yubin.daysLeft !== null && yubin.daysLeft < 0, "引越し日 7/20 は今日 7/28 より前");
+  assert.notEqual(yubin.urgency, "overdue");
+  assert.match(yubin.note ?? "", /過ぎています/, "残り日数だけ見て「あと-8日」と出させない");
+});

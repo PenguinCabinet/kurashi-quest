@@ -37,7 +37,7 @@ const PLACE_LABELS: Record<string, string> = {
 export function buildRoute(quests: Quest[], me: Profile): RouteSheet {
   const todo = sortByRequires(visibleQuests(quests).filter((q) => !q.done));
 
-  const stops: RouteStop[] = [];
+  let stops: RouteStop[] = [];
   const indexByKey = new Map<string, number>();
 
   for (const q of todo) {
@@ -62,8 +62,8 @@ export function buildRoute(quests: Quest[], me: Profile): RouteSheet {
     stop.say.push(q.sayThis);
   }
 
-  // 家でできるものは後ろへ（出かける用事を先に片付ける）
-  stops.sort((a, b) => Number(a.atHome) - Number(b.atHome));
+  // 家でできるものは後ろへ。ただし前提になっているものは、それを待つ場所より前に置く
+  stops = orderStops(stops);
 
   for (const stop of stops) {
     stop.bring = mergeBring(
@@ -111,6 +111,60 @@ export function sortByRequires(quests: Quest[]): Quest[] {
     placed.add(q.id);
     out.push(q);
   }
+  return out;
+}
+
+/**
+ * 回る場所の順番を決める。
+ *
+ * 「家でできるものは最後」を単純な並べ替えでやると、
+ * 家でやる手続き（ライフラインの停止など）が他の手続きの前提になっている場合に、
+ * 前提が最後に来てしまいます。順番がこのシートの売りなので、そこは崩さない。
+ *
+ * 前提を満たした場所の中から、外に出る用事 → 家 の順で選んでいきます。
+ */
+function orderStops(stops: RouteStop[]): RouteStop[] {
+  const stopOfQuest = new Map<string, number>();
+  stops.forEach((stop, i) => stop.quests.forEach((q) => stopOfQuest.set(q.id, i)));
+
+  // その場所より先に済ませておく必要がある場所
+  const dependsOn = stops.map(() => new Set<number>());
+  stops.forEach((stop, i) => {
+    for (const q of stop.quests) {
+      for (const required of q.procedure.requires) {
+        const j = stopOfQuest.get(required);
+        if (j !== undefined && j !== i) dependsOn[i].add(j);
+      }
+    }
+  });
+
+  const placed = new Set<number>();
+  const out: RouteStop[] = [];
+
+  while (out.length < stops.length) {
+    const ready = stops
+      .map((_, i) => i)
+      .filter((i) => !placed.has(i) && [...dependsOn[i]].every((d) => placed.has(d)));
+
+    if (ready.length === 0) {
+      // 前提が循環している。残りは元の順で出す（画面が空になるより出す方がいい）
+      stops.forEach((stop, i) => {
+        if (!placed.has(i)) {
+          placed.add(i);
+          out.push(stop);
+        }
+      });
+      break;
+    }
+
+    ready.sort((a, b) => {
+      const home = Number(stops[a].atHome) - Number(stops[b].atHome);
+      return home !== 0 ? home : a - b;
+    });
+    placed.add(ready[0]);
+    out.push(stops[ready[0]]);
+  }
+
   return out;
 }
 

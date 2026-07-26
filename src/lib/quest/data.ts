@@ -74,6 +74,12 @@ export function validateProcedures(raw: unknown): ValidationResult {
   const ids = new Set<string>();
   const seenPhaseOrder = new Set<string>();
 
+  // 持ち物をファイル全体で見るためのもの（sameAs の解決と、同じものの二重登録の検出）
+  const allItemIds = new Set<string>();
+  const aliasIds = new Set<string>();
+  const idsByLabel = new Map<string, Set<string>>();
+  const sameAsRefs: { at: string; id: string; target: string }[] = [];
+
   for (let i = 0; i < list.length; i++) {
     const p = list[i];
     const at = isObject(p) && typeof p.id === "string" ? p.id : `#${i}`;
@@ -137,6 +143,23 @@ export function validateProcedures(raw: unknown): ValidationResult {
         }
         if (itemIds.has(b.id)) warn(at, `bring.${b.id}`, "同じ手続きの中で持ち物 id が重複しています");
         itemIds.add(b.id);
+        allItemIds.add(b.id);
+
+        const sameLabel = idsByLabel.get(b.label) ?? new Set<string>();
+        sameLabel.add(b.id);
+        idsByLabel.set(b.label, sameLabel);
+
+        if (b.sameAs !== undefined && b.sameAs !== null) {
+          aliasIds.add(b.id);
+          if (typeof b.sameAs !== "string" || b.sameAs === "") {
+            err(at, `bring.${b.id}.sameAs`, "同じものとしてまとめたい持ち物の id を入れてください");
+          } else if (b.sameAs === b.id) {
+            err(at, `bring.${b.id}.sameAs`, "自分自身を指しています");
+          } else {
+            sameAsRefs.push({ at, id: b.id, target: b.sameAs });
+          }
+        }
+
         if (b.verified !== true) {
           unverified.push({ procedureId: at, field: `bring.${b.id}`, message: `${b.label} が未確認` });
         }
@@ -202,6 +225,30 @@ export function validateProcedures(raw: unknown): ValidationResult {
           });
         }
       }
+    }
+  }
+
+  // 持ち物の sameAs（別名の指す先が実在するか）
+  for (const ref of sameAsRefs) {
+    if (!allItemIds.has(ref.target)) {
+      err(ref.at, `bring.${ref.id}.sameAs`, `"${ref.target}" という持ち物がどの手続きにもありません`);
+    } else if (aliasIds.has(ref.target)) {
+      err(
+        ref.at,
+        `bring.${ref.id}.sameAs`,
+        `"${ref.target}" にも sameAs が付いています。別名の別名は解決しないので、本来の id を直接指してください`,
+      );
+    }
+  }
+
+  // 同じ名前なのに id が違う持ち物（攻略シートで同じものが2行に見えます）
+  for (const [label, sameLabel] of idsByLabel) {
+    if (sameLabel.size > 1) {
+      warn(
+        null,
+        "bring",
+        `「${label}」が別の id（${[...sameLabel].join(" / ")}）で入っています。同じものなら id を揃えるか sameAs でまとめてください`,
+      );
     }
   }
 

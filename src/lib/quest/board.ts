@@ -6,6 +6,7 @@
 // 計算は全部この中で終わっているので、画面側で期限や順番を考える必要はありません。
 
 import type { Board, ProcedureFile, Profile, Progress } from "./types";
+import { isDateString } from "./dates";
 import {
   buildQuests,
   groupByPhase,
@@ -23,6 +24,11 @@ export function buildBoard(
   progress: Progress,
   today: string,
 ): Board {
+  // ここで弾かないと、全部の期限が黙って「不明」になって原因が分からなくなります。
+  // 画面側は new Date().toISOString().slice(0, 10) を渡してください。
+  if (!isDateString(today)) {
+    throw new Error(`today は "YYYY-MM-DD" で渡してください（今: ${String(today)}）`);
+  }
   const quests = buildQuests(data, profile, progress, today);
   const shown = visibleQuests(quests);
 

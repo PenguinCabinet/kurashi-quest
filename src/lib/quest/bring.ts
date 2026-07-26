@@ -21,7 +21,7 @@ export function bringFor(p: Procedure, me: Profile): BringLine[] {
  * 同じものは1行にまとめて、neededFor に「何のために持つか」を全部入れる。
  */
 export function mergeBring(procedures: Procedure[], me: Profile): BringLine[] {
-  const lines: BringLine[] = [];
+  const lines: Line[] = [];
   for (const p of procedures) {
     for (const b of p.bring) {
       if (needsItem(b, me)) lines.push(toLine(b, p.id));
@@ -52,19 +52,27 @@ function needsItem(b: BringItem, me: Profile): boolean {
   return matchCond(b.showIf, me) !== "no";
 }
 
-function toLine(b: BringItem, procedureId: string): BringLine {
+/**
+ * sameAs が付いているものは、まとめる時のキーを付け替える。
+ * 別名の側（sameAs あり）は primary:false にして、
+ * 本来の名前の行が1つでもあれば、そちらの言い方を残す。
+ */
+type Line = BringLine & { primary: boolean };
+
+function toLine(b: BringItem, procedureId: string): Line {
   return {
-    id: b.id,
+    id: b.sameAs ?? b.id,
     label: b.label,
     note: b.note,
     physical: b.physical !== false, // 既定は物あつかい
     verified: b.verified === true,
     neededFor: [procedureId],
+    primary: b.sameAs === undefined,
   };
 }
 
-function dedupe(lines: BringLine[]): BringLine[] {
-  const byId = new Map<string, BringLine>();
+function dedupe(lines: Line[]): BringLine[] {
+  const byId = new Map<string, Line>();
   for (const line of lines) {
     const found = byId.get(line.id);
     if (!found) {
@@ -76,10 +84,25 @@ function dedupe(lines: BringLine[]): BringLine[] {
     }
     // 1か所でも未確認なら未確認あつかい（安全側）
     found.verified = found.verified && line.verified;
-    // 注記は、書いてある方を残す
-    if (!found.note && line.note) found.note = line.note;
+
+    // 別名で入っていたものに、本来の言い方が来たら、そちらを表に出す
+    if (!found.primary && line.primary) {
+      found.label = line.label;
+      found.physical = line.physical;
+      found.primary = true;
+    }
+    // 注記はどちらも残す。まとめた側の説明（「基礎年金番号通知書でも可」など）を
+    // 落とすと、代わりになるものが分からなくなるため
+    found.note = joinNotes(found.note, line.note);
   }
-  return [...byId.values()];
+  return [...byId.values()].map(({ primary: _p, ...line }) => line);
+}
+
+/** 注記を1つにまとめる。同じ文は2回書かない */
+function joinNotes(a: string | undefined, b: string | undefined): string | undefined {
+  if (!a) return b;
+  if (!b || a.includes(b)) return a;
+  return `${a}。${b}`;
 }
 
 /**

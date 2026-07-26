@@ -116,13 +116,20 @@ export function resolveDeadline(
   const d = p.deadline;
   const base = (dueOn: string | null, soft: boolean, note?: string): DeadlineInfo => {
     const daysLeft = dueOn ? diffDays(today, dueOn) : null;
+    // 目安の期限は過ぎても overdue にしない（本当の期限と区別するため）。
+    // ただし残り日数はマイナスになるので、そのままだと画面が「あと-6日」と出せてしまう。
+    // 過ぎていることは note に書く。
+    const passed =
+      soft && daysLeft !== null && daysLeft < 0
+        ? "目安の日を過ぎています。厳密な期限ではありませんが、早めに出してください"
+        : undefined;
     return {
       label: d.label,
       dueOn,
       daysLeft,
       urgency: urgencyOf(daysLeft, soft),
       soft,
-      note,
+      note: passed ?? note,
     };
   };
 
@@ -175,13 +182,38 @@ function urgencyOf(daysLeft: number | null, soft: boolean): Urgency {
 
 // ── 順番（鍵） ──────────────────────────────────────────────
 
-/** 前提が終わっていなければ鍵をかける */
-export function lockOf(p: Procedure, progress: Progress, byId: Map<string, Procedure>): LockInfo {
-  const blockedBy = p.requires.filter((id) => !progress.doneAt[id]);
+/**
+ * 前提が終わっていなければ鍵をかける。
+ *
+ * ただし「その人には出ていない前提」は待ちません。
+ * 要らないと判定された手続きや、本人が消した手続きは画面に出ないので、
+ * それを待たせると開ける手段が無くなり、そのクエストが永久に到達不能になります。
+ */
+export function lockOf(
+  p: Procedure,
+  me: Profile,
+  progress: Progress,
+  byId: Map<string, Procedure>,
+): LockInfo {
+  const blockedBy: string[] = [];
+  const ignored: string[] = [];
+
+  for (const id of p.requires) {
+    if (progress.doneAt[id]) continue; // 終わっている
+    const prereq = byId.get(id);
+    const gone =
+      progress.dismissed.includes(id) ||
+      (prereq !== undefined && decideNeed(prereq, me).status === "notNeeded");
+    (gone ? ignored : blockedBy).push(id);
+  }
+
+  const nameOf = (id: string) => byId.get(id)?.displayName ?? id;
   return {
     locked: blockedBy.length > 0,
     blockedBy,
-    blockedByNames: blockedBy.map((id) => byId.get(id)?.displayName ?? id),
+    blockedByNames: blockedBy.map(nameOf),
+    ignored,
+    ignoredNames: ignored.map(nameOf),
   };
 }
 
@@ -209,7 +241,7 @@ export function toQuest(
     hiddenReason: p.littleKnownReason,
 
     deadline: resolveDeadline(p, me, progress, today, byId),
-    lock: lockOf(p, progress, byId),
+    lock: lockOf(p, me, progress, byId),
     done: doneOn !== null,
     doneOn,
     dismissed: progress.dismissed.includes(p.id),

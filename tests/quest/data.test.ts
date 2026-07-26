@@ -74,3 +74,24 @@ test("エラーがあると loadProcedures は例外を投げる（画面が黙�
   data.procedures[0].id = data.procedures[1].id;
   assert.throws(() => loadProcedures(data), /直すところ/);
 });
+
+test("sameAs が実在しない持ち物を指していたら見つける", () => {
+  const data = raw();
+  data.procedures[5].bring[1].sameAs = "nai-mochimono";
+  const result = validateProcedures(data);
+  assert.ok(result.errors.some((e) => e.field.includes("sameAs")));
+});
+
+test("sameAs の指す先にも sameAs が付いていたら見つける（別名の別名は解決しない）", () => {
+  const data = raw();
+  data.procedures[3].bring[1].sameAs = "id-doc"; // mynumber-card 自体を別名にする
+  const result = validateProcedures(data);
+  assert.ok(result.errors.some((e) => e.message.includes("別名の別名")));
+});
+
+test("同じ名前なのに id が違う持ち物は警告になる（攻略シートで2行に見えるため）", () => {
+  const data = raw();
+  data.procedures[5].bring[2].id = "id-doc-2"; // 本人確認書類が2つの id で入る
+  const result = validateProcedures(data);
+  assert.ok(result.warnings.some((w) => w.message.includes("別の id")));
+});

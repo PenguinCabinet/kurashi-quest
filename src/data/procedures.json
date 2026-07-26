@@ -132,7 +132,7 @@
       "littleKnown": false,
 
       "deadline": { "kind": "afterMove", "days": 14, "label": "引越しから14日以内" },
-      "requires": [],
+      "requires": ["tenshutsu-todoke"],
 
       "where": { "text": "市役所の市民課", "placeKey": "city-hall", "verified": false, "todo": "正式な課名を対象自治体で確認" },
       "sayThis": { "text": "転入届を出したいです", "verified": false, "todo": "実際に窓口で通じるか確認" },
@@ -256,7 +256,13 @@
 
       "bring": [
         { "id": "student-id-copy", "label": "学生証の写し（両面）または在学証明書の原本", "verified": true },
-        { "id": "pension-number", "label": "マイナンバーカード（または基礎年金番号通知書）", "verified": true },
+        {
+          "id": "pension-number",
+          "label": "マイナンバーカード（または基礎年金番号通知書）",
+          "note": "年金の窓口では、基礎年金番号通知書でも代わりになります",
+          "sameAs": "mynumber-card",
+          "verified": true
+        },
         { "id": "id-doc", "label": "本人確認書類", "verified": true }
       ],
 

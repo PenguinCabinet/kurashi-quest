@@ -48,6 +48,12 @@ export type BringItem = {
   id: string;
   label: string;
   note?: string;
+  /**
+   * 別の手続きにある、実質同じ持ち物の id。
+   * 攻略シートで持ち物をまとめるとき、同じものが2行に見えないようにする。
+   * 例: 年金窓口の「マイナンバーカード（または基礎年金番号通知書）」→ sameAs: "mynumber-card"
+   */
+  sameAs?: string;
   /** 物でないもの（暗証番号など）。忘れやすいので画面で区別する。既定は物あつかい */
   physical?: boolean;
   verified: boolean;
@@ -160,6 +166,14 @@ export type LockInfo = {
   blockedBy: string[];
   /** 同じ順の表示名。「転入届を出す」 */
   blockedByNames: string[];
+  /**
+   * 前提だが、その人には出ていないもの（要らない／本人が消した）の id。
+   * 画面に無いものを待たせると永久に開かないので、鍵には数えない。
+   * 「転入届は要らない判断なので、そのまま進めます」と添えたいとき用。
+   */
+  ignored: string[];
+  /** 同じ順の表示名 */
+  ignoredNames: string[];
 };
 
 export type BringLine = {

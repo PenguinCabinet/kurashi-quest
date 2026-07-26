@@ -44,3 +44,8 @@ test("発表とトップで使う一行が出る", () => {
   assert.match(routeLine(board), /出かけるのは3回/);
   assert.match(routeLine(board), /分/);
 });
+
+test("today が壊れていたら、黙って期限を消さずに落とす", () => {
+  assert.throws(() => buildBoard(data, student, emptyProgress(), "きょう"), /YYYY-MM-DD/);
+  assert.throws(() => buildBoard(data, student, emptyProgress(), "2026-02-31"), /YYYY-MM-DD/);
+});
