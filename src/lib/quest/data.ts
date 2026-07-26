@@ -3,7 +3,7 @@
 // ロジックは JSON を自分で import しません（テストからも Next からも同じ形で使えるように）。
 // 画面側:  import raw from "@/data/procedures.json";  const data = loadProcedures(raw);
 //
-// データ担当が項目を足したり id を打ち間違えたとき、画面が黙って空になるのが一番困るので、
+// 手続きを調べる人が項目を足したり id を打ち間違えたとき、画面が黙って空になるのが一番困るので、
 // 壊れているものは loadProcedures で例外にして、直すべき箇所を全部出します。
 
 import type { ProcedureFile, Procedure, ProfileKey } from "./types";
@@ -21,7 +21,7 @@ export type ValidationResult = {
   errors: DataProblem[];
   /** 動くが、直した方がいいもの */
   warnings: DataProblem[];
-  /** verified:false の箇所。画面では「要確認」と出す。データ担当の残作業リストでもある */
+  /** verified:false の箇所。画面では「要確認」と出す。調べる人の残作業リストでもある */
   unverified: DataProblem[];
 };
 
@@ -48,7 +48,7 @@ export function loadProcedures(raw: unknown): ProcedureFile {
   return raw as ProcedureFile;
 }
 
-/** 例外を投げずに全部の問題を返す。テストとデータ担当向けのチェッカーで使う。 */
+/** 例外を投げずに全部の問題を返す。テストと、データを直す人向けのチェッカーで使う。 */
 export function validateProcedures(raw: unknown): ValidationResult {
   const errors: DataProblem[] = [];
   const warnings: DataProblem[] = [];

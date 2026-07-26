@@ -19,7 +19,7 @@ test("本物の procedures.json に直すべきエラーが無い", () => {
   assert.deepEqual(result.errors, []);
 });
 
-test("未確認の項目は残作業として出てくる（データ担当のチェックリスト）", () => {
+test("未確認の項目は残作業として出てくる（調べる人のチェックリスト）", () => {
   const result = validateProcedures(raw());
   assert.ok(result.unverified.length > 0, "未確認が1件も出ないのはおかしい");
   // 「どこで」が未確認の手続きが挙がっている

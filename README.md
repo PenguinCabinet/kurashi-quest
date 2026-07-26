@@ -40,4 +40,4 @@ npm install
 | ロジック・実装 | src/lib/quest 以下 |
 | 手続きデータ | src/data/procedures.json（未確認の項目は `verified: false`） |
 
-データの直し方は [src/lib/quest/README.md](src/lib/quest/README.md) の「データ担当へ」を見てください。
+データの直し方は [src/lib/quest/README.md](src/lib/quest/README.md) の「手続きを調べる人へ」を見てください。

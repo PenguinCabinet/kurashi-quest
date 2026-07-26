@@ -5,7 +5,7 @@
 
 ```
 src/lib/quest/         ロジック（このフォルダ）
-src/data/procedures.json   手続きのデータ（データ担当が触るファイル）
+src/data/procedures.json   手続きのデータ（手続きを調べる人が触るファイル）
 tests/quest/           テスト
 test.sh                テスト実行（npm install 不要）
 ```
