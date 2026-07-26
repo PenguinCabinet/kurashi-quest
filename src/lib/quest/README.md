@@ -55,6 +55,22 @@ board.phases.map((group) => (
 | `board.route` | 役所攻略シート |
 | `board.missingAnswers` | キャラメイクの残りの質問 |
 
+## 画面5枚と、そこで呼ぶもの（早見表）
+
+画面を作るときは、この表の右側だけ見れば足ります。**期限の計算・順番・持ち物のまとめ・出し分けは、全部この中で終わっています。**
+
+| # | 画面 | 呼ぶもの |
+|---|---|---|
+| ① | キャラメイク | `QUESTIONS` / `answer(profile, key, value)` / `missingAnswers` / `isComplete` / `labelOf` |
+| ② | クエストログ | `buildBoard(...)` の `phases` `next` `stats` `notNeeded` / `toggle` / `dismiss` / `restore` / `hiddenLine` / `formatDaysLeft` |
+| ③ | やり方カード | `quest`（1件）の `where` `bring` `sayThis` `minutes` `result` `deadline` `lock` `unverified` `procedure.steps` `procedure.sources` / `stuckPoints` |
+| ④ | 役所攻略シート | `board.route` の `stops` `trips` `minutes` `bring` `warnings` / `routeLine` |
+| ⑤ | 窓口の練習 | `startSimulation` / `advance` / `answerItem` / `restart` / `resetSimulation` / `ratio` |
+
+②③④は `buildBoard` を1回呼べば全部そろいます。③は `board.quests.find((q) => q.id === id)` で1件取り出すだけです。
+
+画面が持つ状態は **`profile`（キャラメイクの答え）と `progress`（進捗）の2つだけ**です。どちらも新しい値が返る形なので、`useState` にそのまま入ります。
+
 ## 画面ごとの呼び方
 
 ### キャラメイク
@@ -129,9 +145,10 @@ useEffect(() => {                       // サーバ側では localStorage が�
 5. **データが壊れていたら起動時に落ちる。** `loadProcedures` が直すべき箇所を全部並べて例外を投げます。画面が黙って空になるより、開発中に落ちた方が早く直せます。
 6. **画面に出ていない前提は待たない。** 前提の手続きが「あなたは要りません」だったり、本人が消した場合、鍵はかかりません（`lock.locked` は false のまま、`lock.ignoredNames` にその名前が入ります）。画面に出ていないものを待たせると、そのクエストが永久に開けなくなるためです。「『転入届』は要らない判断なので、そのまま進めます」と添えたいときは `ignoredNames` を使ってください。
 
-## データ担当へ
+## 手続きを調べる人へ
 
-- `verified: false` の項目は画面に「要確認」と出ます。確認できたら `true` にしてください。残りは `validateProcedures(raw).unverified` で一覧になります
+- `verified: false` の項目は画面に「要確認」と出ます。確認できたら `true` にしてください。残りは `validateProcedures(raw).unverified` で一覧になります（いま22件）
+- **未確認のままでも動きます。**画面に「要確認」と出るだけなので、埋まる前でも作業は止まりません
 - `where.placeKey` は「同じ場所でまとめる」判定に使います（`city-hall` / `prev-city-hall` / `post-office` / `online`）。無いと攻略シートの精度が落ちます
 - `steps` の `stuckIf.missing` は、その手続きの `bring` にある id しか書けません（テストで落ちます）
 - **別の手続きに出てくる同じ持ち物は、id を揃えてください。** 揃えられない（言い方を変えたい）場合は `sameAs` にまとめ先の id を書くと、攻略シートで1行になります。同じ名前なのに id が違うと警告が出ます
@@ -145,7 +162,7 @@ useEffect(() => {                       // サーバ側では localStorage が�
 ## テスト
 
 ```bash
-./test.sh        # 61件。npm install も tsc も要りません（Node 24 以上）
+./test.sh        # 73件。npm install も tsc も要りません（Node 24 以上）
 ```
 
 型チェックは Next.js プロジェクトに入れたあと `npx tsc --noEmit` で通ります（strict で確認済み）。
