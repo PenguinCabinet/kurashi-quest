@@ -1,9 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildRoute } from "../../src/lib/quest/route";
-import { buildQuests } from "../../src/lib/quest/quests";
-import { complete, emptyProgress } from "../../src/lib/quest/progress";
-import { TODAY, realData, student } from "./fixture";
+import { buildRoute } from "../../src/lib/quest/route.ts";
+import { buildQuests } from "../../src/lib/quest/quests.ts";
+import { complete, emptyProgress } from "../../src/lib/quest/progress.ts";
+import { TODAY, realData, student } from "./fixture.ts";
 
 const data = realData();
 const questsFor = (progress = emptyProgress()) => buildQuests(data, student, progress, TODAY);

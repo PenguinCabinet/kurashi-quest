@@ -28,12 +28,12 @@ export type {
   Step,
   Urgency,
   WhereField,
-} from "./types";
+} from "./types.ts";
 
-export type { DataProblem, ValidationResult } from "./data";
-export { loadProcedures, validateProcedures } from "./data";
+export type { DataProblem, ValidationResult } from "./data.ts";
+export { loadProcedures, validateProcedures } from "./data.ts";
 
-export type { Choice, Match, Question } from "./profile";
+export type { Choice, Match, Question } from "./profile.ts";
 export {
   ASKED_KEYS,
   QUESTIONS,
@@ -46,7 +46,7 @@ export {
   missingAnswers,
   normalizeProfile,
   unknownKeys,
-} from "./profile";
+} from "./profile.ts";
 
 export {
   PHASE_LABELS,
@@ -62,10 +62,10 @@ export {
   statsOf,
   toQuest,
   visibleQuests,
-} from "./quests";
+} from "./quests.ts";
 
-export { bringFor, mergeBring, nonPhysical, unverifiedBring } from "./bring";
-export { buildRoute, placeKeyOf, sortByRequires } from "./route";
+export { bringFor, mergeBring, nonPhysical, unverifiedBring } from "./bring.ts";
+export { buildRoute, placeKeyOf, sortByRequires } from "./route.ts";
 
 export {
   complete,
@@ -79,9 +79,9 @@ export {
   restore,
   toggle,
   uncomplete,
-} from "./progress";
+} from "./progress.ts";
 
-export type { StorageLike } from "./storage";
+export type { StorageLike } from "./storage.ts";
 export {
   KEYS,
   browserStorage,
@@ -91,7 +91,7 @@ export {
   memoryStorage,
   saveProfile,
   saveProgress,
-} from "./storage";
+} from "./storage.ts";
 
 export {
   advance,
@@ -103,8 +103,8 @@ export {
   startSimulation,
   stuckPoints,
   totalSteps,
-} from "./simulation";
+} from "./simulation.ts";
 
-export { addDays, diffDays, formatDaysLeft, formatJa, isDateString } from "./dates";
+export { addDays, diffDays, formatDaysLeft, formatJa, isDateString } from "./dates.ts";
 
-export { buildBoard, hiddenLine, routeLine } from "./board";
+export { buildBoard, hiddenLine, routeLine } from "./board.ts";

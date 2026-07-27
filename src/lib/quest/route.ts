@@ -1,10 +1,10 @@
 // 役所攻略シート。同じ場所のものをまとめて、前提のある順に並べる。
 // 家でできるもの（Web・電話）は最後で、出かける回数に数えない。
 
-import type { Procedure, Profile, Quest, RouteSheet, RouteStop } from "./types";
-import { mergeBring, nonPhysical } from "./bring";
-import { visibleQuests } from "./quests";
-import { formatJa } from "./dates";
+import type { Procedure, Profile, Quest, RouteSheet, RouteStop } from "./types.ts";
+import { mergeBring, nonPhysical } from "./bring.ts";
+import { visibleQuests } from "./quests.ts";
+import { formatJa } from "./dates.ts";
 
 /** 家でできる場所の placeKey。データ側でこれを付けてもらう */
 const AT_HOME_KEYS = new Set(["online", "phone", "web"]);

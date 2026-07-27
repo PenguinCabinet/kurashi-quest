@@ -10,9 +10,9 @@ import {
   restore,
   toggle,
   uncomplete,
-} from "../../src/lib/quest/progress";
-import { loadProgress, memoryStorage, saveProgress } from "../../src/lib/quest/storage";
-import { normalizeProfile } from "../../src/lib/quest/profile";
+} from "../../src/lib/quest/progress.ts";
+import { loadProgress, memoryStorage, saveProgress } from "../../src/lib/quest/storage.ts";
+import { normalizeProfile } from "../../src/lib/quest/profile.ts";
 
 test("元の値を書き換えずに、新しい値を返す", () => {
   const before = emptyProgress();

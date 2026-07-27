@@ -1,8 +1,8 @@
 // キャラメイクの5問と、答えを条件に当てる部分。
 // 画面は QUESTIONS を map するだけ。質問を増やすときもここだけ直せばいい。
 
-import type { Profile, ProfileKey } from "./types";
-import { isDateString } from "./dates";
+import type { Profile, ProfileKey } from "./types.ts";
+import { isDateString } from "./dates.ts";
 
 export type Choice = {
   value: string | boolean;

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { addDays, diffDays, formatDaysLeft, formatJa, isDateString } from "../../src/lib/quest/dates";
+import { addDays, diffDays, formatDaysLeft, formatJa, isDateString } from "../../src/lib/quest/dates.ts";
 
 test("日数の足し引きが月をまたいでも合う", () => {
   assert.equal(addDays("2026-07-20", 14), "2026-08-03");

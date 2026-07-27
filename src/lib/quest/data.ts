@@ -2,8 +2,8 @@
 // 画面側:  import raw from "@/data/procedures.json";  const data = loadProcedures(raw);
 // id の打ち間違いなどは例外にする（画面が黙って空になるより落ちた方が早く直せる）。
 
-import type { ProcedureFile, Procedure, ProfileKey } from "./types";
-import { isDateString } from "./dates";
+import type { ProcedureFile, Procedure, ProfileKey } from "./types.ts";
+import { isDateString } from "./dates.ts";
 
 export type DataProblem = {
   /** どの手続きか。ファイル全体の問題なら null */

@@ -1,8 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildQuests, notNeededQuests, pickNext, statsOf, visibleQuests } from "../../src/lib/quest/quests";
-import { complete, emptyProgress } from "../../src/lib/quest/progress";
-import { TODAY, halfway, realData, student, worker } from "./fixture";
+import { buildQuests, notNeededQuests, pickNext, statsOf, visibleQuests } from "../../src/lib/quest/quests.ts";
+import { complete, emptyProgress } from "../../src/lib/quest/progress.ts";
+import { TODAY, halfway, realData, student, worker } from "./fixture.ts";
 
 const data = realData();
 const find = <T extends { id: string }>(list: T[], id: string): T =>

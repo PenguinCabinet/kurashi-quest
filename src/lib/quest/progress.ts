@@ -1,8 +1,8 @@
 // 進捗。元の値は書き換えず、新しい値を返す（useState にそのまま入る）。
 // 完了は true/false ではなく日付で持つ（「転入届の90日後」の起算に要るため）。
 
-import type { Progress, Quest } from "./types";
-import { isDateString } from "./dates";
+import type { Progress, Quest } from "./types.ts";
+import { isDateString } from "./dates.ts";
 
 export function emptyProgress(): Progress {
   return { doneAt: {}, dismissed: [] };

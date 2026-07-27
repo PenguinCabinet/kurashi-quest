@@ -2,9 +2,9 @@
 // localStorage を直接呼ばないのは、サーバ側に window が無いのと、Safari のプライベートモードが例外を投げるため。
 // 画面側は useEffect の中で読むこと。
 
-import type { Profile, Progress } from "./types";
-import { normalizeProfile } from "./profile";
-import { emptyProgress, normalizeProgress } from "./progress";
+import type { Profile, Progress } from "./types.ts";
+import { normalizeProfile } from "./profile.ts";
+import { emptyProgress, normalizeProgress } from "./progress.ts";
 
 export type StorageLike = {
   getItem(key: string): string | null;

@@ -1,7 +1,7 @@
 // 持ち物。1手続き分（やり方カード用）と、まとめたもの（攻略シート用）を作る。
 
-import type { BringItem, BringLine, Procedure, Profile } from "./types";
-import { matchCond } from "./profile";
+import type { BringItem, BringLine, Procedure, Profile } from "./types.ts";
+import { matchCond } from "./profile.ts";
 
 /** その人が実際に持っていく必要があるものだけを返す */
 export function bringFor(p: Procedure, me: Profile): BringLine[] {
