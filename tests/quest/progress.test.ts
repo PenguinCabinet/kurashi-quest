@@ -11,7 +11,7 @@ import {
   toggle,
   uncomplete,
 } from "../../src/lib/quest/progress.ts";
-import { loadProgress, memoryStorage, saveProgress } from "../../src/lib/quest/storage.ts";
+import { KEYS, loadProgress, memoryStorage, saveProgress } from "../../src/lib/quest/storage.ts";
 import { normalizeProfile } from "../../src/lib/quest/profile.ts";
 
 test("元の値を書き換えずに、新しい値を返す", () => {
@@ -71,7 +71,7 @@ test("保存して読み戻せる", () => {
 });
 
 test("保存が壊れていても、空の状態で始まる", () => {
-  const storage = memoryStorage({ "hikkoshi-quest.progress.v1": "{壊れたJSON" });
+  const storage = memoryStorage({ [KEYS.progress]: "{壊れたJSON" });
   assert.deepEqual(loadProgress(storage), { doneAt: {}, dismissed: [] });
 });
 

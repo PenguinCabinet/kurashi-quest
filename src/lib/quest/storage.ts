@@ -13,15 +13,15 @@ export type StorageLike = {
 };
 
 export const KEYS = {
-  profile: "hikkoshi-quest.profile.v1",
-  progress: "hikkoshi-quest.progress.v1",
+  profile: "kurashi-quest.profile.v1",
+  progress: "kurashi-quest.progress.v1",
 } as const;
 
 /** ブラウザの localStorage。サーバ側や、使えない環境では null */
 export function browserStorage(): StorageLike | null {
   try {
     if (typeof window === "undefined" || !window.localStorage) return null;
-    const probe = "hikkoshi-quest.probe";
+    const probe = "kurashi-quest.probe";
     window.localStorage.setItem(probe, "1");
     window.localStorage.removeItem(probe);
     return window.localStorage;
