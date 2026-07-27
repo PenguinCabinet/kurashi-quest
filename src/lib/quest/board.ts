@@ -1,8 +1,8 @@
 // 画面1枚分をまとめて作る。期限も順番も持ち物もここで計算済み。
 //   const board = buildBoard(data, profile, progress, "2026-07-28");
 
-import type { Board, ProcedureFile, Profile, Progress } from "./types";
-import { isDateString } from "./dates";
+import type { Board, ProcedureFile, Profile, Progress } from "./types.ts";
+import { isDateString } from "./dates.ts";
 import {
   buildQuests,
   groupByPhase,
@@ -10,9 +10,9 @@ import {
   pickNext,
   statsOf,
   visibleQuests,
-} from "./quests";
-import { buildRoute } from "./route";
-import { missingAnswers } from "./profile";
+} from "./quests.ts";
+import { buildRoute } from "./route.ts";
+import { missingAnswers } from "./profile.ts";
 
 export function buildBoard(
   data: ProcedureFile,

@@ -1,8 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildBoard, hiddenLine, routeLine } from "../../src/lib/quest/board";
-import { complete, emptyProgress } from "../../src/lib/quest/progress";
-import { TODAY, halfway, realData, student } from "./fixture";
+import { buildBoard, hiddenLine, routeLine } from "../../src/lib/quest/board.ts";
+import { complete, emptyProgress } from "../../src/lib/quest/progress.ts";
+import { TODAY, halfway, realData, student } from "./fixture.ts";
 
 const data = realData();
 

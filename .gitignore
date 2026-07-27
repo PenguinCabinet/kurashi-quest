@@ -1,37 +1,41 @@
-# 依存
-node_modules/
-.pnp
-.pnp.js
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# ビルド
-.next/
-out/
-build/
-dist/
-*.tsbuildinfo
-next-env.d.ts
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# 環境変数（Supabase の URL とキーもここ。絶対にコミットしない）
-.env
-.env.*
-!.env.example
+# testing
+/coverage
 
-# Supabase ローカル
-.branches
-.temp
-supabase/.temp
+# next.js
+/.next/
+/out/
 
-# エディタ・OS
+# production
+/build
+
+# misc
 .DS_Store
-.vscode/
-.idea/
-*.swp
+*.pem
 
-# ログ
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# ローカル設定
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
 .vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

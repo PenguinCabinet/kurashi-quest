@@ -14,10 +14,10 @@ import type {
   Progress,
   Quest,
   Urgency,
-} from "./types";
-import { addDays, diffDays } from "./dates";
-import { labelOf, matchCond, unknownKeys } from "./profile";
-import { bringFor } from "./bring";
+} from "./types.ts";
+import { addDays, diffDays } from "./dates.ts";
+import { labelOf, matchCond, unknownKeys } from "./profile.ts";
+import { bringFor } from "./bring.ts";
 
 export const PHASE_LABELS: Record<Phase, string> = {
   before: "引越し前",

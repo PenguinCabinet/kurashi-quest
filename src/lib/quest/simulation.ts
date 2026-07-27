@@ -1,7 +1,7 @@
 // 窓口の練習。手順を1歩ずつ進め、持ち物が無いところで止めて出直しにする。
 // 使うデータは攻略シートと同じ（steps と bring）。使い方は README を参照。
 
-import type { Procedure, SimQuestion, SimState, Step } from "./types";
+import type { Procedure, SimQuestion, SimState, Step } from "./types.ts";
 
 export function startSimulation(p: Procedure): SimState {
   return {

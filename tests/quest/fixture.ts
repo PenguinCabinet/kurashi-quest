@@ -3,8 +3,8 @@
 // できるだけ本物で確かめる。
 
 import { readFileSync } from "node:fs";
-import { loadProcedures } from "../../src/lib/quest/data";
-import type { ProcedureFile, Profile } from "../../src/lib/quest/types";
+import { loadProcedures } from "../../src/lib/quest/data.ts";
+import type { ProcedureFile, Profile } from "../../src/lib/quest/types.ts";
 
 export function realData(): ProcedureFile {
   const text = readFileSync(new URL("../../src/data/procedures.json", import.meta.url), "utf8");

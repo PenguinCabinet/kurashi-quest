@@ -13,25 +13,16 @@ test.sh            テスト実行
 
 画面（Next.js）はこれから入ります。ロジックの呼び方は [src/lib/quest/README.md](src/lib/quest/README.md) にまとめてあります。
 
-## テスト
-
+## 初期設定
 ```bash
-./test.sh      # npm install 不要。Node 24 以上
-```
-
-## Next.js を入れるとき
-
-このリポジトリには `README.md` が既にあるので、`create-next-app` を直接ここで実行すると止まります。
-別の場所で作ってから中身を移してください。
-
-```bash
-npx create-next-app@latest /tmp/app --ts --app --eslint --src-dir --import-alias "@/*"
-cp -R /tmp/app/{package.json,next.config.*,tsconfig.json,eslint.config.*,public} .
-cp -R /tmp/app/src/app src/app
 npm install
 ```
 
-`tsconfig.json` の `@/*` が `src/*` を指していれば、ロジックは `@/lib/quest` から使えます。
+## テスト
+
+```bash
+npm run test:quest     # Node 24 以上
+```
 
 ## 担当
 

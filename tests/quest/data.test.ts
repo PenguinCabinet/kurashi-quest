@@ -1,8 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { loadProcedures, validateProcedures } from "../../src/lib/quest/data";
-import { realData } from "./fixture";
+import { loadProcedures, validateProcedures } from "../../src/lib/quest/data.ts";
+import { realData } from "./fixture.ts";
 
 function raw(): any {
   return JSON.parse(readFileSync(new URL("../../src/data/procedures.json", import.meta.url), "utf8"));

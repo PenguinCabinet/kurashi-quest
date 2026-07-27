@@ -7,8 +7,8 @@ import {
   restart,
   startSimulation,
   stuckPoints,
-} from "../../src/lib/quest/simulation";
-import { realData } from "./fixture";
+} from "../../src/lib/quest/simulation.ts";
+import { realData } from "./fixture.ts";
 
 const data = realData();
 const tennyu = data.procedures.find((p) => p.id === "tennyu-todoke")!;
