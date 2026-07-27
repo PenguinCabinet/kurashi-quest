@@ -7,7 +7,7 @@
 src/lib/quest/         ロジック（このフォルダ）
 src/data/procedures.json   手続きのデータ（手続きを調べる人が触るファイル）
 tests/quest/           テスト
-test.sh                テスト実行（npm install 不要）
+npm run test:quest         テスト実行
 ```
 
 import は `@/lib/quest` から。中のファイルを直接 import しなくて大丈夫です
@@ -162,7 +162,8 @@ useEffect(() => {                       // サーバ側では localStorage が�
 ## テスト
 
 ```bash
-./test.sh        # 73件。npm install も tsc も要りません（Node 24 以上）
+npm install          # 初回だけ
+npm run test:quest   # 73件（Node 24 以上）
 ```
 
 型チェックは Next.js プロジェクトに入れたあと `npx tsc --noEmit` で通ります（strict で確認済み）。
