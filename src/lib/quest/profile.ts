@@ -5,7 +5,7 @@ import type { Profile, ProfileKey } from "./types.ts";
 import { isDateString } from "./dates.ts";
 
 export type Choice = {
-  value: string | boolean;
+  value: string | boolean | number;
   label: string;
   note?: string;
   /** キャラ画像などのファイル名。デザイン担当が差し替える */
@@ -61,6 +61,17 @@ export const QUESTIONS: Question[] = [
       { value: "none", label: "なし" },
       { value: "moped", label: "原付・バイク" },
       { value: "car", label: "車" },
+    ],
+  },
+  {
+    // 年齢そのものは使わないので、20歳以上かどうかだけ聞く（年金の手続きの判定に使う）
+    key: "age",
+    kind: "choice",
+    title: "20歳以上ですか？",
+    help: "国民年金の手続きが要るかどうかが変わります",
+    options: [
+      { value: 20, label: "20歳以上" },
+      { value: 19, label: "20歳未満" },
     ],
   },
 ];

@@ -25,6 +25,7 @@ test("キャラメイクの途中でも画面が作れる（残りの質問が�
     "hasMyNumberCard",
     "livingAlone",
     "vehicle",
+    "age",
   ]);
   assert.equal(board.quests.length, 6);
   assert.ok(board.stats.unsure > 0);

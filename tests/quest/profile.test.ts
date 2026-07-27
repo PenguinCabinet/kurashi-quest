@@ -15,11 +15,28 @@ import {
 } from "../../src/lib/quest/profile.ts";
 import type { Profile } from "../../src/lib/quest/types.ts";
 
-test("キャラメイクは5問。聞かないものは入れない", () => {
-  assert.equal(QUESTIONS.length, 5);
-  assert.deepEqual(ASKED_KEYS, ["occupation", "movedOn", "hasMyNumberCard", "livingAlone", "vehicle"]);
+test("キャラメイクは6問。聞かないものは入れない", () => {
+  assert.equal(QUESTIONS.length, 6);
+  assert.deepEqual(ASKED_KEYS, [
+    "occupation",
+    "movedOn",
+    "hasMyNumberCard",
+    "livingAlone",
+    "vehicle",
+    "age",
+  ]);
   assert.ok(!ASKED_KEYS.includes("city"), "対象自治体は1つなので聞かない");
-  assert.ok(!ASKED_KEYS.includes("age"), "年齢はいまは聞いていない");
+});
+
+test("年齢は「20歳以上か」だけを聞く", () => {
+  // 年齢そのものは使わないので、数字を入力させずに2択で済ませる
+  const age = QUESTIONS.find((q) => q.key === "age")!;
+  assert.equal(age.kind, "choice");
+  if (age.kind !== "choice") return;
+
+  assert.deepEqual(age.options.map((o) => o.label), ["20歳以上", "20歳未満"]);
+  assert.equal(answer(emptyProfile(), "age", 20).age, 20);
+  assert.equal(answer(emptyProfile(), "age", 19).age, 19);
 });
 
 test("選択肢の値は、そのまま答えとして通る", () => {
@@ -57,7 +74,7 @@ test("「いいえ」の答えも、ちゃんと残る", () => {
 
   assert.equal(p.livingAlone, false);
   assert.equal(p.hasMyNumberCard, false);
-  assert.deepEqual(missingAnswers(p), ["occupation", "movedOn", "vehicle"], "答えた扱いになる");
+  assert.deepEqual(missingAnswers(p), ["occupation", "movedOn", "vehicle", "age"], "答えた扱いになる");
 });
 
 test("答えを取り消せる", () => {
@@ -105,6 +122,7 @@ test("残りの質問数と、全部答えたかが分かる", () => {
     hasMyNumberCard: true,
     livingAlone: true,
     vehicle: "none",
+    age: 20,
   };
   assert.deepEqual(missingAnswers(full), []);
   assert.equal(isComplete(full), true);
