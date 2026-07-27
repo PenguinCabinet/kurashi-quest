@@ -75,7 +75,8 @@ test("忘れやすいもの・順番・期限切れが注意として出る", ()
   const route = buildRoute(questsFor(), student);
   const text = route.warnings.join("\n");
   assert.match(text, /暗証番号/);
-  assert.match(text, /転入届を出す.*先に/s);
+  // 改行をまたいで探すので [\s\S] を使う（/s フラグは古い target だと型チェックで落ちる）
+  assert.match(text, /転入届を出す[\s\S]*先に/);
   assert.match(text, /期限/);
 });
 
