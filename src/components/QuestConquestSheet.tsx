@@ -21,6 +21,7 @@ export function QuestConquestSheet({
   board,
   notNeeded = [],
   onToggleQuest,
+  progress={},
 }: QuestConquestSheetProps) {
   // 市役所の手続き一覧
   const cityHallQuests = board.quests.filter(
@@ -47,7 +48,9 @@ export function QuestConquestSheet({
     }));
   };
 
-  const readyCount = bringItems.filter((b) => checkedBringIds[b.id]).length;
+  const bring_readyCount = bringItems.filter((b) => checkedBringIds[b.id]).length;
+  console.log(progress.doneAt)
+  const progress_readyCount = Object.keys(progress.doneAt).length;
   const totalCount = bringItems.length;
 
   return (
@@ -60,7 +63,7 @@ export function QuestConquestSheet({
         <div className="text-base font-bold text-[#b32d2e] flex items-center gap-1.5">
           <span className="text-slate-900 font-bold mr-1">準備</span>
           <span className="text-lg font-bold">
-            {readyCount} / {totalCount}
+            {bring_readyCount} / {totalCount}
           </span>
           <span>そろった</span>
         </div>
@@ -192,7 +195,8 @@ export function QuestConquestSheet({
       {/* フッター */}
       <div className="px-4 py-3 bg-[#edf3f8] border-t-2 border-[#5c738e] flex items-center justify-between">
         <span className="font-bold text-[#1c4a75] text-base md:text-lg">
-          この{cityHallQuests.length}つが１回で終われば クリア
+          {/* progress_readyCountが0タスク完了の時、cityHallQuests.lengthであるため、差し引く*/}
+          この{cityHallQuests.length}つが{progress_readyCount-cityHallQuests.length}回で終われば クリア
         </span>
       </div>
     </div>
