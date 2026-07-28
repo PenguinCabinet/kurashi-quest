@@ -193,7 +193,7 @@ export function QuestConquestSheet({
       <div className="px-4 py-3 bg-[#edf3f8] border-t-2 border-[#5c738e] flex items-center justify-between">
         <span className="font-bold text-[#1c4a75] text-base md:text-lg">
           {/* progress_readyCountが0タスク完了の時、Quests.lengthであるため、差し引く*/}
-          この{Quests.length}つのうち{progress_readyCount}つが終われば クリア
+          {Quests.length}つのクエストうち{progress_readyCount}つが終了
         </span>
       </div>
     </div>
