@@ -54,7 +54,10 @@ export function QuestConquestSheet({
         <h1 className="text-xl font-bold tracking-tight text-slate-800">
           役所攻略シート
         </h1>
-        <div className="text-base font-bold text-[#b32d2e] flex items-center gap-1.5">
+        <div className={
+          "text-base font-bold flex items-center gap-1.5 "+
+          (bring_readyCount!=totalCount?"text-[#b32d2e]":"text-[#2eb32d]")
+        }>
           <span className="text-slate-900 font-bold mr-1">準備</span>
           <span className="text-lg font-bold">
             {bring_readyCount} / {totalCount}
