@@ -1,9 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { buildRoute } from "../../src/lib/quest/route.ts";
+import { mergeBring, notNeededBring } from "../../src/lib/quest/bring.ts";
 import { buildQuests } from "../../src/lib/quest/quests.ts";
 import { complete, emptyProgress } from "../../src/lib/quest/progress.ts";
-import { TODAY, realData, student } from "./fixture.ts";
+import { TODAY, realData, student, worker } from "./fixture.ts";
 
 const data = realData();
 const questsFor = (progress = emptyProgress()) => buildQuests(data, student, progress, TODAY);
@@ -114,4 +115,37 @@ test("1つの手続きだけを見るときは、その手続きの言い方の�
   const gakusei = questsFor().find((q) => q.id === "gakusei-nofu-tokurei")!;
   const card = gakusei.bring.find((b) => b.id === "mynumber-card")!;
   assert.equal(card.label, "マイナンバーカード（または基礎年金番号通知書）");
+});
+
+test("その人には要らない持ち物が、理由付きで取れる", () => {
+  // 学生はカードを持っているので、転出証明書は交付されない＝持っていく必要がない
+  const procedures = data.procedures;
+  const skipped = notNeededBring(procedures, student);
+
+  assert.deepEqual(skipped.map((b) => b.id), ["tenshutsu-shomeisho"]);
+  assert.match(skipped[0].reason, /マイナンバーカードを持っていない人/);
+
+  // 持っていく方の一覧には入っていない
+  assert.ok(!mergeBring(procedures, student).some((b) => b.id === "tenshutsu-shomeisho"));
+});
+
+test("カードを持っていない人では、要る・要らないが逆になる", () => {
+  // 画面は場所ごとに呼ぶので、市役所の分だけで見る
+  const route = buildRoute(buildQuests(data, worker, emptyProgress(), TODAY), worker);
+  const cityHall = route.stops.find((s) => s.placeKey === "city-hall")!;
+  const procedures = cityHall.quests.map((q) => q.procedure);
+
+  assert.ok(
+    cityHall.bring.some((b) => b.id === "tenshutsu-shomeisho"),
+    "カードが無い人は転出証明書が要る",
+  );
+
+  const skipped = notNeededBring(procedures, worker);
+  assert.deepEqual(skipped.map((b) => b.id), ["mynumber-card", "juki-pin"]);
+  assert.match(skipped[0].reason, /マイナンバーカードを持っている人/);
+});
+
+test("答えていない項目があるうちは、「要らない」に入れない（迷ったら出す）", () => {
+  const skipped = notNeededBring(data.procedures, { occupation: "student" });
+  assert.deepEqual(skipped, [], "判定できないものを勝手に外さない");
 });

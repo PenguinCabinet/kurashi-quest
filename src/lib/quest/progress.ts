@@ -5,7 +5,7 @@ import type { Progress, Quest } from "./types.ts";
 import { isDateString } from "./dates.ts";
 
 export function emptyProgress(): Progress {
-  return { doneAt: {}, dismissed: [] };
+  return { doneAt: {}, dismissed: [], brought: [] };
 }
 
 /** 保存されていた値を読む。壊れていたら捨てて空にする（古い形で画面が落ちないように） */
@@ -22,6 +22,11 @@ export function normalizeProgress(raw: unknown): Progress {
   if (Array.isArray(r.dismissed)) {
     for (const id of r.dismissed) {
       if (typeof id === "string" && id !== "" && !out.dismissed.includes(id)) out.dismissed.push(id);
+    }
+  }
+  if (Array.isArray(r.brought)) {
+    for (const id of r.brought) {
+      if (typeof id === "string" && id !== "" && !out.brought.includes(id)) out.brought.push(id);
     }
   }
   return out;
@@ -44,6 +49,33 @@ export function uncomplete(progress: Progress, id: string): Progress {
 /** チェックボックスの ON / OFF */
 export function toggle(progress: Progress, id: string, today: string): Progress {
   return isDone(progress, id) ? uncomplete(progress, id) : complete(progress, id, today);
+}
+
+/** 持ち物をそろえた／まだ、を切り替える。攻略シートのチェック用 */
+export function toggleBrought(progress: Progress, itemId: string): Progress {
+  return isBrought(progress, itemId)
+    ? { ...progress, brought: progress.brought.filter((x) => x !== itemId) }
+    : { ...progress, brought: [...progress.brought, itemId] };
+}
+
+export function isBrought(progress: Progress, itemId: string): boolean {
+  return progress.brought.includes(itemId);
+}
+
+/** 「準備 2 / 4 そろった」の数。要らないものは数に入れない */
+export function broughtCount(
+  progress: Progress,
+  lines: { id: string }[],
+): { ready: number; total: number } {
+  return {
+    ready: lines.filter((line) => isBrought(progress, line.id)).length,
+    total: lines.length,
+  };
+}
+
+/** 持ち物のチェックだけ外す（役所から帰ってきたときなど） */
+export function clearBrought(progress: Progress): Progress {
+  return { ...progress, brought: [] };
 }
 
 /** 本人が「これは要らない」と消す。データからは消さないので、あとで戻せる */
@@ -79,5 +111,10 @@ export function pruneProgress(progress: Progress, knownIds: string[]): Progress 
   for (const [id, date] of Object.entries(progress.doneAt)) {
     if (known.has(id)) doneAt[id] = date;
   }
-  return { doneAt, dismissed: progress.dismissed.filter((id) => known.has(id)) };
+  // brought は手続きではなく持ち物の id なので、ここでは触らない
+  return {
+    doneAt,
+    dismissed: progress.dismissed.filter((id) => known.has(id)),
+    brought: progress.brought,
+  };
 }

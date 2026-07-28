@@ -228,6 +228,8 @@ export type Progress = {
   doneAt: Record<string, string>;
   /** 本人が「これは要らない」と消したもの */
   dismissed: string[];
+  /** そろえた持ち物の id。攻略シートの「準備 2/4 そろった」に使う */
+  brought: string[];
 };
 
 export type Quest = {

@@ -56,7 +56,7 @@ test("答えと進捗は、別の場所に入る", () => {
 test("何も保存されていなければ、空の状態で始まる", () => {
   const storage = memoryStorage();
   assert.deepEqual(loadProfile(storage), {});
-  assert.deepEqual(loadProgress(storage), { doneAt: {}, dismissed: [] });
+  assert.deepEqual(loadProgress(storage), emptyProgress());
 });
 
 test("保存が壊れていても、空の状態で始まる", () => {
@@ -65,7 +65,7 @@ test("保存が壊れていても、空の状態で始まる", () => {
     [KEYS.progress]: "[1,2,3",
   });
   assert.deepEqual(loadProfile(storage), {});
-  assert.deepEqual(loadProgress(storage), { doneAt: {}, dismissed: [] });
+  assert.deepEqual(loadProgress(storage), emptyProgress());
 });
 
 test("古い形の保存データが入っていても、知らない項目は捨てて読む", () => {
@@ -89,7 +89,7 @@ test("最初からやり直すと、両方消える", () => {
 test("保存できない環境（null）でも、全部の関数が動く", () => {
   // サーバ側で最初の描画をするとき、localStorage はまだ無い
   assert.deepEqual(loadProfile(null), {});
-  assert.deepEqual(loadProgress(null), { doneAt: {}, dismissed: [] });
+  assert.deepEqual(loadProgress(null), emptyProgress());
   saveProfile(null, student);
   saveProgress(null, emptyProgress());
   clearAll(null);
@@ -122,7 +122,7 @@ test("読み込みで例外が出ても、空の状態で始まる", () => {
   };
 
   assert.deepEqual(loadProfile(throwing), {});
-  assert.deepEqual(loadProgress(throwing), { doneAt: {}, dismissed: [] });
+  assert.deepEqual(loadProgress(throwing), emptyProgress());
 });
 
 test("サーバ側では、保存先が無い（null）", () => {

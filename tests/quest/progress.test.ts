@@ -1,14 +1,18 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  broughtCount,
+  clearBrought,
   complete,
   dismiss,
   emptyProgress,
+  isBrought,
   isDone,
   normalizeProgress,
   pruneProgress,
   restore,
   toggle,
+  toggleBrought,
   uncomplete,
 } from "../../src/lib/quest/progress.ts";
 import { KEYS, loadProgress, memoryStorage, saveProgress } from "../../src/lib/quest/storage.ts";
@@ -50,17 +54,29 @@ test("消す・戻す", () => {
 });
 
 test("古い保存データが壊れていても落ちない", () => {
-  assert.deepEqual(normalizeProgress(null), { doneAt: {}, dismissed: [] });
-  assert.deepEqual(normalizeProgress("こわれてる"), { doneAt: {}, dismissed: [] });
+  assert.deepEqual(normalizeProgress(null), emptyProgress());
+  assert.deepEqual(normalizeProgress("こわれてる"), emptyProgress());
   assert.deepEqual(
-    normalizeProgress({ doneAt: { a: "2026-07-28", b: true, c: "ゆうべ" }, dismissed: ["x", 3] }),
-    { doneAt: { a: "2026-07-28" }, dismissed: ["x"] },
+    normalizeProgress({
+      doneAt: { a: "2026-07-28", b: true, c: "ゆうべ" },
+      dismissed: ["x", 3],
+      brought: ["id-doc", 7],
+    }),
+    { doneAt: { a: "2026-07-28" }, dismissed: ["x"], brought: ["id-doc"] },
   );
 });
 
 test("データから消えた手続きの進捗は捨てる", () => {
-  const p = { doneAt: { a: "2026-07-28", zzz: "2026-07-28" }, dismissed: ["zzz"] };
-  assert.deepEqual(pruneProgress(p, ["a"]), { doneAt: { a: "2026-07-28" }, dismissed: [] });
+  const p = {
+    doneAt: { a: "2026-07-28", zzz: "2026-07-28" },
+    dismissed: ["zzz"],
+    brought: ["id-doc"],
+  };
+  assert.deepEqual(pruneProgress(p, ["a"]), {
+    doneAt: { a: "2026-07-28" },
+    dismissed: [],
+    brought: ["id-doc"],
+  });
 });
 
 test("保存して読み戻せる", () => {
@@ -72,11 +88,11 @@ test("保存して読み戻せる", () => {
 
 test("保存が壊れていても、空の状態で始まる", () => {
   const storage = memoryStorage({ [KEYS.progress]: "{壊れたJSON" });
-  assert.deepEqual(loadProgress(storage), { doneAt: {}, dismissed: [] });
+  assert.deepEqual(loadProgress(storage), emptyProgress());
 });
 
 test("保存できない環境（null）でも落ちない", () => {
-  assert.deepEqual(loadProgress(null), { doneAt: {}, dismissed: [] });
+  assert.deepEqual(loadProgress(null), emptyProgress());
   saveProgress(null, emptyProgress());
 });
 
@@ -89,4 +105,44 @@ test("キャラメイクの答えも、知らない値は捨てて読む", () =>
     hobby: "釣り",
   });
   assert.deepEqual(profile, { movedOn: "2026-07-20", vehicle: "car" });
+});
+
+test("持ち物のチェックを付け外しできる（攻略シートの「準備 2/4」）", () => {
+  let p = emptyProgress();
+  assert.equal(isBrought(p, "id-doc"), false);
+
+  p = toggleBrought(p, "id-doc");
+  assert.equal(isBrought(p, "id-doc"), true);
+  assert.deepEqual(p.brought, ["id-doc"]);
+
+  p = toggleBrought(p, "id-doc");
+  assert.equal(isBrought(p, "id-doc"), false, "もう一度押すと外れる");
+  assert.deepEqual(p.brought, []);
+});
+
+test("持ち物のチェックも保存されて、読み戻せる", () => {
+  const storage = memoryStorage();
+  const p = toggleBrought(toggleBrought(emptyProgress(), "id-doc"), "juki-pin");
+  saveProgress(storage, p);
+
+  const back = loadProgress(storage);
+  assert.deepEqual(back.brought, ["id-doc", "juki-pin"]);
+  assert.equal(isBrought(back, "juki-pin"), true);
+});
+
+test("そろった数を数えられる。要らないものは分母に入らない", () => {
+  const lines = [{ id: "id-doc" }, { id: "mynumber-card" }, { id: "student-id-copy" }, { id: "juki-pin" }];
+  const p = toggleBrought(toggleBrought(emptyProgress(), "id-doc"), "mynumber-card");
+
+  assert.deepEqual(broughtCount(p, lines), { ready: 2, total: 4 });
+  assert.deepEqual(broughtCount(emptyProgress(), lines), { ready: 0, total: 4 });
+});
+
+test("持ち物のチェックだけまとめて外せる", () => {
+  const p = toggleBrought(toggleBrought(emptyProgress(), "id-doc"), "juki-pin");
+  const done = complete(p, "tennyu-todoke", "2026-07-28");
+
+  const cleared = clearBrought(done);
+  assert.deepEqual(cleared.brought, []);
+  assert.equal(isDone(cleared, "tennyu-todoke"), true, "手続きの進捗は消さない");
 });

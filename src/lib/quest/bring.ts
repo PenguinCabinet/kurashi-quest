@@ -22,6 +22,47 @@ export function mergeBring(procedures: Procedure[], me: Profile): BringLine[] {
   return sortBring(dedupe(lines));
 }
 
+/** 「あなたは要りません」で見せる持ち物。消さずに理由付きで残す用 */
+export type SkippedBringLine = BringLine & { reason: string };
+
+/**
+ * その人には要らない持ち物。
+ * 「カードがあるので転出証明書は要りません」のように、
+ * 外れたことが分かる形で画面に出すためのもの。
+ */
+export function notNeededBring(procedures: Procedure[], me: Profile): SkippedBringLine[] {
+  const needed = new Set(mergeBring(procedures, me).map((line) => line.id));
+  const out = new Map<string, SkippedBringLine>();
+
+  for (const p of procedures) {
+    for (const b of p.bring) {
+      const key = b.sameAs ?? b.id;
+      if (needed.has(key) || out.has(key)) continue;
+      if (!b.showIf || matchCond(b.showIf, me) !== "no") continue;
+      out.set(key, {
+        ...toLine(b, p.id),
+        reason: `${describeCondForItem(b.showIf)}が持っていくものです`,
+      });
+    }
+  }
+  return [...out.values()];
+}
+
+/** 「マイナンバーカードを持っていない人」のような言い方にする */
+function describeCondForItem(cond: Partial<Profile>): string {
+  const parts: string[] = [];
+  if (cond.occupation === "student") parts.push("学生の人");
+  if (cond.occupation === "worker") parts.push("働いている人");
+  if (cond.livingAlone === true) parts.push("1人暮らしの人");
+  if (cond.livingAlone === false) parts.push("家族と住む人");
+  if (cond.hasMyNumberCard === true) parts.push("マイナンバーカードを持っている人");
+  if (cond.hasMyNumberCard === false) parts.push("マイナンバーカードを持っていない人");
+  if (cond.vehicle === "car") parts.push("車を持っている人");
+  if (cond.vehicle === "moped") parts.push("原付・バイクを持っている人");
+  if (cond.vehicle === "none") parts.push("乗り物がない人");
+  return parts.length > 0 ? parts.join("で") : "一部の人";
+}
+
 /** 物ではないもの（暗証番号など）。忘れやすいので画面で分けて出す */
 export function nonPhysical(lines: BringLine[]): BringLine[] {
   return lines.filter((l) => !l.physical);

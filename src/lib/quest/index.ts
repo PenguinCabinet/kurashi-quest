@@ -68,20 +68,25 @@ export {
   visibleQuests,
 } from "./quests.ts";
 
-export { bringFor, mergeBring, nonPhysical, unverifiedBring } from "./bring.ts";
+export type { SkippedBringLine } from "./bring.ts";
+export { bringFor, mergeBring, nonPhysical, notNeededBring, unverifiedBring } from "./bring.ts";
 export { buildRoute, placeKeyOf, sortByRequires } from "./route.ts";
 
 export {
+  broughtCount,
+  clearBrought,
   complete,
   confirmBeforeComplete,
   dismiss,
   emptyProgress,
+  isBrought,
   isDone,
   normalizeProgress,
   pruneProgress,
   reset,
   restore,
   toggle,
+  toggleBrought,
   uncomplete,
 } from "./progress.ts";
 
