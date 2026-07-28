@@ -1,43 +1,62 @@
-"use client"
-import Image from "next/image";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import raw from "@/data/procedures.json";
-import { loadProcedures, buildBoard, toggle, emptyProgress } from "@/lib/quest";
+import { loadProcedures, buildBoard, toggle } from "@/lib/quest";
 import { useLocalStorage } from "usehooks-ts";
-import type { Board, ProcedureFile, Profile, Progress } from "@/lib/quest/types";
+import type { Progress, Profile } from "@/lib/quest/types";
+import { QuestConquestSheet } from "@/components/QuestConquestSheet";
 
 export default function Home() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const [progress, setProgress] = useLocalStorage<Progress>(
-    "quest_progress", 
+    "quest_progress",
     {
       doneAt: {},
-      dismissed: []
+      dismissed: [],
     }
   );
 
-  const data = loadProcedures(raw);              // 1回だけでいい
+  const [profile] = useLocalStorage<Profile>(
+    "quest_profile",
+    {
+      occupation: "student",
+      hasMyNumberCard: true,
+      livingAlone: true,
+    }
+  );
 
-  const board = buildBoard(data, {}, progress, "2026-07-28");
-  console.log(board)
+  const today = "2026-07-28";
+  const data = loadProcedures(raw);
+  const board = buildBoard(data, profile, progress, today);
 
-  return board.phases.map((group) => (
-    <section key={group.phase}>
-      <h2>{group.label}</h2>                     {/* 引越し前 / 14日以内 */}
-      {group.quests.map((q) => (
-        <label key={q.id}>
-          <input
-            type="checkbox"
-            checked={q.done}
-            disabled={false}
-            onChange={() => setProgress(toggle(progress, q.id, "2026-07-28"))}
-          />
-          {q.name}
-          {q.hidden && <span>隠しクエスト</span>}
-          {q.lock.locked && <span>先に「{q.lock.blockedByNames[0]}」</span>}
-          <small>{q.deadline.label}（{q.deadline.dueOn} / あと{q.deadline.daysLeft}日）</small>
-        <br/>
-        </label>
-      ))}
-    </section>
-  ));
+  const handleToggleQuest = (questId: string) => {
+    setProgress(toggle(progress, questId, today));
+  };
+
+  if (!isMounted) {
+    return (
+      <main className="min-h-screen bg-slate-100 py-8 px-4 flex flex-col items-center justify-center">
+        <div className="w-full max-w-xl mx-auto bg-white border-2 border-[#5c738e] shadow-md p-8 text-center text-slate-500 font-sans">
+          読み込み中...
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-100 py-8 px-4 flex flex-col items-center justify-center">
+      {/* 役所攻略シートのみを表示 */}
+      <QuestConquestSheet
+        board={board}
+        progress={progress}
+        onToggleQuest={handleToggleQuest}
+      />
+    </main>
+  );
 }
