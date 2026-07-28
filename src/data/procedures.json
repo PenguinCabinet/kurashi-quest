@@ -2,6 +2,13 @@
   "$comment": "引越しクエスト 手続きデータ。TODO画面では steps / stuckIf を使わないが、後からシミュレーションを足すとき作り直さないよう最初から入れておく。verified:false は未確認。対象自治体が決まったら確認して true にする。",
   "dataVersion": "2026-07-26",
   "targetCity": "◯◯市",
+  "notNeeded": [
+    {
+      "id": "tenshutsu-shomeisho",
+      "label": "転出証明書",
+      "note": "カードがあるので、あなたは要りません"
+    }
+  ],
 
   "procedures": [
     {

@@ -4,17 +4,25 @@ import React, { useState } from "react";
 import type { Board, Progress } from "@/lib/quest";
 import { mergeBring } from "@/lib/quest";
 
+interface NotNeededItem {
+  id: string;
+  label: string;
+  note: string;
+}
+
 interface QuestConquestSheetProps {
   board: Board;
   progress: Progress;
+  notNeeded?: NotNeededItem[];
   onToggleQuest: (questId: string) => void;
 }
 
 export function QuestConquestSheet({
   board,
+  notNeeded = [],
   onToggleQuest,
 }: QuestConquestSheetProps) {
-  // 市役所の手続き一覧（完了済みも含めて取得し、チェック後もシート項目が消えないように表示維持）
+  // 市役所の手続き一覧
   const cityHallQuests = board.quests.filter(
     (q) => q.procedure.where.placeKey === "city-hall" || q.phase === "within14"
   );
@@ -66,19 +74,10 @@ export function QuestConquestSheet({
         <div className="divide-y divide-[#b8c9d9]">
           {bringItems.map((item) => {
             const isChecked = !!checkedBringIds[item.id];
-
-            // quest-TODO.png の表示文言・装飾に合わせた注記の個別調整
-            let customNote = item.note;
-            if (item.id === "mynumber-card") {
-              customNote = "← 転入届にも住所変更にも使う";
-            } else if (item.id === "gakuseisho-copy") {
-              customNote = "← これが無いと年金の窓口で止まる";
-            } else if (item.id === "juki-pin") {
-              customNote = "← 転入届にも要る。物ではないので忘れがち";
-            }
-
             const isWarningNote =
-              item.id === "gakuseisho-copy" || item.id === "juki-pin";
+              item.id === "student-id-copy" ||
+              item.id === "gakuseisho-copy" ||
+              item.id === "juki-pin";
 
             return (
               <div
@@ -101,7 +100,7 @@ export function QuestConquestSheet({
                   >
                     {item.label}
                   </span>
-                  {customNote && (
+                  {item.note && (
                     <span
                       className={`text-xs md:text-sm ${
                         isWarningNote
@@ -109,7 +108,7 @@ export function QuestConquestSheet({
                           : "text-[#486581]"
                       }`}
                     >
-                      {customNote}
+                      ← {item.note}
                     </span>
                   )}
                 </div>
@@ -117,18 +116,25 @@ export function QuestConquestSheet({
             );
           })}
 
-          {/* 不要な持ち物・スキップ項目（転出証明書など） */}
-          <div className="px-4 py-2.5 flex items-start gap-3 text-sm text-slate-400 bg-slate-50/50 select-none">
-            <span className="font-bold text-base leading-none pt-0.5 text-slate-400">
-              —
-            </span>
-            <div className="flex-1 flex flex-wrap items-baseline gap-x-2">
-              <span className="text-slate-400">転出証明書</span>
-              <span className="text-xs md:text-sm text-slate-400">
-                ← カードがあるので、あなたは要りません
+          {/* procedures.json から渡された notNeeded を描画 */}
+          {notNeeded.map((item) => (
+            <div
+              key={item.id}
+              className="px-4 py-2.5 flex items-start gap-3 text-sm text-slate-400 bg-slate-50/50 select-none"
+            >
+              <span className="font-bold text-base leading-none pt-0.5 text-slate-400">
+                —
               </span>
+              <div className="flex-1 flex flex-wrap items-baseline gap-x-2">
+                <span className="text-slate-400">{item.label}</span>
+                {item.note && (
+                  <span className="text-xs md:text-sm text-slate-400">
+                    ← {item.note}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -140,17 +146,11 @@ export function QuestConquestSheet({
         <div className="divide-y divide-[#b8c9d9]">
           {cityHallQuests.map((quest, index) => {
             const stepNum = index + 1;
-
-            let subNote = quest.what;
+            const subNote = quest.what;
             let orderWarning: string | null = null;
 
-            if (quest.id === "tennyu-todoke") {
-              subNote = "住民票をこの市に移す";
+            if (quest.procedure.skipIf === null) {
               orderWarning = "↓ これを先にやらないと、下は受け付けてもらえない";
-            } else if (quest.id === "mynumber-address") {
-              subNote = "同じ日にできる。90日を過ぎると失効する";
-            } else if (quest.id === "gakusei-nofu-tokurei") {
-              subNote = "学生証が要る。出さないと未納になる";
             }
 
             return (

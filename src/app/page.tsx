@@ -51,10 +51,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-100 py-8 px-4 flex flex-col items-center justify-center">
-      {/* 役所攻略シートのみを表示 */}
+      {/* 役所攻略シートを表示 */}
       <QuestConquestSheet
         board={board}
         progress={progress}
+        notNeeded={raw.notNeeded}
         onToggleQuest={handleToggleQuest}
       />
     </main>
