@@ -24,22 +24,16 @@ export function QuestConquestSheet({
   progress={},
 }: QuestConquestSheetProps) {
   // 市役所の手続き一覧
-  const cityHallQuests = board.quests.filter(
-    (q) => q.procedure.where.placeKey === "city-hall" || q.phase === "within14"
-  );
+  const Quests = board.quests
 
   // 市役所の手続きに必要な持ち物を集計
   const bringItems = mergeBring(
-    cityHallQuests.map((q) => q.procedure),
+    Quests.map((q) => q.procedure),
     board.profile
   );
 
   // 画像(quest-TODO.png)の初期状態に合わせて、本人確認書類とマイナンバーカードをチェック済み(✓)に設定
-  const [checkedBringIds, setCheckedBringIds] = useState<Record<string, boolean>>({
-    "id-doc": true,
-    "honnin-kakunin": true,
-    "mynumber-card": true,
-  });
+  const [checkedBringIds, setCheckedBringIds] = useState<Record<string, boolean>>({});
 
   const toggleBringItem = (id: string) => {
     setCheckedBringIds((prev) => ({
@@ -147,7 +141,7 @@ export function QuestConquestSheet({
           【 この順番で回る 】
         </div>
         <div className="divide-y divide-[#b8c9d9]">
-          {cityHallQuests.map((quest, index) => {
+          {Quests.map((quest, index) => {
             const stepNum = index + 1;
             const subNote = quest.what;
             let orderWarning: string | null = null;
@@ -195,8 +189,8 @@ export function QuestConquestSheet({
       {/* フッター */}
       <div className="px-4 py-3 bg-[#edf3f8] border-t-2 border-[#5c738e] flex items-center justify-between">
         <span className="font-bold text-[#1c4a75] text-base md:text-lg">
-          {/* progress_readyCountが0タスク完了の時、cityHallQuests.lengthであるため、差し引く*/}
-          この{cityHallQuests.length}つが{progress_readyCount-cityHallQuests.length}回で終われば クリア
+          {/* progress_readyCountが0タスク完了の時、Quests.lengthであるため、差し引く*/}
+          この{Quests.length}つが{progress_readyCount}回で終われば クリア
         </span>
       </div>
     </div>
