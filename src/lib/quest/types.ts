@@ -101,6 +101,68 @@ export type ProcedureFile = {
   procedures: Procedure[];
 };
 
+/**
+ * 使える制度（家賃補助・無料健診など）。手続きとは別に持つ。
+ * 手続きは「やらないと困るもの」、制度は「知らないと損するもの」で、
+ * 期限の重さも出す画面も違うため。
+ */
+export type Benefit = {
+  id: string;
+  /** 画面に出す名前。「若者向け家賃補助」 */
+  name: string;
+  /** 何がもらえるか。「家賃の一部が毎月もどってくる」 */
+  what: string;
+  /** 知らないと損する理由。「申請しないと1円ももらえない」 */
+  ifNot?: string;
+
+  /** 誰が使えるか。手続きと同じ書き方（迷ったら出す） */
+  showIf: Partial<Profile> & { always?: true; ageAtLeast?: number };
+
+  /** 申請の期限。文言だけのものが多いので text は必須、日付計算は任意 */
+  deadline: { text: string; kind?: "afterMove"; days?: number };
+  where: Checked<string>;
+  howTo: Checked<string>;
+
+  /** 金額。まだ裏が取れていないので任意。入っているものだけ画面に出す */
+  amount?: { text: string; yearlyYen?: number };
+
+  sources: Source[];
+};
+
+export type BenefitFile = {
+  dataVersion: string;
+  targetCity: string;
+  benefits: Benefit[];
+};
+
+/** 画面に渡す制度1件 */
+export type BenefitCard = {
+  id: string;
+  name: string;
+  what: string;
+  ifNot?: string;
+  /** 手続きと同じ3値。判定できないものは消さずに出す */
+  need: Need;
+  deadline: string;
+  where: string;
+  howTo: string;
+  /** 金額が分かっているものだけ。無ければ null */
+  amount: { text: string; yearlyYen: number | null } | null;
+  /** 未確認の項目名。画面で「要確認」を出す用 */
+  unverified: string[];
+};
+
+/** 「使える制度」の画面ぶん */
+export type BenefitBoard = {
+  targetCity: string;
+  /** 使える（かもしれない）制度 */
+  cards: BenefitCard[];
+  /** 「あなたは対象外です」で残すもの */
+  notEligible: BenefitCard[];
+  /** 金額が分かっているものの合計。1件も分からなければ null */
+  yearlyTotalYen: number | null;
+};
+
 /** その人に必要かどうか。判定できないものは unsure にして、消さずに出す */
 export type Need = {
   status: "show" | "unsure" | "notNeeded";

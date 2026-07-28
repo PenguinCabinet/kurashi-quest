@@ -2,6 +2,10 @@
 //   import { loadProcedures, buildBoard, toggle } from "@/lib/quest";
 
 export type {
+  Benefit,
+  BenefitBoard,
+  BenefitCard,
+  BenefitFile,
   Board,
   BoardStats,
   BringItem,
@@ -108,3 +112,12 @@ export {
 export { addDays, diffDays, formatDaysLeft, formatJa, isDateString } from "./dates.ts";
 
 export { buildBoard, hiddenLine, routeLine } from "./board.ts";
+
+export {
+  benefitLine,
+  buildBenefitBoard,
+  decideEligibility,
+  loadBenefits,
+  toCard,
+  validateBenefits,
+} from "./benefits.ts";
