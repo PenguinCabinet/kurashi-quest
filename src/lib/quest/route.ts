@@ -19,9 +19,18 @@ const PLACE_LABELS: Record<string, string> = {
   web: "家（Web）",
 };
 
-/** 攻略シートを作る。終わったもの・要らないものは入れない */
-export function buildRoute(quests: Quest[], me: Profile): RouteSheet {
-  const todo = sortByRequires(visibleQuests(quests).filter((q) => !q.done));
+export type RouteOptions = {
+  /**
+   * 終わったものも残す。既定は false（これから回る順番なので消える）。
+   * チェックリストとして見せる画面では true にする（チェックしても行が消えない）。
+   */
+  includeDone?: boolean;
+};
+
+/** 攻略シートを作る。要らないものは入れない。終わったものは既定では入れない */
+export function buildRoute(quests: Quest[], me: Profile, options: RouteOptions = {}): RouteSheet {
+  const visible = visibleQuests(quests);
+  const todo = sortByRequires(options.includeDone ? visible : visible.filter((q) => !q.done));
 
   let stops: RouteStop[] = [];
   const indexByKey = new Map<string, number>();
@@ -63,12 +72,20 @@ export function buildRoute(quests: Quest[], me: Profile): RouteSheet {
     me,
   );
 
+  // 終わったものを残す場合でも、回数・時間・注意は「これからやる分」だけで出す
+  // （終わった手続きに「期限を過ぎています」と出しても意味がないため）
+  const remaining = todo.filter((q) => !q.done);
+  const remainingBring = mergeBring(
+    remaining.map((q) => q.procedure),
+    me,
+  );
+
   return {
     stops,
-    trips: stops.filter((s) => !s.atHome).length,
-    minutes: stops.reduce((sum, s) => sum + s.minutes, 0),
+    trips: stops.filter((s) => !s.atHome && s.quests.some((q) => !q.done)).length,
+    minutes: remaining.reduce((sum, q) => sum + q.minutes, 0),
     bring: all,
-    warnings: warningsFor(stops, todo, all),
+    warnings: warningsFor(stops, remaining, remainingBring),
   };
 }
 

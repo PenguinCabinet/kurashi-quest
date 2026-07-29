@@ -70,6 +70,7 @@ export {
 
 export type { SkippedBringLine } from "./bring.ts";
 export { bringFor, mergeBring, nonPhysical, notNeededBring, unverifiedBring } from "./bring.ts";
+export type { RouteOptions } from "./route.ts";
 export { buildRoute, placeKeyOf, sortByRequires } from "./route.ts";
 
 export {

@@ -149,3 +149,40 @@ test("答えていない項目があるうちは、「要らない」に入れ�
   const skipped = notNeededBring(data.procedures, { occupation: "student" });
   assert.deepEqual(skipped, [], "判定できないものを勝手に外さない");
 });
+
+test("チェックしても行が消えない形にできる（includeDone）", () => {
+  const progress = complete(emptyProgress(), "tennyu-todoke", TODAY);
+  const quests = questsFor(progress);
+
+  // 既定は「これから回る順番」なので、終わったものは消える
+  const walking = buildRoute(quests, student);
+  const walkingStop = walking.stops.find((s) => s.placeKey === "city-hall")!;
+  assert.ok(!walkingStop.quests.some((q) => q.id === "tennyu-todoke"));
+
+  // チェックリストとして見せるときは残す
+  const checklist = buildRoute(quests, student, { includeDone: true });
+  const stop = checklist.stops.find((s) => s.placeKey === "city-hall")!;
+  assert.deepEqual(
+    stop.quests.map((q) => q.id),
+    ["tennyu-todoke", "mynumber-address", "gakusei-nofu-tokurei"],
+    "チェックを付けても並びが変わらない",
+  );
+  assert.equal(stop.quests[0].done, true);
+});
+
+test("終わったものを残しても、回数と時間と注意は残りの分だけ", () => {
+  const all = data.procedures.map((p) => p.id);
+  let progress = emptyProgress();
+  for (const id of all) progress = complete(progress, id, TODAY);
+
+  const route = buildRoute(questsFor(progress), student, { includeDone: true });
+
+  assert.ok(route.stops.length > 0, "行は残る");
+  assert.equal(route.trips, 0, "全部終わっていれば、出かける回数は0");
+  assert.equal(route.minutes, 0);
+  assert.deepEqual(
+    route.warnings.filter((w) => w.includes("期限")),
+    [],
+    "終わった手続きに期限切れの注意を出さない",
+  );
+});
