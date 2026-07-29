@@ -26,7 +26,9 @@ export function QuestConquestSheet({
   onToggleItem,
 }: QuestConquestSheetProps) {
   // 市役所の手続き一覧
-  const Quests = board.quests
+  const stop = board.route.stops.find((s) => s.placeKey === "city-hall");
+  const Quests = stop?.quests??[];
+  console.log(Quests)
 
   // 市役所の手続きに必要な持ち物を集計
   const bringItems = mergeBring(
