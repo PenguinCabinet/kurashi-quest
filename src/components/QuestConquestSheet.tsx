@@ -43,7 +43,6 @@ export function QuestConquestSheet({
   };
 
   const bring_readyCount = bringItems.filter((b) => checkedBringIds[b.id]).length;
-  console.log(progress.doneAt)
   const progress_readyCount = Object.keys(progress.doneAt).length;
   const totalCount = bringItems.length;
 
