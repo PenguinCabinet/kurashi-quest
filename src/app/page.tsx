@@ -63,7 +63,6 @@ export default function Home() {
       <QuestConquestSheet
         board={board}
         progress={progress}
-        notNeeded={raw.notNeeded}
         onToggleQuest={handleToggleQuest}
         onToggleItem={handleToggleItem}
       />

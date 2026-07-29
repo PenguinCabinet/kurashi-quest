@@ -13,14 +13,12 @@ interface NotNeededItem {
 interface QuestConquestSheetProps {
   board: Board;
   progress: Progress;
-  notNeeded?: NotNeededItem[];
   onToggleQuest: (questId: string) => void;
   onToggleItem: (itemId: string) => void;
 }
 
 export function QuestConquestSheet({
   board,
-  notNeeded = [],
   onToggleQuest,
   progress,
   onToggleItem,
@@ -39,7 +37,7 @@ export function QuestConquestSheet({
   const bring_readyCount = broughtCount(progress, stop?.bring ?? []);
   const progress_readyCount = Object.keys(progress.doneAt).length;
 
-  const skipped = notNeededBring(stop?.quests.map((q) => q.procedure) ?? [], board.profile);
+  const notNeededBring_items = notNeededBring(stop?.quests.map((q) => q.procedure) ?? [], board.profile);
 
   return (
     <div className="w-full max-w-xl mx-auto bg-white border-2 border-[#5c738e] shadow-md font-sans text-slate-900 overflow-hidden my-6">
@@ -110,8 +108,8 @@ export function QuestConquestSheet({
             );
           })}
 
-          {/* procedures.json から渡された notNeeded を描画 */}
-          {notNeeded.map((item) => (
+          {/* notNeeded items を描画 */}
+          {notNeededBring_items.map((item) => (
             <div
               key={item.id}
               className="px-4 py-2.5 flex items-start gap-3 text-sm text-slate-400 bg-slate-50/50 select-none"
