@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import type { Board, Progress } from "@/lib/quest";
-import { mergeBring } from "@/lib/quest";
+import { mergeBring,broughtCount,notNeededBring,toggleBrought } from "@/lib/quest";
 
 interface NotNeededItem {
   id: string;
@@ -15,6 +15,7 @@ interface QuestConquestSheetProps {
   progress: Progress;
   notNeeded?: NotNeededItem[];
   onToggleQuest: (questId: string) => void;
+  onToggleItem: (itemId: string) => void;
 }
 
 export function QuestConquestSheet({
@@ -22,6 +23,7 @@ export function QuestConquestSheet({
   notNeeded = [],
   onToggleQuest,
   progress,
+  onToggleItem,
 }: QuestConquestSheetProps) {
   // 市役所の手続き一覧
   const Quests = board.quests
@@ -32,19 +34,10 @@ export function QuestConquestSheet({
     board.profile
   );
 
-  // 画像(quest-TODO.png)の初期状態に合わせて、本人確認書類とマイナンバーカードをチェック済み(✓)に設定
-  const [checkedBringIds, setCheckedBringIds] = useState<Record<string, boolean>>({});
-
-  const toggleBringItem = (id: string) => {
-    setCheckedBringIds((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  const bring_readyCount = bringItems.filter((b) => checkedBringIds[b.id]).length;
+  const bring_readyCount = broughtCount(progress, stop?.bring ?? []);
   const progress_readyCount = Object.keys(progress.doneAt).length;
-  const totalCount = bringItems.length;
+
+  const skipped = notNeededBring(stop?.quests.map((q) => q.procedure) ?? [], board.profile);
 
   return (
     <div className="w-full max-w-xl mx-auto bg-white border-2 border-[#5c738e] shadow-md font-sans text-slate-900 overflow-hidden my-6">
@@ -55,11 +48,11 @@ export function QuestConquestSheet({
         </h1>
         <div className={
           "text-base font-bold flex items-center gap-1.5 "+
-          (bring_readyCount!=totalCount?"text-[#b32d2e]":"text-[#2eb32d]")
+          (bring_readyCount.ready!=bring_readyCount.total?"text-[#b32d2e]":"text-[#2eb32d]")
         }>
           <span className="text-slate-900 font-bold mr-1">準備</span>
           <span className="text-lg font-bold">
-            {bring_readyCount} / {totalCount}
+            {bring_readyCount.ready} / {bring_readyCount.total}
           </span>
           <span>そろった</span>
         </div>
@@ -72,7 +65,7 @@ export function QuestConquestSheet({
         </div>
         <div className="divide-y divide-[#b8c9d9]">
           {bringItems.map((item) => {
-            const isChecked = !!checkedBringIds[item.id];
+            const isChecked = progress.brought.includes(item.id);
             const isWarningNote =
               item.id === "student-id-copy" ||
               item.id === "gakuseisho-copy" ||
@@ -81,7 +74,7 @@ export function QuestConquestSheet({
             return (
               <div
                 key={item.id}
-                onClick={() => toggleBringItem(item.id)}
+                onClick={() => onToggleItem(item.id)}
                 className="px-4 py-2.5 flex items-start gap-3 text-sm cursor-pointer hover:bg-slate-50 transition-colors select-none"
               >
                 <span

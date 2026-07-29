@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import raw from "@/data/procedures.json";
-import { loadProcedures, buildBoard, toggle } from "@/lib/quest";
+import { loadProcedures, buildBoard, toggle,toggleBrought } from "@/lib/quest";
 import { useLocalStorage } from "usehooks-ts";
 import type { Progress, Profile } from "@/lib/quest/types";
 import { QuestConquestSheet } from "@/components/QuestConquestSheet";
@@ -43,6 +43,10 @@ export default function Home() {
     setProgress(toggle(progress, questId, today));
   };
 
+  const handleToggleItem = (itemId: string) => {
+    setProgress(toggleBrought(progress, itemId))
+  };
+
   if (!isMounted) {
     return (
       <main className="min-h-screen bg-slate-100 py-8 px-4 flex flex-col items-center justify-center">
@@ -61,6 +65,7 @@ export default function Home() {
         progress={progress}
         notNeeded={raw.notNeeded}
         onToggleQuest={handleToggleQuest}
+        onToggleItem={handleToggleItem}
       />
     </main>
   );
