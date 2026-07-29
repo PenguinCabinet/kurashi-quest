@@ -32,7 +32,10 @@ export default function Home() {
     }
   );
 
-  const today = "2026-07-28";
+  const today = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Tokyo",
+  }).format(new Date());
+
   const data = loadProcedures(raw);
   const board = buildBoard(data, profile, progress, today);
 
