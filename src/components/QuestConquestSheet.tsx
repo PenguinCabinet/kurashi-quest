@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import type { Board, Progress } from "@/lib/quest";
-import { mergeBring,broughtCount,notNeededBring,toggleBrought } from "@/lib/quest";
+import { mergeBring,broughtCount,notNeededBring,toggleBrought,buildRoute } from "@/lib/quest";
 
 interface NotNeededItem {
   id: string;
@@ -26,9 +26,9 @@ export function QuestConquestSheet({
   onToggleItem,
 }: QuestConquestSheetProps) {
   // 市役所の手続き一覧
-  const stop = board.route.stops.find((s) => s.placeKey === "city-hall");
+  const route = buildRoute(board.quests, board.profile, { includeDone: true });
+  const stop = route.stops.find((s) => s.placeKey === "city-hall");
   const Quests = stop?.quests??[];
-  console.log(Quests)
 
   // 市役所の手続きに必要な持ち物を集計
   const bringItems = mergeBring(
