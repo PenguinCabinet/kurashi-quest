@@ -137,11 +137,15 @@ export function QuestConquestSheet({
         </div>
         <div className="divide-y divide-[#b8c9d9]">
           {Quests.map((quest, index) => {
+            /*本クエスト以降に、本クエストを必要とする後続クエストがある場合、trueが入る */
+            const isBlockerForLater = Quests.slice(index + 1)
+              .some((laterQuest) => laterQuest.procedure.requires.includes(quest.id));
+
             const stepNum = index + 1;
             const subNote = quest.what;
             let orderWarning: string | null = null;
 
-            if (quest.procedure.skipIf === null) {
+            if (isBlockerForLater) {
               orderWarning = "↓ これを先にやらないと、下は受け付けてもらえない";
             }
 
