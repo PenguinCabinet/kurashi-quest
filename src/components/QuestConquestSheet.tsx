@@ -21,7 +21,7 @@ export function QuestConquestSheet({
   board,
   notNeeded = [],
   onToggleQuest,
-  progress={},
+  progress,
 }: QuestConquestSheetProps) {
   // 市役所の手続き一覧
   const Quests = board.quests
