@@ -66,6 +66,8 @@ board.phases.map((group) => (
 | ③ | やり方カード | `quest`（1件）の `where` `bring` `sayThis` `minutes` `result` `deadline` `lock` `unverified` `procedure.steps` `procedure.sources` / `stuckPoints` |
 | ④ | 役所攻略シート | `board.route` の `stops` `trips` `minutes` `bring` `warnings` / `routeLine` |
 | ⑤ | 窓口の練習 | `startSimulation` / `advance` / `answerItem` / `restart` / `resetSimulation` / `ratio` |
+| ⑥ | 窓口の会話ゲーム | `startCounter` / `say` / `show` / `comeAgain` / `questionsOf` |
+| ⑦ | 役所の言葉に意味を出す | `buildGlossary` / `markTerms` / `lookup` |
 
 ②③④は `buildBoard` を1回呼べば全部そろいます。③は `board.quests.find((q) => q.id === id)` で1件取り出すだけです。
 
@@ -135,6 +137,71 @@ useEffect(() => {                       // サーバ側では localStorage が�
 
 `browserStorage()` はサーバ側や Safari のプライベートモードでは `null` を返します。
 `null` を渡しても全部の関数が動くので、分岐は要りません（保存されないだけ）。
+
+## 窓口の会話ゲーム
+
+職員とのやり取りを選択肢で進めます。**選択肢は他の手続きの「何て言う」から自動で作る**ので、
+データを足す必要はありません。
+
+```tsx
+import { startCounter, say, show, comeAgain } from "@/lib/quest";
+
+let s = startCounter(target, data.procedures, profile);
+
+s.clerk     // 「本日はどのようなご用件ですか？」
+s.choices   // [{ text: "転入届を出したいです", correct: true }, ...]
+s.log       // 会話の履歴。[{ who: "clerk" | "me", text }] をそのまま並べられる
+s.status    // purpose / item / turnedAway / cleared
+
+s = say(s, target, i, profile);              // 用件の選択肢を選ぶ
+s = show(s, target, true, profile);          // 「あります」/「持っていません」
+s = comeAgain(s, target, others, profile);   // 出直す（回数は残る）
+```
+
+| status | 画面 |
+|---|---|
+| `purpose` | `s.choices` をボタンで並べる。間違えても終わらず、言い直しになる |
+| `item` | `s.asking.label` を「◯◯はお持ちですか？」と聞かれている。はい／いいえ |
+| `turnedAway` | `s.turnedAwayReason` を出して、出直しボタン |
+| `cleared` | `s.clerk` に完了の言葉が入る |
+
+聞かれる持ち物は `questionsOf(target, profile)` で先に取れます（その人に必要なものだけ）。
+
+## 役所の言葉に意味を出す
+
+`officialName`（役所の言い方）と `displayName` / `what` が対になっているので、用語集は自動で作れます。
+
+```tsx
+import { buildGlossary, markTerms } from "@/lib/quest";
+
+const glossary = buildGlossary(data);   // 1回だけでいい
+
+markTerms(s.clerk, glossary).map((part) =>
+  typeof part === "string"
+    ? part
+    : <button title={part.term.plain}>{part.term.word}</button>
+);
+```
+
+`markTerms` は文を「ふつうの文字」と「用語」に分けて返します。つなげると元の文に戻るので、
+用語のところだけボタンにすれば済みます。
+
+```
+個人番号カードの券面記載事項変更 → マイナンバーカードの住所を書き換える
+住民基本台帳用暗証番号（数字4桁） → カードを作ったときに決めた番号。物ではないので忘れがち
+```
+
+## 持ち物の準備（展望）
+
+取得コスト方式の判定も入れてあります（発表で「今後やりたいこと」として使う想定）。
+
+```tsx
+const candidates = packingCandidates(target, data.procedures, profile);
+const verdict = judgePacking(candidates, picked);   // picked は選んだ持ち物の id
+verdictLine(verdict);   // 「受付できました。ただし3日、余分にかかっています」
+```
+
+家にあるものは何個入れても減点なし、取りに行った書類だけコストがかかります。
 
 ## 決めごと（ここだけ守ってもらえれば壊れません）
 
