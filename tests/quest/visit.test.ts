@@ -1,0 +1,139 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import {
+  afterCounter,
+  currentProcedure,
+  goAgain,
+  predictVisit,
+  startVisit,
+  visitLine,
+} from "../../src/lib/quest/visit.ts";
+import { say, show } from "../../src/lib/quest/counter.ts";
+import { buildQuests } from "../../src/lib/quest/quests.ts";
+import { buildRoute } from "../../src/lib/quest/route.ts";
+import { emptyProgress, toggleBrought } from "../../src/lib/quest/progress.ts";
+import { realData, student, TODAY } from "./fixture.ts";
+
+const data = realData();
+
+function cityHall(progress = emptyProgress()) {
+  const quests = buildQuests(data, student, progress, TODAY);
+  const stop = buildRoute(quests, student).stops.find((s) => s.placeKey === "city-hall")!;
+  return { stop, quests };
+}
+
+function open() {
+  const { stop } = cityHall();
+  return startVisit(stop.quests, data.procedures, student, {
+    placeKey: stop.placeKey,
+    place: stop.place,
+  });
+}
+
+/** 用件を正しく言う */
+function sayRight(visit: ReturnType<typeof open>) {
+  const p = currentProcedure(visit, data.procedures)!;
+  const i = visit.counter.choices.findIndex((c) => c.correct);
+  return { p, counter: say(visit.counter, p, i, student) };
+}
+
+test("その日の予定は、攻略シートの1か所ぶん（前提の順）", () => {
+  const visit = open();
+  assert.deepEqual(visit.plan, ["tennyu-todoke", "mynumber-address", "gakusei-nofu-tokurei"]);
+  assert.equal(visit.status, "atCounter");
+  assert.equal(currentProcedure(visit, data.procedures)!.id, "tennyu-todoke");
+  assert.match(visitLine(visit), /1件目 \/ 3件/);
+});
+
+test("1件終わると、次の手続きの窓口に進む", () => {
+  let visit = open();
+  const { p, counter } = sayRight(visit);
+  visit = afterCounter(visit, show(counter, p, true, student), data.procedures, student);
+
+  assert.equal(visit.status, "atCounter");
+  assert.deepEqual(visit.done, ["tennyu-todoke"]);
+  assert.equal(currentProcedure(visit, data.procedures)!.id, "mynumber-address");
+  assert.match(visit.counter.clerk, /ご用件/, "次の窓口は用件を聞くところから");
+});
+
+test("持ち物が足りないと、その日はそこで終わり", () => {
+  let visit = open();
+  const { p, counter } = sayRight(visit);
+  visit = afterCounter(visit, show(counter, p, false, student), data.procedures, student);
+
+  assert.equal(visit.status, "wentHome");
+  assert.deepEqual(visit.done, [], "1件も終わっていない");
+  assert.match(visitLine(visit), /残り3件/);
+});
+
+test("途中まで進んでから詰まると、済んだ分は残る", () => {
+  let visit = open();
+  const first = sayRight(visit);
+  visit = afterCounter(visit, show(first.counter, first.p, true, student), data.procedures, student);
+
+  const second = sayRight(visit);
+  visit = afterCounter(visit, show(second.counter, second.p, false, student), data.procedures, student);
+
+  assert.equal(visit.status, "wentHome");
+  assert.deepEqual(visit.done, ["tennyu-todoke"], "1件目は終わったまま");
+});
+
+test("出直すと、残りだけをやり直す", () => {
+  let visit = open();
+  const first = sayRight(visit);
+  visit = afterCounter(visit, show(first.counter, first.p, true, student), data.procedures, student);
+  const second = sayRight(visit);
+  visit = afterCounter(visit, show(second.counter, second.p, false, student), data.procedures, student);
+
+  visit = goAgain(visit, data.procedures, student);
+
+  assert.equal(visit.status, "atCounter");
+  assert.equal(visit.trips, 1);
+  assert.deepEqual(visit.plan, ["mynumber-address", "gakusei-nofu-tokurei"], "終わった分は予定から外れる");
+  assert.equal(currentProcedure(visit, data.procedures)!.id, "mynumber-address");
+});
+
+test("全部終わると、何回で終わったかが出る", () => {
+  let visit = open();
+  for (let i = 0; i < 3 && visit.status === "atCounter"; i++) {
+    const { p, counter } = sayRight(visit);
+    visit = afterCounter(visit, show(counter, p, true, student), data.procedures, student);
+  }
+
+  assert.equal(visit.status, "finished");
+  assert.equal(visit.done.length, 3);
+  assert.match(visitLine(visit), /1回で終わりました（3件）/);
+});
+
+test("行く前に、何が足りなくて どこで止まるかが分かる", () => {
+  const { stop } = cityHall();
+
+  // 何もそろえていない状態
+  const nothing = predictVisit(stop.quests, emptyProgress());
+  assert.equal(nothing.stopAt!.id, "tennyu-todoke");
+  assert.ok(nothing.missing.length > 0);
+
+  // 全部そろえた状態
+  let progress = emptyProgress();
+  for (const item of stop.bring) progress = toggleBrought(progress, item.id);
+  const ready = predictVisit(stop.quests, progress);
+  assert.equal(ready.stopAt, null, "止まらない");
+  assert.deepEqual(ready.missing, []);
+});
+
+test("暗証番号だけ足りないと、そこで止まると分かる", () => {
+  const { stop } = cityHall();
+  let progress = emptyProgress();
+  for (const item of stop.bring) {
+    if (item.id !== "juki-pin") progress = toggleBrought(progress, item.id);
+  }
+
+  const p = predictVisit(stop.quests, progress);
+  assert.equal(p.stopAt!.id, "tennyu-todoke", "最初に暗証番号を使う手続きで止まる");
+  assert.ok(p.missing.every((m) => m.label.includes("暗証番号")));
+});
+
+test("その日の予定が無ければ、行く必要はない", () => {
+  const visit = startVisit([], data.procedures, student, { placeKey: "city-hall", place: "市役所" });
+  assert.equal(visit.status, "finished");
+});

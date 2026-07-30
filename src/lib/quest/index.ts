@@ -124,8 +124,18 @@ export { buildBoard, hiddenLine, routeLine } from "./board.ts";
 export type { Term, TermHit } from "./glossary.ts";
 export { buildGlossary, lookup, markTerms } from "./glossary.ts";
 
+export type { VisitState, VisitStatus } from "./visit.ts";
+export {
+  afterCounter,
+  currentProcedure,
+  goAgain,
+  predictVisit,
+  startVisit,
+  visitLine,
+} from "./visit.ts";
+
 export type { CounterState, CounterStatus } from "./counter.ts";
-export { comeAgain, purposeChoices, questionsOf, say, show, startCounter } from "./counter.ts";
+export { comeAgain, openBag, purposeChoices, questionsOf, say, show, startCounter } from "./counter.ts";
 
 export type { PackCandidate, PackVerdict } from "./packing.ts";
 export {
