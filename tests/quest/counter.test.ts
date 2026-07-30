@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   comeAgain,
+  openBag,
   purposeChoices,
   questionsOf,
   say,
@@ -9,6 +10,7 @@ import {
   startCounter,
 } from "../../src/lib/quest/counter.ts";
 import type { Procedure } from "../../src/lib/quest/types.ts";
+import { emptyProgress, toggleBrought } from "../../src/lib/quest/progress.ts";
 import { realData, student, worker } from "./fixture.ts";
 
 const data = realData();
@@ -106,4 +108,32 @@ test("聞くことが無ければ、そのまま完了する", () => {
   let s = startCounter(tennyu, data.procedures, worker);
   s = say(s, tennyu, s.choices.findIndex((c) => c.correct), worker);
   assert.equal(s.status, "cleared");
+});
+
+test("鞄から出す。準備でそろえていなければ、その場で出直しになる", () => {
+  let s = open();
+  s = say(s, tennyu, s.choices.findIndex((c) => c.correct), student);
+  assert.equal(s.asking?.itemId, "juki-pin");
+
+  // 何も準備していない鞄
+  const empty = emptyProgress();
+  const failed = openBag(s, tennyu, empty, student);
+  assert.equal(failed.status, "turnedAway", "持っていないのに あります とは言えない");
+
+  // 暗証番号をそろえてから来た場合
+  const ready = toggleBrought(emptyProgress(), "juki-pin");
+  const ok = openBag(s, tennyu, ready, student);
+  assert.equal(ok.status, "cleared");
+});
+
+test("準備の内容だけで結果が決まる（申告ではない）", () => {
+  let s = open();
+  s = say(s, tennyu, s.choices.findIndex((c) => c.correct), student);
+
+  // 関係ない持ち物をいくら入れても、聞かれたものが無ければ通らない
+  let progress = emptyProgress();
+  for (const id of ["id-doc", "mynumber-card", "student-id-copy"]) {
+    progress = toggleBrought(progress, id);
+  }
+  assert.equal(openBag(s, tennyu, progress, student).status, "turnedAway");
 });

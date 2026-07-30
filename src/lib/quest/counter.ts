@@ -10,8 +10,9 @@
 //
 // 持ち物を聞かれて持っていなければ、その場で出直しになる。
 
-import type { Procedure, Profile } from "./types.ts";
+import type { Procedure, Profile, Progress } from "./types.ts";
 import { bringFor } from "./bring.ts";
+import { isBrought } from "./progress.ts";
 
 export type CounterStatus =
   /** 用件を聞かれている */
@@ -107,7 +108,21 @@ export function say(state: CounterState, target: Procedure, index: number, me: P
   return askNext({ ...state, log }, target, me, 0);
 }
 
-/** 持ち物の質問に答える */
+/**
+ * 鞄から出す。持っているかは、準備画面でそろえたかどうかで決まる。
+ * 「持っていないのに あります と答える」ができないようにするための入口。
+ */
+export function openBag(
+  state: CounterState,
+  target: Procedure,
+  progress: Progress,
+  me: Profile,
+): CounterState {
+  if (state.status !== "item" || !state.asking) return state;
+  return show(state, target, isBrought(progress, state.asking.itemId), me);
+}
+
+/** 持ち物の質問に答える（持っているかを自分で渡す形） */
 export function show(
   state: CounterState,
   target: Procedure,
