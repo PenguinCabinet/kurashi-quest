@@ -71,6 +71,21 @@ board.phases.map((group) => (
 
 ②③④は `buildBoard` を1回呼べば全部そろいます。③は `board.quests.find((q) => q.id === id)` で1件取り出すだけです。
 
+表に無いけれど、要るときに使えるものです。
+
+| やりたいこと | 呼ぶもの |
+|---|---|
+| 攻略シートで、終わったものも残す | `buildRoute(board.quests, profile, { includeDone: true })` |
+| その人には要らない持ち物を出す | `notNeededBring(procedures, profile)` |
+| 持ち物のチェック（そろえた／まだ） | `toggleBrought` / `isBrought` / `broughtCount` / `clearBrought` |
+| 「このままだとどこで止まるか」を先に出す | `predictStuck(procedure, answers)` / `stuckPoints(procedure)` |
+| データから消えた手続きの進捗を捨てる | `pruneProgress(progress, 生きているid)` |
+| 鍵つきにチェックを付けるときの確認文 | `confirmBeforeComplete(quest)` |
+| 日付の計算・表示 | `addDays` / `diffDays` / `formatJa` / `formatDaysLeft` / `isDateString` |
+| データの残作業を一覧にする | `validateProcedures(raw).unverified` |
+
+全部の関数は `src/lib/quest/index.ts` にまとめてあります。
+
 画面が持つ状態は **`profile`（キャラメイクの答え）と `progress`（進捗）の2つだけ**です。どちらも新しい値が返る形なので、`useState` にそのまま入ります。
 
 ## 画面ごとの呼び方
@@ -230,7 +245,7 @@ verdictLine(verdict);   // 「受付できました。ただし3日、余分に�
 
 ```bash
 npm install          # 初回だけ
-npm run test:quest   # 73件（Node 24 以上）
+npm run test:quest   # 148件（Node 24 以上）
 ```
 
 型チェックは Next.js プロジェクトに入れたあと `npx tsc --noEmit` で通ります（strict で確認済み）。
@@ -247,6 +262,5 @@ npm run test:quest   # 73件（Node 24 以上）
 
 ## まだ決まっていないこと
 
-- **対象自治体**（`procedures.json` の `targetCity` が `◯◯市` のまま）。決まると窓口名と制度が確定します
 - **使える制度**（家賃補助・無料健診）はまだデータにありません。手続きとは別の型になるので、やるなら追加で作ります
 - **年齢を聞くか**。いまは聞いていないので、20歳以上向けの年金の手続きが「判定できません」付きで全員に出ます。1問足せば消えます

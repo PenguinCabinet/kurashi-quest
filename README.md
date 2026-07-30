@@ -7,7 +7,7 @@
 ```
 src/lib/quest/     ロジック（画面が無くても動く部分。React 非依存）
 src/data/          手続きのデータ（procedures.json）
-tests/quest/       ロジックのテスト 61件
+tests/quest/       ロジックのテスト 148件
 test.sh            テスト実行
 ```
 
