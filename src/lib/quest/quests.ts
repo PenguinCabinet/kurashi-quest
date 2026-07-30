@@ -49,7 +49,7 @@ export function decideNeed(p: Procedure, me: Profile): Need {
     if (me.age === undefined) {
       return {
         status: "unsure",
-        message: `${ageAtLeast}歳以上の人向けです。年齢を聞いていないので、いちおう出しています`,
+        message: `${ageAtLeast}歳以上の人向けです。年齢が分からないので、念のため出しています`,
       };
     }
     if (me.age < ageAtLeast) {
@@ -68,7 +68,7 @@ export function decideNeed(p: Procedure, me: Profile): Need {
     default:
       return {
         status: "unsure",
-        message: `${unknownKeys(cond, me).map(labelOf).join("・")}が分からないので、いちおう出しています`,
+        message: `${unknownKeys(cond, me).map(labelOf).join("・")}が分からないので、念のため出しています`,
       };
   }
 }

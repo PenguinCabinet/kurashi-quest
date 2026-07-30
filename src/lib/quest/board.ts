@@ -55,7 +55,7 @@ export function routeLine(board: Board): string {
   const { trips, stops, minutes } = board.route;
   const atHome = stops.filter((s) => s.atHome).length;
   if (stops.length === 0) return "やることは全部終わっています";
-  const parts = [trips === 0 ? "出かける用事はなし" : `出かけるのは${trips}回`];
+  const parts = [trips === 0 ? "出かける用事はありません" : `出かけるのは${trips}回`];
   if (atHome > 0) parts.push(`家でできるものが${atHome}件`);
   parts.push(`合計の目安は${minutes}分`);
   return parts.join("、");
