@@ -1,4 +1,4 @@
-// キャラメイクの5問と、答えを条件に当てる部分。
+// キャラメイクの6問と、答えを条件に当てる部分。
 // 画面は QUESTIONS を map するだけ。質問を増やすときもここだけ直せばいい。
 
 import type { Profile, ProfileKey } from "./types.ts";
@@ -16,23 +16,23 @@ export type Question =
   | { key: ProfileKey; kind: "choice"; title: string; help?: string; options: Choice[] }
   | { key: ProfileKey; kind: "date"; title: string; help?: string };
 
-/** キャラメイクの5問。この順に出す */
+/** キャラメイクの6問。この順に出す */
 export const QUESTIONS: Question[] = [
   {
     key: "occupation",
     kind: "choice",
-    title: "どっちですか？",
-    help: "手続きの中身が変わります",
+    title: "学生ですか？",
+    help: "学生と社会人で、必要な手続きが変わります",
     options: [
-      { value: "student", label: "学生", art: "student" },
-      { value: "worker", label: "働いている", art: "worker" },
+      { value: "student", label: "学生です", art: "student" },
+      { value: "worker", label: "働いています", art: "worker" },
     ],
   },
   {
     key: "movedOn",
     kind: "date",
-    title: "引越した日（引越す日）はいつですか？",
-    help: "ここから期限を数えます",
+    title: "いつ引越しましたか？",
+    help: "これから引越す人は、その予定日を入れてください",
   },
   {
     key: "hasMyNumberCard",
@@ -40,27 +40,27 @@ export const QUESTIONS: Question[] = [
     title: "マイナンバーカードは持っていますか？",
     help: "持っている人と持っていない人で、必要なものが変わります",
     options: [
-      { value: true, label: "持っている" },
-      { value: false, label: "持っていない", note: "通知カードだけの人はこちら" },
+      { value: true, label: "はい", art: "card-yes" },
+      { value: false, label: "いいえ", note: "通知カードだけの人はこちら", art: "card-no" },
     ],
   },
   {
     key: "livingAlone",
     kind: "choice",
-    title: "1人で住みますか？",
+    title: "ひとり暮らしですか？",
     options: [
-      { value: true, label: "1人暮らし" },
-      { value: false, label: "家族と住む" },
+      { value: true, label: "はい", art: "alone" },
+      { value: false, label: "いいえ、家族と住みます", art: "family" },
     ],
   },
   {
     key: "vehicle",
     kind: "choice",
-    title: "乗り物はありますか？",
+    title: "車やバイクは持っていますか？",
     options: [
-      { value: "none", label: "なし" },
-      { value: "moped", label: "原付・バイク" },
-      { value: "car", label: "車" },
+      { value: "none", label: "持っていません", art: "walk" },
+      { value: "moped", label: "原付・バイク", art: "moped" },
+      { value: "car", label: "車", art: "car" },
     ],
   },
   {
@@ -70,8 +70,8 @@ export const QUESTIONS: Question[] = [
     title: "20歳以上ですか？",
     help: "国民年金の手続きが要るかどうかが変わります",
     options: [
-      { value: 20, label: "20歳以上" },
-      { value: 19, label: "20歳未満" },
+      { value: 20, label: "はい", art: "20over" },
+      { value: 19, label: "いいえ、まだ19歳以下です", art: "under20" },
     ],
   },
 ];

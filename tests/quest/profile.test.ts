@@ -34,7 +34,7 @@ test("年齢は「20歳以上か」だけを聞く", () => {
   assert.equal(age.kind, "choice");
   if (age.kind !== "choice") return;
 
-  assert.deepEqual(age.options.map((o) => o.label), ["20歳以上", "20歳未満"]);
+  assert.deepEqual(age.options.map((o) => o.value), [20, 19], "はい／いいえ で聞く");
   assert.equal(answer(emptyProfile(), "age", 20).age, 20);
   assert.equal(answer(emptyProfile(), "age", 19).age, 19);
 });
