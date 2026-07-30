@@ -137,3 +137,41 @@ test("その日の予定が無ければ、行く必要はない", () => {
   const visit = startVisit([], data.procedures, student, { placeKey: "city-hall", place: "市役所" });
   assert.equal(visit.status, "finished");
 });
+
+test("「どちらか一方でよい」持ち物は、片方あれば止まらない", () => {
+  // 学生納付特例は「学生証の写し」でも「在学証明書の原本」でもよい。
+  // 片方だけ持って行った人を、もう片方が無いからと止めてしまわないか
+  const { stop } = cityHall();
+  const gakusei = stop.quests.find((q) => q.id === "gakusei-nofu-tokurei")!;
+  const copy = gakusei.bring.find((b) => b.id === "student-id-copy")!;
+  const original = gakusei.bring.find((b) => b.id === "zaigaku-shomei")!;
+
+  assert.equal(original.insteadOf, "student-id-copy", "代わりになる相手が分かる");
+
+  // 学生証の写しだけ持っている
+  let progress = emptyProgress();
+  for (const item of stop.bring) {
+    if (item.id !== "zaigaku-shomei") progress = toggleBrought(progress, item.id);
+  }
+  const withCopy = predictVisit(stop.quests, progress);
+  assert.equal(withCopy.stopAt, null, "学生証の写しがあれば、在学証明書は要らない");
+
+  // 在学証明書だけ持っている
+  progress = emptyProgress();
+  for (const item of stop.bring) {
+    if (item.id !== "student-id-copy") progress = toggleBrought(progress, item.id);
+  }
+  const withOriginal = predictVisit(stop.quests, progress);
+  assert.equal(withOriginal.stopAt, null, "在学証明書があれば、学生証の写しは要らない");
+
+  // どちらも持っていない
+  progress = emptyProgress();
+  for (const item of stop.bring) {
+    if (item.id !== "student-id-copy" && item.id !== "zaigaku-shomei") {
+      progress = toggleBrought(progress, item.id);
+    }
+  }
+  const withNeither = predictVisit(stop.quests, progress);
+  assert.equal(withNeither.stopAt!.id, "gakusei-nofu-tokurei", "両方無ければ、そこで止まる");
+  assert.ok(copy.label && original.label);
+});

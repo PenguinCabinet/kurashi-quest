@@ -12,6 +12,7 @@ import type { Procedure, Profile, Progress, Quest } from "./types.ts";
 import type { CounterState } from "./counter.ts";
 import { startCounter, comeAgain } from "./counter.ts";
 import { isBrought } from "./progress.ts";
+import { isReady } from "./bring.ts";
 
 export type VisitStatus =
   /** 窓口で手続き中 */
@@ -131,7 +132,8 @@ export function predictVisit(
 
   for (const quest of plan) {
     for (const item of quest.bring) {
-      if (isBrought(progress, item.id)) continue;
+      // 「学生証の写し または 在学証明書」は、どちらか一方あれば足りている
+      if (isReady(quest.bring, item, (id) => isBrought(progress, id))) continue;
       missing.push({ questId: quest.id, label: item.label });
       if (!stopAt) stopAt = quest;
     }

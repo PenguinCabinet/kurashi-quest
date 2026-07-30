@@ -251,6 +251,8 @@ export type BringLine = {
   verified: boolean;
   /** これが必要な手続きの id。持ち物をまとめたときに「何のために持つか」を出す用 */
   neededFor: string[];
+  /** この持ち物の代わりになる相手の id。「学生証の写し または 在学証明書」 */
+  insteadOf?: string;
 };
 
 /** 進捗。LocalStorage に入れるのはこの形だけ */

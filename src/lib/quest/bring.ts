@@ -90,8 +90,26 @@ function toLine(b: BringItem, procedureId: string): Line {
     physical: b.physical !== false, // 既定は物あつかい
     verified: b.verified === true,
     neededFor: [procedureId],
+    insteadOf: b.insteadOf,
     primary: b.sameAs === undefined,
   };
+}
+
+/**
+ * その持ち物が用意できているか。
+ * 「どちらか一方でよい」ものは、相方が用意できていれば足りている。
+ * 片方だけ持って窓口に行った人を、間違って止めないための判定。
+ */
+export function isReady(
+  lines: BringLine[],
+  item: BringLine,
+  brought: (itemId: string) => boolean,
+): boolean {
+  if (brought(item.id)) return true;
+  // 自分が「代わりのもの」で、本体を持っている
+  if (item.insteadOf && brought(item.insteadOf)) return true;
+  // 自分が本体で、代わりのものを持っている
+  return lines.some((other) => other.insteadOf === item.id && brought(other.id));
 }
 
 function dedupe(lines: Line[]): BringLine[] {
