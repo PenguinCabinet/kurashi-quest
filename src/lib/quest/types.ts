@@ -31,10 +31,35 @@ export type Checked<T> = { text: T; verified: boolean; todo?: string };
 /** どこでやるか。placeKey が同じものは1回の外出でまとめられる */
 export type WhereField = Checked<string> & { placeKey?: string };
 
+/**
+ * 持ち物をどこで手に入れるか。
+ * 家にあるものは何個持っていっても損しない（現実と同じ）。
+ * 取りに行くもの（cityOffice / school / mail）だけコストがかかる。
+ */
+export type ItemCategory = "home" | "cityOffice" | "school" | "mail";
+
+/** 取りに行くときにかかるもの。家にあるものは 0 */
+export type ItemCost = {
+  yen: number;
+  days: number;
+  /** 手数料と日数の裏が取れているか。false なら画面に「要確認」を出す */
+  verified?: boolean;
+};
+
 export type BringItem = {
   id: string;
   label: string;
   note?: string;
+  /** どこで手に入れるか。既定は home（家にある） */
+  category?: ItemCategory;
+  /** 取得コスト。無ければ 0円・0日 */
+  cost?: ItemCost;
+  /**
+   * この持ち物の代わりになる、という宣言。同じ手続きの持ち物 id を指す。
+   * 例: 在学証明書は「学生証の写し」の代わりになる（どちらか一方でよい）。
+   * 代わりの方が取得コストが高いことがあるので、ゲームの駆け引きになる。
+   */
+  insteadOf?: string;
   /** 別の手続きにある同じ持ち物の id。まとめたとき2行に見えないようにする */
   sameAs?: string;
   /** 物でないもの（暗証番号など）。忘れやすいので画面で区別する。既定は物あつかい */

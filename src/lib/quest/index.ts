@@ -13,6 +13,8 @@ export type {
   Checked,
   Deadline,
   DeadlineInfo,
+  ItemCategory,
+  ItemCost,
   LockInfo,
   Need,
   Phase,
@@ -118,6 +120,21 @@ export {
 export { addDays, diffDays, formatDaysLeft, formatJa, isDateString } from "./dates.ts";
 
 export { buildBoard, hiddenLine, routeLine } from "./board.ts";
+
+export type { Term, TermHit } from "./glossary.ts";
+export { buildGlossary, lookup, markTerms } from "./glossary.ts";
+
+export type { CounterState, CounterStatus } from "./counter.ts";
+export { comeAgain, purposeChoices, questionsOf, say, show, startCounter } from "./counter.ts";
+
+export type { PackCandidate, PackVerdict } from "./packing.ts";
+export {
+  categoryOf,
+  costOf,
+  judgePacking,
+  packingCandidates,
+  verdictLine,
+} from "./packing.ts";
 
 export {
   benefitLine,
