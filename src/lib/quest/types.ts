@@ -29,7 +29,13 @@ export type Deadline =
 export type Checked<T> = { text: T; verified: boolean; todo?: string };
 
 /** どこでやるか。placeKey が同じものは1回の外出でまとめられる */
-export type WhereField = Checked<string> & { placeKey?: string };
+export type WhereField = Checked<string> & {
+  placeKey?: string;
+  /** 開いている時間。「平日 8:30〜17:00」。分かっているものだけ */
+  hours?: string;
+  /** そこでは受け付けてもらえない場所。「出張所・区民サービスセンターでは不可」 */
+  notHere?: string;
+};
 
 /**
  * 持ち物をどこで手に入れるか。

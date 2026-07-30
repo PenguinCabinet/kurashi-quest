@@ -1,7 +1,7 @@
 {
   "$comment": "引越しクエスト 手続きデータ。TODO画面では steps / stuckIf を使わないが、後からシミュレーションを足すとき作り直さないよう最初から入れておく。verified:false は未確認。対象自治体が決まったら確認して true にする。",
-  "dataVersion": "2026-07-26",
-  "targetCity": "◯◯市",
+  "dataVersion": "2026-07-30",
+  "targetCity": "渋谷区",
   "procedures": [
     {
       "id": "tenshutsu-todoke",
@@ -22,7 +22,8 @@
       "where": {
         "text": "前に住んでいた市役所の市民課",
         "placeKey": "prev-city-hall",
-        "verified": false
+        "verified": false,
+        "todo": "前に住んでいた自治体の窓口。マイナポータルの引越しワンストップならオンラインで出せる"
       },
       "sayThis": {
         "text": "転出届を出したいです",
@@ -81,10 +82,16 @@
       ],
       "sources": [
         {
-          "name": "各自治体の公式サイト",
+          "name": "各自治体の公式サイト（前住所地）",
           "url": "",
           "fetchedAt": "",
           "verified": false
+        },
+        {
+          "name": "渋谷区 転入届（引越しワンストップの案内あり）",
+          "url": "https://www.city.shibuya.tokyo.jp/kurashi/jumin/ido/t_tennyu.html",
+          "fetchedAt": "2026-07-30",
+          "verified": true
         }
       ]
     },
@@ -250,10 +257,10 @@
         "tenshutsu-todoke"
       ],
       "where": {
-        "text": "市役所の市民課",
+        "text": "渋谷区役所 本庁舎3階 住民戸籍課 住民登録係",
         "placeKey": "city-hall",
-        "verified": false,
-        "todo": "正式な課名を対象自治体で確認"
+        "hours": "平日 8:30〜17:00",
+        "verified": true
       },
       "sayThis": {
         "text": "転入届を出したいです",
@@ -296,7 +303,7 @@
         {
           "id": "tenshutsu-shomeisho",
           "label": "転出証明書",
-          "note": "マイナンバーカードがあれば交付されない（転入届の特例）",
+          "note": "マイナポータルの引越しワンストップを使った場合は交付されない（転入届の特例）",
           "verified": true,
           "showIf": {
             "hasMyNumberCard": false
@@ -306,7 +313,8 @@
             "yen": 0,
             "days": 1,
             "verified": false
-          }
+          },
+          "todo": "「カードを持っているか」ではなく「特例転出を使ったか」で決まる。聞き方を調べる人と相談する"
         }
       ],
       "showIf": {
@@ -345,9 +353,15 @@
       ],
       "sources": [
         {
-          "name": "西東京市 マイナンバーカードを使った転出・転入（転入届の特例）",
-          "url": "https://www.city.nishitokyo.lg.jp/kurasi/todokede/kojinninsho/tokurei.html",
-          "fetchedAt": "2026-07-26",
+          "name": "渋谷区 転入届（区外から渋谷区へ）",
+          "url": "https://www.city.shibuya.tokyo.jp/kurashi/jumin/ido/t_tennyu.html",
+          "fetchedAt": "2026-07-30",
+          "verified": true
+        },
+        {
+          "name": "渋谷区役所 本庁舎案内・フロアマップ",
+          "url": "https://www.city.shibuya.tokyo.jp/shisetsu/kuyakusho/kuyakusho/shintyousha.html",
+          "fetchedAt": "2026-07-30",
           "verified": true
         }
       ]
@@ -372,10 +386,10 @@
         "tennyu-todoke"
       ],
       "where": {
-        "text": "市役所の市民課。転入届と同じ窓口でできる",
+        "text": "渋谷区役所 本庁舎3階 住民戸籍課（転入届と同じ窓口）",
         "placeKey": "city-hall",
-        "verified": false,
-        "todo": "正式な課名を対象自治体で確認"
+        "hours": "平日 8:30〜17:00",
+        "verified": true
       },
       "sayThis": {
         "text": "マイナンバーカードの住所も変更したいです",
@@ -433,7 +447,13 @@
       ],
       "sources": [
         {
-          "name": "大田区 住所変更に伴うマイナンバーカードの手続きについて",
+          "name": "渋谷区役所 本庁舎案内・フロアマップ（マイナンバーカード関連は住民戸籍課）",
+          "url": "https://www.city.shibuya.tokyo.jp/shisetsu/kuyakusho/kuyakusho/shintyousha.html",
+          "fetchedAt": "2026-07-30",
+          "verified": true
+        },
+        {
+          "name": "大田区 住所変更に伴うマイナンバーカードの手続き（90日の根拠）",
           "url": "https://www.city.ota.tokyo.jp/seikatsu/koseki_j/jyuminhyo/todokede/jyuusyo-henkou_mynumber-card.html",
           "fetchedAt": "2026-07-26",
           "verified": true
@@ -458,10 +478,11 @@
         "tennyu-todoke"
       ],
       "where": {
-        "text": "市役所の国民年金担当窓口",
+        "text": "渋谷区役所 本庁舎3階 国民健康保険課 国民年金係",
         "placeKey": "city-hall",
-        "verified": true,
-        "todo": "正式な課名を対象自治体で確認"
+        "hours": "平日 8:30〜17:00",
+        "notHere": "出張所・区民サービスセンター（ヒカリエ8階など）では手続きできません",
+        "verified": true
       },
       "sayThis": {
         "text": "学生納付特例を申請したいです",
@@ -544,6 +565,18 @@
         }
       ],
       "sources": [
+        {
+          "name": "渋谷区 国民年金保険料の免除制度・学生納付特例",
+          "url": "https://www.city.shibuya.tokyo.jp/kurashi/nenkin/shikaku-menjo/menjo.html",
+          "fetchedAt": "2026-07-30",
+          "verified": true
+        },
+        {
+          "name": "渋谷区FAQ 学生納付特例の窓口と必要書類",
+          "url": "https://dcp.city.shibuya.tokyo.jp/ctz/s/faq/faq-000013783",
+          "fetchedAt": "2026-07-30",
+          "verified": true
+        },
         {
           "name": "日本年金機構 国民年金保険料の学生納付特例制度",
           "url": "https://www.nenkin.go.jp/service/kokunen/menjo/20150514.html",

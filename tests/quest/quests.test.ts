@@ -119,8 +119,24 @@ test("本人が消したものは一覧から外れるが、消えたことは�
 
 test("未確認の項目が画面に渡る", () => {
   const q = find(buildQuests(data, student, emptyProgress(), TODAY), "tennyu-todoke");
-  assert.ok(q.unverified.includes("どこで"));
-  assert.ok(q.unverified.includes("何て言う"));
+
+  // 窓口は渋谷区の公式ページで確認済み。まだ確認できていないものだけ残る
+  assert.ok(!q.unverified.includes("どこで"));
+  assert.ok(q.unverified.includes("何て言う"), "窓口で通じるかは実際に行かないと分からない");
+  assert.ok(q.unverified.includes("かかる時間"));
+});
+
+test("確認できたものは「要確認」から外れる", () => {
+  const quests = buildQuests(data, student, emptyProgress(), TODAY);
+
+  // 渋谷区の窓口が分かっている3件
+  for (const id of ["tennyu-todoke", "mynumber-address", "gakusei-nofu-tokurei"]) {
+    assert.ok(!find(quests, id).unverified.includes("どこで"), `${id} の窓口は確定済み`);
+    assert.ok(!find(quests, id).unverified.includes("出典"), `${id} は出典つき`);
+  }
+
+  // 前に住んでいた自治体の窓口は、渋谷区の資料では分からない
+  assert.ok(find(quests, "tenshutsu-todoke").unverified.includes("どこで"));
 });
 
 test("前提が「あなたは要りません」の人には、鍵をかけない（開ける手段が画面に無いため）", () => {
