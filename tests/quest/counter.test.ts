@@ -137,3 +137,15 @@ test("準備の内容だけで結果が決まる（申告ではない）", () =>
   }
   assert.equal(openBag(s, tennyu, progress, student).status, "turnedAway");
 });
+
+test("用件の選択肢は、正解の位置が毎回変わる", () => {
+  // いつも1番目が正解だと、読まずに1番目を押すだけの画面になる
+  const seen = new Set<number>();
+  for (let i = 0; i < 200; i++) {
+    const choices = purposeChoices(tennyu, data.procedures, student);
+    assert.equal(choices.length, 3, "数は変わらない");
+    assert.equal(choices.filter((c) => c.correct).length, 1, "正解はいつも1つ");
+    seen.add(choices.findIndex((c) => c.correct));
+  }
+  assert.deepEqual([...seen].sort(), [0, 1, 2], "3か所すべてに正解が来る");
+});

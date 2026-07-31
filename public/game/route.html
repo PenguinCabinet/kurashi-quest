@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Mac と iPhone はヒラギノ丸ゴが最初から入っているので、これは読み込まれない。
+     Windows と Android のときだけ落ちてくる -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
+<title>回る順番 — 暮らしクエスト（確認用）</title>
+<link rel="stylesheet" href="./game.css?v=1785478907" />
+<style>
+  main { max-width: 620px; }
+
+  /* 道順の帯。双六の盤 */
+  .route {
+    display: flex; align-items: flex-start; gap: 0;
+    padding: 6px 0 16px; overflow-x: auto;
+  }
+  .route .spot { flex: none; width: 96px; text-align: center; }
+  .route .pin {
+    position: relative; width: 62px; height: 62px; margin: 0 auto 6px;
+    border: 2px solid var(--sumi); background: #fff;
+    display: grid; place-items: center;
+  }
+  .route .spot[data-home="true"] .pin { border-style: dashed; }
+  .route .pinart { width: 46px; height: 46px; object-fit: contain; }
+  .route .pin .no {
+    position: absolute; left: -8px; top: -8px;
+    width: 22px; height: 22px; background: var(--shu); color: #fff;
+    font-size: 12px; display: grid; place-items: center;
+  }
+  .route .pin:has(.pinart) .no { background: var(--shu); }
+  .route .nm { font-size: 12px; font-weight: 700; line-height: 1.4; }
+  .route .mn { font-size: 11px; color: #6b7280; }
+  /* 場所と場所をつなぐ道 */
+  .route .leg {
+    flex: 1; min-width: 20px; height: 2px; margin-top: 30px;
+    background: repeating-linear-gradient(
+      90deg, rgba(26,26,26,.45) 0 6px, transparent 6px 12px);
+  }
+
+  /* 行く前に読むこと。畳んでおく */
+  .cautions { border-top: 1px solid rgba(26,26,26,.16); margin-bottom: 14px; }
+  .cautions .k {
+    font-size: 12px; color: var(--shu); padding: 9px 0; cursor: pointer;
+  }
+  .cautions .k::after { content: "　［開く］"; color: #8a8f98; }
+  .cautions:not(.folded) .k::after { content: "　［閉じる］"; }
+  .cautions.folded .c { display: none; }
+  .cautions .c { font-size: 13px; color: #55606e; padding: 4px 0 4px 14px; }
+  .cautions .c::before { content: "・"; margin-left: -14px; color: var(--shu); }
+
+  .tally { display: flex; gap: 22px; padding: 4px 0 12px; font-size: 12px; color: #55606e; }
+  .tally b { font-family: var(--maru); font-size: 17px; color: var(--sumi); margin-left: 4px; }
+
+  /* 立ち寄り先1つ */
+  .stop-head {
+    display: flex; gap: 12px; align-items: baseline;
+    font-family: var(--maru);
+    font-size: 19px; font-weight: 700; padding-bottom: 8px;
+  }
+  .stop-head .no {
+    flex: none; width: 26px; height: 26px; border: 2px solid var(--shu); color: var(--shu);
+    text-align: center; line-height: 22px; font-size: 14px;
+  }
+  .stop-head .min { font-family: var(--maru); font-size: 12px; font-weight: 400; color: #6b7280; }
+
+  /* 場所の絵 */
+  .placeart { width: 34px; height: 34px; object-fit: contain; }
+
+  /* そこでやること */
+  .do { display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid rgba(26,26,26,.12); }
+  .do .body { flex: 1; min-width: 0; }
+  .doart { flex: none; width: 40px; height: 40px; object-fit: contain; margin-top: 2px; }
+  .do a { font-size: 16px; font-weight: 700; color: var(--sumi); text-decoration: none; }
+  .do a:hover { color: var(--shu); }
+  .do .line { font-size: 13px; color: #55606e; margin-top: 2px; }
+  .do .line .q { font-family: var(--maru); color: var(--ai); }
+  .do .warn-min { font-size: 12px; color: var(--shu); margin-top: 2px; }
+
+
+  /* そこで出す持ち物 */
+  .bring { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: 14px; }
+  .bring .box { flex: none; width: 18px; height: 18px; border: 1px solid var(--keisen); margin-top: 3px; }
+  .bring .note { font-size: 12px; color: #6b7280; }
+  .bring .for { font-size: 12px; color: var(--ai); }
+  .itemart { flex: none; width: 30px; height: 30px; object-fit: contain; margin-top: 1px; }
+
+  .sub-head { font-size: 11px; letter-spacing: .18em; color: #6b7280; padding: 12px 0 2px; border-top: 1px solid rgba(26,26,26,.16); margin-top: 8px; }
+  @media (max-width: 560px) {
+    .stop-head { flex-wrap: wrap; gap: 8px; font-size: 17px; }
+    .bring { padding: 9px 0; }
+    .bring .box { width: 22px; height: 22px; }
+  }
+</style>
+</head>
+<body class="bare" data-place="home">
+<main>
+  <div id="page"></div>
+</main>
+<script type="module" src="./page-route.js?v=1785478907"></script>
+</body>
+</html>

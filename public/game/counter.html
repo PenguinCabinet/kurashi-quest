@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Mac と iPhone はヒラギノ丸ゴが最初から入っているので、これは読み込まれない。
+     Windows と Android のときだけ落ちてくる -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
+<title>窓口 — 暮らしクエスト（確認用）</title>
+<link rel="stylesheet" href="./game.css?v=1785478907" />
+<style>
+  main { max-width: 720px; }
+
+  /* 絵 */
+  .titleart { display: flex; align-items: center; gap: 12px; }
+  .titleicon { width: 34px; height: 34px; object-fit: contain; }
+  .todoart { flex: none; width: 34px; height: 34px; object-fit: contain; margin-top: 1px; }
+  .itemart { flex: none; width: 36px; height: 36px; object-fit: contain; margin-top: 1px; }
+
+  /* 今日の目的。ここだけ大きく */
+  .goal {
+    font-family: var(--maru);
+    font-size: 22px; font-weight: 700; line-height: 1.5;
+    padding: 2px 0 12px; margin-bottom: 4px;
+    border-bottom: 1px solid rgba(26,26,26,.16);
+  }
+  .note.hint { font-size: 11px; color: #8a8f98; padding-bottom: 6px; }
+
+  /* 会話のコマンドウィンドウ */
+  .window { border-top: 1px solid rgba(26,26,26,.25); border-bottom: 1px solid rgba(26,26,26,.25); }
+  /* 職員を主役にする。この画面の見せ場は会話なので、絵を大きく出す */
+  .stage { display: flex; gap: 20px; align-items: flex-end; padding: 6px 0 10px; }
+  .stage img {
+    flex: none; width: auto; height: min(38vh, 320px);
+    margin-bottom: -10px;   /* 台の線に足をそろえる */
+  }
+  @media (max-width: 720px) {
+    .stage { gap: 12px; }
+    .stage img { height: min(26vh, 190px); }
+  }
+  .say {
+    flex: 1; min-width: 0; padding-bottom: 6px;
+    font-family: var(--maru);
+    font-size: 20px; line-height: 1.9;
+  }
+  .say .who {
+    display: block; font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size: 11px; letter-spacing: .18em; color: #6b7280; margin-bottom: 4px;
+  }
+
+  /* 「物ではない」のような、行を増やしたくない補足 */
+  .item .label .kind {
+    font-size: 10px; letter-spacing: .08em; color: var(--shu);
+    border: 1px solid rgba(179,45,46,.4); padding: 1px 6px; margin-left: 10px;
+    font-weight: 400; vertical-align: 2px;
+  }
+  .note.hint { color: #8a8f98; }
+  .item .mark { font-family: var(--maru); }
+
+  /* どちらか一方でよい持ち物 */
+  .alt { margin-top: 5px; font-size: 14px; color: #4b5563; cursor: pointer; }
+  .alt .altmark { color: var(--shu); font-weight: 700; margin-right: 6px; }
+  .alt:hover { color: var(--sumi); }
+
+  /* やり取りの記録 */
+  .log { font-size: 13px; }
+  .log div { padding: 2px 0; color: #6b7280; }
+  .log .me { color: var(--sumi); }
+  .log .me::before { content: "▶ "; color: var(--ai); }
+  @media (max-width: 560px) {
+    .stage { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .stage img { height: min(24vh, 190px); margin-bottom: 0; align-self: center; }
+    .say { font-size: 18px; }
+  }
+</style>
+</head>
+<body class="bare" data-place="home">
+<main>
+  <div id="page"></div>
+</main>
+<script type="module" src="./page-counter.js?v=1785478907"></script>
+</body>
+</html>
