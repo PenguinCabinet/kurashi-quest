@@ -148,6 +148,13 @@ function firstSentence(text) {
     const cut = text.split(/[。．\n]/)[0].trim();
     return cut === "" ? text.trim() : cut;
 }
+/**
+ * 家でできる手続きか（Web・電話）。
+ * 窓口の会話は職員とのやり取りなので、こちらは出さない。
+ */
+export function isAtHomeProcedure(p) {
+    return isAtHome(placeKeyOf(p), p);
+}
 function isAtHome(key, p) {
     // placeKey があればそれだけで判断する（本文にオンラインの話が混ざると文字では誤判定する）
     if (p.where.placeKey)

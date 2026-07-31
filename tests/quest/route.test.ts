@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildRoute } from "../../src/lib/quest/route.ts";
+import { buildRoute, isAtHomeProcedure } from "../../src/lib/quest/route.ts";
 import { mergeBring, notNeededBring } from "../../src/lib/quest/bring.ts";
 import { buildQuests } from "../../src/lib/quest/quests.ts";
 import { complete, emptyProgress } from "../../src/lib/quest/progress.ts";
@@ -8,6 +8,17 @@ import { TODAY, realData, student, worker } from "./fixture.ts";
 
 const data = realData();
 const questsFor = (progress = emptyProgress()) => buildQuests(data, student, progress, TODAY);
+
+test("家でできる手続きは、窓口の会話に出さない", () => {
+  // Web・電話でやるものに、職員とのやり取りの練習は要らない
+  const lifeline = data.procedures.find((p) => p.id === "lifeline")!;
+  assert.equal(isAtHomeProcedure(lifeline), true);
+
+  for (const id of ["tennyu-todoke", "yubin-tenso", "tenshutsu-todoke"]) {
+    const p = data.procedures.find((x) => x.id === id)!;
+    assert.equal(isAtHomeProcedure(p), false, `${id} は出かける手続き`);
+  }
+});
 
 test("同じ市役所でやるものが1か所にまとまる", () => {
   const route = buildRoute(questsFor(), student);

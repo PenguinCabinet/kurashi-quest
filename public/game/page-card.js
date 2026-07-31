@@ -2,7 +2,7 @@
 // クエスト1件の中身を、そのまま並べているだけです。
 
 import { app, el, $, header, tagsFor, uses, questFromUrl, sheet, rows, commands, ways, guide } from "./common.js";
-import { toggle, dismiss, formatDaysLeft, stuckPoints } from "./quest/index.js";
+import { toggle, dismiss, formatDaysLeft, stuckPoints, isAtHomeProcedure } from "./quest/index.js";
 
 header(null);
 
@@ -134,7 +134,8 @@ function render(q) {
   // ── コマンド ──
   page.append(
     commands([
-      q.procedure.steps.length > 0
+      // 家でできるもの（Web・電話）に窓口の練習は要らない
+      q.procedure.steps.length > 0 && !isAtHomeProcedure(q.procedure)
         ? ["窓口を練習する", `sim.html?id=${encodeURIComponent(q.id)}`, "行く前に、ここで一度ためす"]
         : [],
       [
