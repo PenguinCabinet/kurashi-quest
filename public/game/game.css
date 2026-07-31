@@ -455,6 +455,13 @@ body.bare .verdict .note,
 body.bare .cmds .small { color: #55606e; }
 
 
+/* 確かめていない値の印。値のとなりに小さく出す */
+.yet {
+  font-size: 11px; letter-spacing: .08em; color: var(--shu);
+  border: 1px solid rgba(179,45,46,.4); padding: 1px 6px; margin-left: 8px;
+  font-weight: 400; vertical-align: 1px; white-space: nowrap;
+}
+
 /* ── 指で押す場所は 44px 以上 ──
    このかたまりは、必ずファイルのいちばん下に置くこと。
    前に、上に書いたせいで下の規則に上書きされて効かなかったことがある */

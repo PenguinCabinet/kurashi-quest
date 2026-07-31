@@ -31,11 +31,17 @@ function render(q) {
   if (q.hidden && q.hiddenReason) page.append(el("div", "warn", q.hiddenReason));
 
   // ── どこで、何て言う ──
-  const head = sheet("【 この手続きのこと 】", `${q.minutes}分`);
+  //
+  // 未確認の印は、その値のとなりに出す。
+  // 前は画面のいちばん下に「確かめていない項目：何て言う / …」とまとめて書いていたが、
+  // 持ち物と出典はその場にも印が出ていて二度書きだったし、
+  // 【出典】の見出しの下に「出典」と並ぶのが読みにくかった
+  const yet = new Set(q.unverified);
+  const head = sheet("【 この手続きのこと 】", `${q.minutes}分`, null, yet.has("かかる時間"));
   head.body.append(
     rows([
-      ["どこで", q.where],
-      ["何て言う", `「${q.sayThis}」`],
+      ["どこで", q.where, null, yet.has("窓口")],
+      ["何て言う", `「${q.sayThis}」`, null, yet.has("何て言う")],
       ["終わると", q.result],
       [
         "期限",
@@ -125,11 +131,6 @@ function render(q) {
     page.append(src.box);
   }
 
-  if (q.unverified.length > 0) {
-    page.append(
-      el("div", "lead", `出典をまだ確かめていない項目：${q.unverified.join(" / ")}`),
-    );
-  }
 
   // ── コマンド ──
   page.append(

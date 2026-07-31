@@ -76,7 +76,7 @@ export function param(name) {
  * icon を渡すと、見出しの横に小さな絵が付く（絵が無ければ何も出ない）。
  * 見出しの文字は消さない。絵だけにすると、どこに何があるか読めなくなるため。
  */
-export function sheet(title, right, icon) {
+export function sheet(title, right, icon, unverified) {
   const box = el("div", "sheet");
   const head = el("div", "sheet-head");
   const left = el("div", "headline");
@@ -90,7 +90,12 @@ export function sheet(title, right, icon) {
   }
   left.append(el("span", null, title));
   head.append(left);
-  if (right !== undefined && right !== null) head.append(el("div", "count", right));
+  if (right !== undefined && right !== null) {
+    const count = el("div", "count", right);
+    // かかる時間などが未確認のとき、その数字のとなりに出す
+    if (unverified) count.append(el("span", "yet", "未確認"));
+    head.append(count);
+  }
   box.append(head);
   const body = el("div", "sheet-body");
   box.append(body);
@@ -100,12 +105,15 @@ export function sheet(title, right, icon) {
 /** 「項目名：中身」の行をまとめて作る */
 export function rows(pairs) {
   const box = el("div", "rows");
-  for (const [k, v, note] of pairs) {
+  for (const [k, v, note, unverified] of pairs) {
     if (v === null || v === undefined || v === "") continue;
     const row = el("div", "r");
     row.append(el("div", "k", k));
     const val = el("div", "v");
-    val.append(el("div", null, v));
+    const line = el("div", null, v);
+    // 確かめていない値は、その場で分かるようにする。隠さない
+    if (unverified) line.append(el("span", "yet", "未確認"));
+    val.append(line);
     if (note) val.append(el("div", "note", note));
     row.append(val);
     box.append(row);
