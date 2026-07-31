@@ -16,6 +16,11 @@
 }
 
 * { box-sizing: border-box; }
+
+/* 日本語は、どこでも改行できてしまう。
+   「4」と「件」の間で折れると読めないので、単語のまとまりで折る。
+   数字と単位が離れるのを、画面ごとに直すのではなく、ここで一度に防ぐ */
+body, body * { word-break: normal; overflow-wrap: anywhere; line-break: strict; }
 body {
   margin: 0;
   font-family: var(--maru);
@@ -371,9 +376,10 @@ body.bare [data-key="on"] { background: rgba(255,255,255,.62); }
   .ways { gap: 4px 20px; }
   .ways a { padding: 8px 0 8px 16px; }
 
-  /* キーの案内は、キーボードが無い端末では意味がない */
+  /* キーの案内も、音の入切も、指で触る端末では出さない。
+     置き場所が無く、どこに置いても中身と重なる */
   .keyhint { display: none; }
-  .soundtoggle { left: 10px; bottom: 8px; }
+  .soundtoggle { display: none; }
 
   /* 役所の言葉の意味も縦に */
   .terms .t { display: block; }

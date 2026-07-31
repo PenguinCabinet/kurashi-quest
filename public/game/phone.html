@@ -14,6 +14,8 @@
      スマホは角が丸いものなので、丸くしないと逆に嘘になる。 */
   :root { --maru: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "M PLUS Rounded 1c", "Zen Maru Gothic", -apple-system, sans-serif; }
   * { box-sizing: border-box; }
+  /* 「4」と「件」の間で折れないようにする */
+  body, body * { line-break: strict; overflow-wrap: anywhere; }
   html, body { height: 100%; margin: 0; }
   body {
     background: #1a1a1a; color: #e8e4dc;
@@ -77,6 +79,7 @@
   .soundtoggle[data-on="true"] { color: #6b7280; }
   .soundtoggle[data-on="false"] { color: #b32d2e; border-color: rgba(179,45,46,.5); }
   .soundtoggle:hover { background: #fff; }
+  @media (max-width: 560px) { .soundtoggle { display: none; } }
 </style>
 </head>
 <body>
