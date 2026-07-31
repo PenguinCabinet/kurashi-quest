@@ -2,6 +2,9 @@
   "name": "kurashi-quest",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "next dev",
     "game:build": "node scripts/build-game-logic.mjs",

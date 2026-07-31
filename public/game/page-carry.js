@@ -19,7 +19,10 @@ const page = $("page");
 
 page.append(el("div", "title", "べつの端末でつづける"));
 page.append(
-  guide("合言葉をひとつ受け取って、もう一方の端末で打ちこみます。ログインはありません。"),
+  guide(
+    "合言葉をひとつ受け取って、もう一方の端末で打ちこみます。" +
+      "一度受け取れば、あとは進めるたびに自動で預けます。ログインはありません。",
+  ),
 );
 
 // ── ① 合言葉を受け取る ──
@@ -31,7 +34,7 @@ const codeNote = el("div", "code-note");
 const has = myCode();
 if (has) {
   code.textContent = formatPassphrase(has);
-  codeNote.textContent = "前に受け取った合言葉です。押すと、いまの続きに入れ替わります";
+  codeNote.textContent = "この端末は、進めるたびに自動でここへ預けています";
 }
 
 const getBtn = el("button", null, has ? "いまの続きを預け直す" : "合言葉を受け取る");
@@ -64,7 +67,7 @@ async function deposit(fresh) {
   rememberCode(r.code);
   code.textContent = formatPassphrase(r.code);
   codeNote.textContent = "この6文字を、もう一方の端末で打ちこんでください";
-  said.textContent = fresh ? "新しい合言葉にしました" : "預かりました";
+  said.textContent = fresh ? "新しい合言葉にしました" : "いまの続きを預けました";
   getBtn.textContent = "いまの続きを預け直す";
   if (!giveRow.contains(newBtn)) giveRow.append(newBtn);
   sfx.stamp();
@@ -79,7 +82,8 @@ if (has) {
     el(
       "div",
       "have",
-      "「預け直す」は、いまの合言葉の中身を入れ替えます。前の状態を残しておきたいときは「別の合言葉にする」を押してください。",
+      "ふだんは押さなくて構いません。進めるたびに自動で預けています。" +
+        "「別の合言葉にする」を押すと、前の合言葉はそのまま残り、この端末は新しい方に移ります。",
     ),
   );
 }

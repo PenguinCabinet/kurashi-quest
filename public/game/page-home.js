@@ -25,10 +25,12 @@ header("chara.html");
 // 前の合言葉の中身がからっぽで上書きされ、前の記録が消えてしまう。
 // サーバに預けたものはそのまま残るので、合言葉を控えてあれば戻せる。
 if (param("new")) {
+  // 合言葉を先に手放す。save() は合言葉を持っていると自動でサーバへ送るので、
+  // 後回しにすると「からっぽ」が前の合言葉に上書きされて、前の記録が消える
+  forgetCode();
   app.profile = emptyProfile();
   app.progress = emptyProgress();
   app.save();
-  forgetCode();
 }
 
 let step = QUESTIONS.findIndex((q) => app.profile[q.key] === undefined);

@@ -19,6 +19,7 @@ import {
   loadProgress,
   saveProfile,
   saveProgress,
+  pushSave,
 } from "./quest/index.js";
 
 /** 手続きデータ。壊れていればここで例外になる（画面が黙って空になるより早い） */
@@ -47,6 +48,7 @@ export const app = {
     } catch {
       // 保存できなくても動く
     }
+    autoPush(this.profile, this.progress);
   },
 
   board() {
@@ -287,6 +289,47 @@ export function forgetCode() {
     localStorage.removeItem(CODE_KEY);
   } catch {
     // 消せなくても進める
+  }
+}
+
+/**
+ * 合言葉を持っているあいだ、進めるたびに黙って預け直す。
+ *
+ * 一度もらったら、あとは何もしなくてもスマホ側が最新になります。
+ * 毎回この画面に来て押すのは、忘れるし面倒なので。
+ *
+ * ・合言葉を持っていない人には、一切通信しない
+ * ・失敗しても何も言わない。手元の保存はもう済んでいるので、遊びは止まらない
+ * ・続けて押されたぶんは、まとめて1回にする
+ */
+let pushTimer = null;
+let pushing = false;
+let pushAgain = null;
+
+function autoPush(profile, progress) {
+  const code = myCode();
+  if (!code || typeof fetch !== "function") return;
+  const snapshot = { profile, progress, code };
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => void send(snapshot), 800);
+}
+
+async function send(snap) {
+  if (pushing) {
+    pushAgain = snap; // いま送っている最中。終わったら最新をもう一度
+    return;
+  }
+  pushing = true;
+  try {
+    await pushSave(fetch, snap.profile, snap.progress, snap.code);
+  } catch {
+    // つながらなくても、手元には残っている
+  }
+  pushing = false;
+  if (pushAgain) {
+    const next = pushAgain;
+    pushAgain = null;
+    void send(next);
   }
 }
 if (typeof document !== "undefined" && document.body) boot();
