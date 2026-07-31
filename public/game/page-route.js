@@ -15,6 +15,7 @@ const route = board.route;
 /** 絵があれば出す。無ければ何も出さない */
 function art(src, cls) {
   const img = el("img", cls);
+  img.loading = "lazy";
   img.src = src;
   img.alt = "";
   img.addEventListener("error", () => img.remove());

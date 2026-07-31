@@ -82,6 +82,7 @@ export function sheet(title, right, icon) {
   const left = el("div", "headline");
   if (icon) {
     const img = el("img", "headicon");
+    img.loading = "lazy";
     img.src = `./characters/${icon}.png`;
     img.alt = "";
     img.addEventListener("error", () => img.remove());

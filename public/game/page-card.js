@@ -74,6 +74,7 @@ function render(q) {
       const row = el("div", "bring");
       row.append(el("div", "box"));
       const bart = el("img", "itemart");
+      bart.loading = "lazy";
       bart.src = `./characters/item-${b.id}.png`;
       bart.alt = "";
       bart.addEventListener("error", () => bart.remove());
