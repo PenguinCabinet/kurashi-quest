@@ -95,35 +95,35 @@
   .foot { position: fixed; left: 12px; bottom: 9px; font-size: 10px; color: #8a8f98; }
 
   /* 柴犬のひとこと。何も言わない絵は、ただの飾りになる */
+  /* 犬の頭の上に置く。横に出すと、中央のコマンドや案内に届いてしまう */
   .bark {
     position: fixed; z-index: 1;
-    right: calc(4vw + min(34vh, 290px) - 20px);
-    bottom: min(20vh, 168px);
-    max-width: min(300px, 46vw);
+    right: 3vw;
+    bottom: calc(min(34vh, 290px) + 26px);
+    width: min(290px, 32vw);
     background: #fff; border: 2px solid var(--sumi);
     padding: 11px 14px; font-size: 14px; line-height: 1.7;
   }
+  /* しっぽは下向き。犬の頭を指す */
   .bark::after {
-    content: ""; position: absolute; right: -9px; bottom: 16px;
+    content: ""; position: absolute; right: 42px; bottom: -10px;
     width: 0; height: 0;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-left: 9px solid var(--sumi);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid var(--sumi);
   }
   .bark::before {
-    content: ""; position: absolute; right: -6px; bottom: 18px; z-index: 1;
+    content: ""; position: absolute; right: 44px; bottom: -7px; z-index: 1;
     width: 0; height: 0;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-left: 7px solid #fff;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #fff;
   }
   .bark .who { display: block; font-size: 10px; letter-spacing: .18em; color: #8a8f98; margin-bottom: 3px; }
   @media (max-width: 760px) {
-    .bark {
-      right: 2vw; bottom: calc(26vh + 8px);
-      max-width: 72vw; font-size: 13px;
-    }
-    .bark::after, .bark::before { display: none; }
+    .bark { right: 2vw; bottom: calc(26vh + 22px); width: 64vw; font-size: 13px; }
+    .bark::after { right: 30px; }
+    .bark::before { right: 32px; }
   }
 
   /* 案内役の柴犬。受付の前に立っている、という置き方。
