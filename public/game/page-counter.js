@@ -284,6 +284,11 @@ function renderHome() {
     });
   });
   cmds.append(go);
+  const memo = el("a", null, "持ち物メモを出す");
+  memo.href = "list.html";
+  memo.append(el("span", "small", "スクショして、当日そのまま見られる1枚"));
+  cmds.append(memo);
+
   // 上のバーを出さないので、戻り道はこの画面に置く
   const back = el("a", null, "クエストログにもどる");
   back.href = "quests.html";

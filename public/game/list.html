@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Mac と iPhone はヒラギノ丸ゴが最初から入っているので、これは読み込まれない。
+     Windows と Android のときだけ落ちてくる -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
+<title>持ち物メモ — 暮らしクエスト</title>
+<link rel="stylesheet" href="./game.css?v=1785493859" />
+<style>
+  /* この画面だけは、背景の絵を出さない。
+     スクリーンショットを撮って、当日そのまま見るための紙なので */
+  body { background: #fff; }
+  main { max-width: 520px; padding: 26px 20px 40px; }
+
+  .memo-head { border-bottom: 3px double var(--sumi); padding-bottom: 12px; margin-bottom: 4px; }
+  .memo-head .t { font-size: 24px; font-weight: 700; letter-spacing: .04em; }
+  .memo-head .s { font-size: 13px; color: #55606e; margin-top: 4px; }
+
+  .where { padding: 14px 0 6px; }
+  .where .k { font-size: 11px; letter-spacing: .2em; color: #6b7280; }
+  .where .v { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .where .h { font-size: 12px; color: #55606e; }
+
+  .li { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; border-top: 1px solid rgba(26,26,26,.16); }
+  .li:first-child { border-top: none; }
+  .li .box { flex: none; width: 22px; height: 22px; border: 2px solid var(--sumi); margin-top: 2px; }
+  .li img { flex: none; width: 34px; height: 34px; object-fit: contain; }
+  .li .label { font-size: 16px; font-weight: 700; }
+  .li .note { font-size: 12px; color: #55606e; margin-top: 1px; }
+  .li .kind { font-size: 11px; color: var(--shu); border: 1px solid rgba(179,45,46,.4); padding: 1px 6px; margin-left: 8px; font-weight: 400; }
+
+  .say { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(26,26,26,.16); }
+  .say .k { font-size: 11px; letter-spacing: .2em; color: #6b7280; margin-bottom: 6px; }
+  .say .row { font-size: 14px; padding: 4px 0; }
+  .say .row b { font-family: var(--maru); font-weight: 700; }
+
+  .foot { margin-top: 22px; font-size: 11px; color: #8a8f98; }
+
+  /* 印刷するとき。余計なものを消す */
+  @media print {
+    .noprint { display: none !important; }
+    body { background: #fff; }
+    main { max-width: none; padding: 0; }
+  }
+</style>
+</head>
+<body class="bare">
+<main>
+  <div id="page"></div>
+</main>
+<script type="module" src="./page-list.js?v=1785493859"></script>
+</body>
+</html>

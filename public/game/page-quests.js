@@ -322,6 +322,7 @@ function render() {
         ? ["出かける準備をする", "counter.html", "かばんを用意して、市役所へ向かう"]
         : ["あなたのことを答える", "chara.html", `あと ${board.missingAnswers.length}問。答えると、この一覧があなた用になります`],
       ["回る順番を見る", "route.html"],
+      ready ? ["持ち物メモを出す", "list.html", "スクショして、当日そのまま見られる1枚"] : [],
       ready ? ["あなたのことを答え直す", "chara.html"] : [],
     ]),
   );
