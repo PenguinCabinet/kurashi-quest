@@ -37,6 +37,14 @@ function sayRight(visit: ReturnType<typeof open>) {
   return { p, counter: say(visit.counter, p, i, student) };
 }
 
+/** 用件を言って、聞かれた持ち物を全部そろえて出す（1件を最後まで終わらせる） */
+function clearOne(visit: ReturnType<typeof open>) {
+  const { p, counter } = sayRight(visit);
+  let s = counter;
+  while (s.status === "item") s = show(s, p, true, student);
+  return { p, counter: s };
+}
+
 test("その日の予定は、攻略シートの1か所ぶん（前提の順）", () => {
   const visit = open();
   assert.deepEqual(visit.plan, ["tennyu-todoke", "mynumber-address", "gakusei-nofu-tokurei"]);
@@ -47,8 +55,8 @@ test("その日の予定は、攻略シートの1か所ぶん（前提の順）"
 
 test("1件終わると、次の手続きの窓口に進む", () => {
   let visit = open();
-  const { p, counter } = sayRight(visit);
-  visit = afterCounter(visit, show(counter, p, true, student), data.procedures, student);
+  const { counter } = clearOne(visit);
+  visit = afterCounter(visit, counter, data.procedures, student);
 
   assert.equal(visit.status, "atCounter");
   assert.deepEqual(visit.done, ["tennyu-todoke"]);
@@ -68,8 +76,7 @@ test("持ち物が足りないと、その日はそこで終わり", () => {
 
 test("途中まで進んでから詰まると、済んだ分は残る", () => {
   let visit = open();
-  const first = sayRight(visit);
-  visit = afterCounter(visit, show(first.counter, first.p, true, student), data.procedures, student);
+  visit = afterCounter(visit, clearOne(visit).counter, data.procedures, student);
 
   const second = sayRight(visit);
   visit = afterCounter(visit, show(second.counter, second.p, false, student), data.procedures, student);
@@ -80,8 +87,7 @@ test("途中まで進んでから詰まると、済んだ分は残る", () => {
 
 test("出直すと、残りだけをやり直す", () => {
   let visit = open();
-  const first = sayRight(visit);
-  visit = afterCounter(visit, show(first.counter, first.p, true, student), data.procedures, student);
+  visit = afterCounter(visit, clearOne(visit).counter, data.procedures, student);
   const second = sayRight(visit);
   visit = afterCounter(visit, show(second.counter, second.p, false, student), data.procedures, student);
 
@@ -96,8 +102,7 @@ test("出直すと、残りだけをやり直す", () => {
 test("全部終わると、何回で終わったかが出る", () => {
   let visit = open();
   for (let i = 0; i < 3 && visit.status === "atCounter"; i++) {
-    const { p, counter } = sayRight(visit);
-    visit = afterCounter(visit, show(counter, p, true, student), data.procedures, student);
+    visit = afterCounter(visit, clearOne(visit).counter, data.procedures, student);
   }
 
   assert.equal(visit.status, "finished");

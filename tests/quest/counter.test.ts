@@ -60,8 +60,8 @@ test("正しく言うと、持ち物を聞かれる", () => {
   s = say(s, tennyu, s.choices.findIndex((c) => c.correct), student);
 
   assert.equal(s.status, "item");
-  assert.equal(s.asking?.itemId, "juki-pin");
-  assert.match(s.clerk, /住民基本台帳用暗証番号（数字4桁）はお持ちですか/);
+  assert.equal(s.asking?.itemId, "id-doc");
+  assert.match(s.clerk, /本人確認書類はお持ちですか/);
 });
 
 test("持っていないと、その場で出直しになる", () => {
@@ -70,17 +70,37 @@ test("持っていないと、その場で出直しになる", () => {
   s = show(s, tennyu, false, student);
 
   assert.equal(s.status, "turnedAway");
-  assert.match(s.turnedAwayReason ?? "", /暗証番号/);
+  assert.match(s.turnedAwayReason ?? "", /本人確認書類/);
 });
 
 test("持っていれば、最後まで進んで完了する", () => {
   let s = open();
   s = say(s, tennyu, s.choices.findIndex((c) => c.correct), student);
-  s = show(s, tennyu, true, student);
+  while (s.status === "item") s = show(s, tennyu, true, student);
 
   assert.equal(s.status, "cleared");
   assert.match(s.clerk, /手続きが完了しました/);
   assert.match(s.clerk, /住民票/, "終わると何が手に入るかを言う");
+});
+
+test("持ち物は1つずつ全部聞かれる。1つでも欠けると通らない", () => {
+  // 詰まりポイントが1件しか書かれていない手続きでも、鍵は持ち物の数だけ要る
+  const items = questionsOf(tennyu, student).map((q) => q.itemId);
+  assert.ok(items.length > 1, "転入届は複数の持ち物が要る");
+
+  for (const forgot of items) {
+    let progress = emptyProgress();
+    for (const id of items) {
+      if (id !== forgot) progress = toggleBrought(progress, id);
+    }
+
+    let s = open();
+    s = say(s, tennyu, s.choices.findIndex((c) => c.correct), student);
+    while (s.status === "item") s = openBag(s, tennyu, progress, student);
+
+    assert.equal(s.status, "turnedAway", `${forgot} を忘れたのに通ってしまった`);
+    assert.equal(s.asking, null);
+  }
 });
 
 test("出直すと最初からになるが、回数は残る", () => {
@@ -97,32 +117,59 @@ test("出直すと最初からになるが、回数は残る", () => {
 });
 
 test("聞かれる持ち物は、その人に必要なものだけ", () => {
-  // カードを持っている人は暗証番号を聞かれる
-  assert.deepEqual(questionsOf(tennyu, student).map((q) => q.itemId), ["juki-pin"]);
+  // カードを持っている人は暗証番号も聞かれる
+  assert.deepEqual(
+    questionsOf(tennyu, student).map((q) => q.itemId),
+    ["id-doc", "mynumber-card", "juki-pin"],
+  );
 
-  // 持っていない人は、そもそも暗証番号が要らないので聞かれない
-  assert.deepEqual(questionsOf(tennyu, worker).map((q) => q.itemId), []);
+  // 持っていない人は、そもそもカードも暗証番号も要らないので聞かれない
+  const forWorker = questionsOf(tennyu, worker).map((q) => q.itemId);
+  assert.ok(!forWorker.includes("juki-pin"));
+  assert.ok(!forWorker.includes("mynumber-card"));
+});
+
+test("「どちらか一方でよい」持ち物は、代わりを用意していれば止まらない", () => {
+  // 在学証明書は学生証の写しの代わりになる。両方は聞かない
+  const nofu = find("gakusei-nofu-tokurei");
+  const items = questionsOf(nofu, student).map((q) => q.itemId);
+  assert.ok(items.includes("student-id-copy"));
+  assert.ok(!items.includes("zaigaku-shomei"), "代わりのものは別に聞かない");
+
+  let progress = emptyProgress();
+  for (const id of items) {
+    progress = toggleBrought(progress, id === "student-id-copy" ? "zaigaku-shomei" : id);
+  }
+
+  let s = startCounter(nofu, data.procedures, student);
+  s = say(s, nofu, s.choices.findIndex((c) => c.correct), student);
+  while (s.status === "item") s = openBag(s, nofu, progress, student);
+
+  assert.equal(s.status, "cleared", "在学証明書で来た人を追い返さない");
 });
 
 test("聞くことが無ければ、そのまま完了する", () => {
-  let s = startCounter(tennyu, data.procedures, worker);
-  s = say(s, tennyu, s.choices.findIndex((c) => c.correct), worker);
+  const noItems: Procedure = { ...tennyu, bring: [] };
+  let s = startCounter(noItems, data.procedures, student);
+  s = say(s, noItems, s.choices.findIndex((c) => c.correct), student);
   assert.equal(s.status, "cleared");
 });
 
 test("鞄から出す。準備でそろえていなければ、その場で出直しになる", () => {
   let s = open();
   s = say(s, tennyu, s.choices.findIndex((c) => c.correct), student);
-  assert.equal(s.asking?.itemId, "juki-pin");
+  assert.equal(s.asking?.itemId, "id-doc");
 
   // 何も準備していない鞄
   const empty = emptyProgress();
   const failed = openBag(s, tennyu, empty, student);
   assert.equal(failed.status, "turnedAway", "持っていないのに あります とは言えない");
 
-  // 暗証番号をそろえてから来た場合
-  const ready = toggleBrought(emptyProgress(), "juki-pin");
-  const ok = openBag(s, tennyu, ready, student);
+  // 全部そろえてから来た場合
+  let ready = emptyProgress();
+  for (const q of questionsOf(tennyu, student)) ready = toggleBrought(ready, q.itemId);
+  let ok = s;
+  while (ok.status === "item") ok = openBag(ok, tennyu, ready, student);
   assert.equal(ok.status, "cleared");
 });
 
@@ -135,7 +182,8 @@ test("準備の内容だけで結果が決まる（申告ではない）", () =>
   for (const id of ["id-doc", "mynumber-card", "student-id-copy"]) {
     progress = toggleBrought(progress, id);
   }
-  assert.equal(openBag(s, tennyu, progress, student).status, "turnedAway");
+  while (s.status === "item") s = openBag(s, tennyu, progress, student);
+  assert.equal(s.status, "turnedAway", "暗証番号が無いので通らない");
 });
 
 test("用件の選択肢は、正解の位置が毎回変わる", () => {

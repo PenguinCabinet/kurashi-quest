@@ -11,7 +11,7 @@
 // 持ち物を聞かれて持っていなければ、その場で出直しになる。
 
 import type { Procedure, Profile, Progress } from "./types.ts";
-import { bringFor } from "./bring.ts";
+import { bringFor, isReady } from "./bring.ts";
 import { isBrought } from "./progress.ts";
 
 export type CounterStatus =
@@ -130,7 +130,17 @@ export function openBag(
   me: Profile,
 ): CounterState {
   if (state.status !== "item" || !state.asking) return state;
-  return show(state, target, isBrought(progress, state.asking.itemId), me);
+  const asking = state.asking;
+  const lines = bringFor(target, me);
+  const item = lines.find((line) => line.id === asking.itemId);
+
+  // 「どちらか一方でよい」ものは、代わりを用意していれば足りている。
+  // ここを isBrought だけで見ると、在学証明書を用意した人を学生証の写しが無いと言って追い返す
+  const has = item
+    ? isReady(lines, item, (id) => isBrought(progress, id))
+    : isBrought(progress, asking.itemId);
+
+  return show(state, target, has, me);
 }
 
 /** 持ち物の質問に答える（持っているかを自分で渡す形） */
@@ -166,18 +176,30 @@ export function comeAgain(state: CounterState, target: Procedure, others: Proced
   return { ...fresh, attempts: state.attempts + 1, mistakes: state.mistakes };
 }
 
-/** 窓口で聞かれる持ち物。手順の詰まりポイントから作る */
+/**
+ * 窓口で聞かれる持ち物。その人が実際に持っていくもの全部。
+ *
+ * 詰まりポイント（stuckIf）だけから作ると、そこが1件しか書かれていない手続きでは
+ * 鍵が1本で開いてしまい、残りを家に忘れていても受付が通る。
+ * 断り文は stuckIf にあればそれを使い、無ければ持ち物の名前から作る。
+ */
 export function questionsOf(target: Procedure, me: Profile): { itemId: string; label: string; ifMissing: string }[] {
-  const mine = new Map(bringFor(target, me).map((line) => [line.id, line]));
+  const messages = new Map<string, string>();
+  for (const step of target.steps) {
+    if (step.stuckIf) messages.set(step.stuckIf.missing, step.stuckIf.message);
+  }
 
-  return target.steps
-    .filter((step) => step.stuckIf)
-    .map((step) => {
-      const stuck = step.stuckIf!;
-      const line = mine.get(stuck.missing);
-      return { itemId: stuck.missing, label: line?.label ?? stuck.missing, ifMissing: stuck.message };
-    })
-    .filter((q) => mine.has(q.itemId));
+  const lines = bringFor(target, me);
+  return lines
+    // 「どちらか一方でよい」ものは、本体だけ聞く。代わりを持っていれば openBag で足りる
+    .filter((line) => !(line.insteadOf && lines.some((other) => other.id === line.insteadOf)))
+    .map((line) => ({
+      itemId: line.id,
+      label: line.label,
+      ifMissing:
+        messages.get(line.id) ??
+        `${line.label}がないと、こちらはお受けできません。おそろえのうえ、もう一度お越しください。`,
+    }));
 }
 
 function askNext(
