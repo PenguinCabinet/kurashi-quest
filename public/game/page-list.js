@@ -97,6 +97,8 @@ page.append(
 // ── 操作（印刷したときは消える） ──
 const cmds = commands([
   ["この紙を印刷する", () => print()],
+  // この画面をスマホで見たくなるので、合言葉への入口をここに置く
+  ["スマホで見る", "carry.html", "合言葉ひとつで、この紙をスマホに持っていけます"],
   ["回る順番にもどる", "route.html"],
 ]);
 cmds.classList.add("noprint");

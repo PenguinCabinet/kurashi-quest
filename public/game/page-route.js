@@ -140,6 +140,7 @@ page.append(
           `あと ${board.missingAnswers.length}問。答えると、この順番があなた用になります`,
         ],
     ready ? ["持ち物メモを出す", "list.html", "スクショして、当日そのまま見られる1枚"] : [],
+    ready ? ["スマホで見る", "carry.html", "合言葉ひとつで、続きをスマホに持っていけます"] : [],
     ["クエストログにもどる", "quests.html"],
   ]),
 );
