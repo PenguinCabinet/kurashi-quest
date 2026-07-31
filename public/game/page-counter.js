@@ -179,7 +179,8 @@ function renderHome() {
       ),
     );
   } else {
-    goal.body.append(el("div", "goal", `一度で ${kanji(todo.length)}件ぜんぶ片づける`));
+    // 何件かあるときは、下に名前が並ぶ。
+    // その上に「一度で◯件ぜんぶ片づける」と足すと、同じことを二度言うことになる
     todo.forEach((q, i) => {
       const row = el("div", "item");
       row.style.cursor = "default";
@@ -398,7 +399,11 @@ function renderCounter() {
   if (visit.status === "wentHome") {
     const v = el("div", "verdict ng");
     v.append(el("div", "big", "持ち物が足りず、今日は帰ることになりました"));
-    v.append(el("div", "lost", `1日ムダになりました　ムダにした日数 ${app.progress.lostDays}日`));
+    // 期限は動かしていないので、「近づいた」とは書かない。
+    // 本当に失うのは、もう一度出かける手間と時間
+    v.append(
+      el("div", "lost", `この日はムダになりました　出直した回数 ${app.progress.lostDays}回`),
+    );
     v.append(
       el("div", "note", `終わった手続き ${visit.done.length}件 / 残り ${visit.plan.length - visit.done.length}件`),
     );
