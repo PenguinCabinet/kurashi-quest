@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>スマホでの見え方 — 暮らしクエスト</title>
+<style>
+  /* この画面は「確認用の台」なので、ゲーム本体の見た目の決まり（角丸なし）は当てはめない。
+     スマホは角が丸いものなので、丸くしないと逆に嘘になる。 */
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: #1a1a1a; color: #e8e4dc;
+    font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 12px; padding: 14px 16px 20px; overflow: auto;
+  }
+
+  .head { display: flex; align-items: baseline; gap: 14px; }
+  h1 {
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-size: 17px; font-weight: 600; margin: 0; letter-spacing: .08em;
+  }
+  .lead { font-size: 12px; color: #9ca3af; margin: 0; }
+
+  /* 上の操作 */
+  .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+  .bar button, .bar a {
+    font: inherit; font-size: 12px; letter-spacing: .04em;
+    background: none; border: 1px solid #4b5563; color: #e8e4dc;
+    padding: 6px 12px; cursor: pointer; text-decoration: none;
+  }
+  .bar button:hover, .bar a:hover { border-color: #b32d2e; color: #ff9d92; }
+  .bar button[aria-pressed="true"] { border-color: #b32d2e; background: #b32d2e; color: #fff; }
+  .bar .sep { width: 1px; height: 18px; background: #4b5563; }
+
+  /* スマホの外枠 */
+  .stage { display: flex; justify-content: center; }
+  .phone {
+    position: relative; flex: none;
+    border: 11px solid #2b2b2e; border-radius: 44px;
+    background: #000; box-shadow: 0 0 0 2px #4b5563, 0 24px 60px rgba(0,0,0,.6);
+    transform-origin: top center;
+  }
+  /* 画面の切り欠き */
+  .phone::before {
+    content: ""; position: absolute; z-index: 2;
+    top: 8px; left: 50%; transform: translateX(-50%);
+    width: 108px; height: 26px; background: #000; border-radius: 14px;
+  }
+  /* 下の横棒 */
+  .phone::after {
+    content: ""; position: absolute; z-index: 2;
+    bottom: 7px; left: 50%; transform: translateX(-50%);
+    width: 116px; height: 4px; background: #6b7280; border-radius: 2px;
+  }
+  .phone iframe {
+    display: block; border: none; border-radius: 34px;
+    background: #dcd8d0;
+  }
+
+  .size { font-size: 11px; color: #6b7280; letter-spacing: .1em; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>スマホでの見え方</h1>
+    <p class="lead">中身は本物と同じです。そのまま遊べます。</p>
+  </div>
+
+  <div class="bar" id="bar"></div>
+
+  <div class="stage"><div class="phone" id="phone"><iframe id="screen" title="スマホの画面"></iframe></div></div>
+  <div class="size" id="size"></div>
+
+<script>
+  const DEVICES = [
+    { name: "iPhone SE", w: 375, h: 667 },
+    { name: "iPhone 15", w: 393, h: 852 },
+    { name: "Pro Max", w: 430, h: 932 },
+  ];
+  const PAGES = [
+    ["タイトル", "index.html"],
+    ["キャラメイク", "chara.html"],
+    ["クエストログ", "quests.html"],
+    ["回る順番", "route.html"],
+    ["窓口", "counter.html"],
+  ];
+
+  const bar = document.getElementById("bar");
+  const phone = document.getElementById("phone");
+  const screen = document.getElementById("screen");
+  const sizeLabel = document.getElementById("size");
+
+  let device = DEVICES[1];
+  let page = PAGES[0][1];
+
+  function fit() {
+    phone.style.width = device.w + 22 + "px";
+    phone.style.height = device.h + 22 + "px";
+    screen.style.width = device.w + "px";
+    screen.style.height = device.h + "px";
+
+    // 縦に合わせる。狭ければ縮め、広ければ少しだけ大きくする
+    const room = innerHeight - 132;
+    const scale = Math.max(0.45, Math.min(1.25, room / (device.h + 22)));
+    phone.style.transform = `scale(${scale})`;
+    phone.parentElement.style.height = (device.h + 22) * scale + "px";
+
+    sizeLabel.textContent =
+      `${device.w} × ${device.h}` +
+      (Math.abs(scale - 1) > 0.02 ? `（${Math.round(scale * 100)}%で表示）` : "");
+  }
+
+  function go(href) {
+    page = href;
+    // 同じ場所を押しても読み直すように
+    screen.src = href + (href.includes("?") ? "&" : "?") + "t=" + Date.now();
+    paint();
+  }
+
+  function paint() {
+    bar.replaceChildren();
+    for (const d of DEVICES) {
+      const b = document.createElement("button");
+      b.textContent = d.name;
+      b.setAttribute("aria-pressed", String(d === device));
+      b.addEventListener("click", () => { device = d; fit(); paint(); });
+      bar.append(b);
+    }
+    bar.append(Object.assign(document.createElement("div"), { className: "sep" }));
+    for (const [label, href] of PAGES) {
+      const b = document.createElement("button");
+      b.textContent = label;
+      b.setAttribute("aria-pressed", String(page.startsWith(href)));
+      b.addEventListener("click", () => go(href));
+      bar.append(b);
+    }
+    bar.append(Object.assign(document.createElement("div"), { className: "sep" }));
+
+    const again = document.createElement("button");
+    again.textContent = "読み直す";
+    again.addEventListener("click", () => go(page));
+    bar.append(again);
+
+    const real = document.createElement("a");
+    real.textContent = "そのまま開く";
+    real.href = page;
+    real.target = "_blank";
+    real.rel = "noreferrer";
+    bar.append(real);
+  }
+
+  addEventListener("resize", fit);
+  fit();
+  go(page);
+</script>
+</body>
+</html>

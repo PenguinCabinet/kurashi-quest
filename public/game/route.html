@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>回る順番 — 暮らしクエスト（確認用）</title>
+<link rel="stylesheet" href="./game.css?v=1785471232" />
+<style>
+  main { max-width: 620px; }
+
+  .tally { display: flex; gap: 22px; padding: 4px 0 12px; font-size: 12px; color: #55606e; }
+  .tally b { font-family: "Hiragino Mincho ProN", serif; font-size: 17px; color: var(--sumi); margin-left: 4px; }
+
+  /* 立ち寄り先1つ */
+  .stop-head {
+    display: flex; gap: 12px; align-items: baseline;
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-size: 19px; font-weight: 700; padding-bottom: 8px;
+  }
+  .stop-head .no {
+    flex: none; width: 26px; height: 26px; border: 2px solid var(--shu); color: var(--shu);
+    text-align: center; line-height: 22px; font-size: 14px;
+  }
+  .stop-head .min { font-family: -apple-system, sans-serif; font-size: 12px; font-weight: 400; color: #6b7280; }
+
+  /* そこでやること */
+  .do { padding: 8px 0; border-top: 1px solid rgba(26,26,26,.12); }
+  .do a { font-size: 16px; font-weight: 700; color: var(--sumi); text-decoration: none; }
+  .do a:hover { color: var(--shu); }
+  .do .line { font-size: 13px; color: #55606e; margin-top: 2px; }
+  .do .line .q { font-family: "Hiragino Mincho ProN", serif; color: var(--ai); }
+  .do .warn-min { font-size: 12px; color: var(--shu); margin-top: 2px; }
+
+
+  /* そこで出す持ち物 */
+  .bring { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: 14px; }
+  .bring .box { flex: none; width: 18px; height: 18px; border: 1px solid var(--keisen); margin-top: 3px; }
+  .bring .note { font-size: 12px; color: #6b7280; }
+  .bring .for { font-size: 12px; color: var(--ai); }
+  .sub-head { font-size: 11px; letter-spacing: .18em; color: #6b7280; padding: 12px 0 2px; border-top: 1px solid rgba(26,26,26,.16); margin-top: 8px; }
+  @media (max-width: 560px) {
+    .stop-head { flex-wrap: wrap; gap: 8px; font-size: 17px; }
+    .bring { padding: 9px 0; }
+    .bring .box { width: 22px; height: 22px; }
+  }
+</style>
+</head>
+<body class="bare" data-place="home">
+<main>
+  <div id="page"></div>
+</main>
+<script type="module" src="./page-route.js?v=1785470537"></script>
+</body>
+</html>

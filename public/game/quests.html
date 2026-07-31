@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>クエストログ — 暮らしクエスト（確認用）</title>
+<link rel="stylesheet" href="./game.css?v=1785471232" />
+<style>
+  main { max-width: 620px; }
+
+  /* 達成の数を、枡で見せる */
+  .progress { display: flex; align-items: center; gap: 12px; padding: 2px 0 18px; }
+  .progress .k { font-size: 11px; letter-spacing: .22em; color: #6b7280; }
+  .progress .masu { display: flex; gap: 4px; }
+  .progress .masu i { width: 15px; height: 15px; border: 1px solid var(--keisen); }
+  .progress .masu i[data-on="true"] { background: var(--shu); border-color: var(--shu); }
+  .progress .n { font-family: "Hiragino Mincho ProN", serif; font-size: 15px; }
+  .progress .n b { font-size: 21px; color: var(--shu); }
+
+  /* 章の見出し */
+  .chapter {
+    display: flex; align-items: baseline; gap: 12px; margin: 26px 0 2px;
+    border-bottom: 1px solid rgba(26,26,26,.25); padding-bottom: 7px;
+  }
+  .chapter .no {
+    font-family: "Hiragino Mincho ProN", serif; font-size: 12px; letter-spacing: .2em;
+    color: #fff; background: var(--sumi); padding: 2px 9px;
+  }
+  .chapter .name { font-family: "Hiragino Mincho ProN", serif; font-size: 17px; font-weight: 700; }
+  .chapter .count { margin-left: auto; font-size: 12px; color: #6b7280; }
+
+  /* 依頼札 1枚 */
+  .job { position: relative; display: flex; gap: 14px; padding: 16px 0; border-top: 1px solid rgba(26,26,26,.14); }
+  .job:first-of-type { border-top: none; }
+  .job[data-open="true"] { background: rgba(255,255,255,.5); }
+
+  /* 左の位。急ぐもの・知られていないもの・封じられているもの */
+  .rank { flex: none; width: 42px; }
+  .rank .badge {
+    width: 42px; height: 42px; border: 2px solid var(--keisen); color: #8a8f98;
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Hiragino Mincho ProN", serif; font-size: 21px;
+  }
+  .rank .badge[data-kind="急"] { border-color: var(--shu); color: #fff; background: var(--shu); }
+  .rank .badge[data-kind="秘"] { border-color: var(--ai); color: var(--ai); }
+  .rank .badge[data-kind="封"] { border-style: dashed; }
+  .rank .sub { font-size: 10px; text-align: center; color: #8a8f98; margin-top: 3px; letter-spacing: .04em; }
+
+  .job .body { flex: 1; min-width: 0; }
+  .job .jname {
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-size: 21px; font-weight: 700; line-height: 1.45; cursor: pointer;
+  }
+  .job .jname:hover { color: var(--shu); }
+  .job .jwhen { font-size: 13px; color: #55606e; margin-top: 3px; }
+  .job .jwhen .left { color: var(--shu); font-weight: 700; margin-left: 10px; }
+  .job .jlock { font-size: 12px; color: #6b7280; margin-top: 3px; }
+
+  /* 開いたときだけ出る中身 */
+  .detail { margin-top: 14px; padding-left: 2px; }
+  .detail .d { display: flex; gap: 16px; padding: 7px 0; font-size: 14px; }
+  /* 「放っておくと」が折り返さない幅にする。折れると読みにくい */
+  .detail .d .k {
+    flex: none; width: 7em; font-size: 11px; letter-spacing: .08em;
+    color: #6b7280; padding-top: 4px; white-space: nowrap;
+  }
+  .detail .d .v { flex: 1; min-width: 0; }
+  .detail .d.gain .v { color: var(--ai); }
+  .detail .d.risk .v { color: var(--shu); }
+  .detail .say { font-family: "Hiragino Mincho ProN", serif; }
+
+
+  .jcmd {
+    display: flex; flex-wrap: wrap; gap: 22px;
+    margin-top: 18px; padding-top: 14px;
+    border-top: 1px solid rgba(26,26,26,.14);
+  }
+  .jcmd button, .jcmd a {
+    font: inherit; font-size: 14px; background: none; border: none; padding: 0;
+    color: var(--sumi); text-decoration: none; cursor: pointer; position: relative; padding-left: 16px;
+  }
+  .jcmd button::before, .jcmd a::before { content: "▶"; position: absolute; left: 0; color: var(--shu); font-size: 11px; top: 4px; }
+  .jcmd button:hover, .jcmd a:hover { color: var(--shu); }
+  .jcmd .no { color: #c3c7cc; cursor: not-allowed; }
+  .jcmd .no::before { color: #dcdfe3; }
+  .jcmd .quiet { color: #8a8f98; }
+  .jcmd .quiet::before { color: #cbcfd4; }
+
+  /* 達成した依頼 */
+  .job[data-done="true"] .jname, .job[data-done="true"] .jwhen { color: #9ca3af; }
+  .job[data-done="true"]::after {
+    content: "達成"; position: absolute; right: 6px; top: 18px;
+    border: 3px double var(--shu); color: var(--shu); background: rgba(255,255,255,.7);
+    font-family: "Hiragino Mincho ProN", serif; font-size: 17px; letter-spacing: .2em;
+    padding: 4px 10px 4px 14px; transform: rotate(-11deg);
+  }
+
+  /* あなたには要らないもの */
+  .off .row { display: flex; gap: 12px; padding: 8px 0; border-top: 1px solid rgba(26,26,26,.12); font-size: 13px; }
+  .off .row:first-child { border-top: none; }
+  .off .n { flex: none; width: 11em; color: #6b7280; }
+  .off .r { flex: 1; color: #8a8f98; }
+  .off button { font: inherit; font-size: 12px; background: none; border: none; color: #8a8f98; cursor: pointer; padding: 0; }
+  .off button:hover { color: var(--shu); }
+  @media (max-width: 560px) {
+    .detail .d { display: block; padding: 8px 0; }
+    .detail .d .k { width: auto; padding: 0 0 2px; }
+    .job { gap: 10px; }
+    .rank, .rank .badge { width: 34px; }
+    .rank .badge { height: 34px; font-size: 17px; }
+    .job .jname { font-size: 19px; }
+    /* 判子が長い名前に重なるので、下に置く */
+    .job[data-done="true"]::after { position: static; display: inline-block; margin: 6px 0 0; }
+    .jcmd { gap: 10px 18px; }
+    .jcmd button, .jcmd a { padding: 6px 0 6px 16px; }
+    .off .row { display: block; }
+    .off .n { width: auto; font-weight: 700; }
+    .chapter { flex-wrap: wrap; gap: 8px; }
+  }
+</style>
+</head>
+<body class="bare" data-place="home">
+<main>
+  <div id="page"></div>
+</main>
+<script type="module" src="./page-quests.js?v=1785470242"></script>
+</body>
+</html>

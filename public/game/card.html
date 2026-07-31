@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>やり方カード — 暮らしクエスト（確認用）</title>
+<link rel="stylesheet" href="./game.css?v=1785471232" />
+<style>
+  main { max-width: 620px; }
+
+  /* 持ち物。かばんに入れる物として並べる */
+  .bring { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-top: 1px solid rgba(26,26,26,.12); }
+  .bring:first-child { border-top: none; }
+  .bring .box { flex: none; width: 22px; height: 22px; border: 1px solid var(--keisen); margin-top: 3px; }
+  .bring .label { font-weight: 700; font-size: 15px; }
+  .bring .note { font-size: 12px; color: #6b7280; }
+  .bring .kind { font-size: 12px; color: var(--shu); }
+
+  /* 出典 */
+
+  .src { font-size: 12px; padding: 6px 0; border-top: 1px solid rgba(26,26,26,.12); }
+  .src:first-child { border-top: none; }
+  .src a { color: var(--ai); }
+  .src span { color: #8a8f98; margin-left: 8px; }
+  @media (max-width: 560px) {
+    .bring { padding: 11px 0; }
+    .bring .box { width: 24px; height: 24px; }
+  }
+</style>
+</head>
+<body class="bare" data-place="home">
+<main id="page"></main>
+<script type="module" src="./page-card.js?v=1785435649"></script>
+</body>
+</html>
