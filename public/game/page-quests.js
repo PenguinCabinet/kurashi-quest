@@ -106,7 +106,6 @@ function jobCard(q, isNext) {
       row("待たなくていい", `「${q.lock.ignoredNames.join("」「")}」は要らない判断なので、待たずに進めます`);
     }
     if (q.bring.length > 0) row("持ち物", q.bring.map((b) => b.label).join("　／　"));
-    if (q.unverified.length > 0) row("未確認", q.unverified.join(" / "));
     body.append(d);
 
     const cmd = el("div", "jcmd");

@@ -32,16 +32,14 @@ function render(q) {
 
   // ── どこで、何て言う ──
   //
-  // 未確認の印は、その値のとなりに出す。
-  // 前は画面のいちばん下に「確かめていない項目：何て言う / …」とまとめて書いていたが、
-  // 持ち物と出典はその場にも印が出ていて二度書きだったし、
-  // 【出典】の見出しの下に「出典」と並ぶのが読みにくかった
-  const yet = new Set(q.unverified);
-  const head = sheet("【 この手続きのこと 】", `${q.minutes}分`, null, yet.has("かかる時間"));
+  // 「未確認」の印は出さない。
+  // 使う人には、作り手がどこまで裏を取ったかは関係がない。
+  // 代わりに、出典へのリンクと「行く前に確かめてください」の1行を置いている
+  const head = sheet("【 この手続きのこと 】", `${q.minutes}分`);
   head.body.append(
     rows([
-      ["どこで", q.where, null, yet.has("窓口")],
-      ["何て言う", `「${q.sayThis}」`, null, yet.has("何て言う")],
+      ["どこで", q.where],
+      ["何て言う", `「${q.sayThis}」`],
       ["終わると", q.result],
       [
         "期限",
@@ -89,7 +87,6 @@ function render(q) {
       body.append(el("div", "label", b.label));
       if (!b.physical) body.append(el("div", "kind", "物ではありません。忘れやすい"));
       if (b.note) body.append(el("div", "note", b.note));
-      if (!b.verified) body.append(el("div", "note", "出典をまだ確かめていません"));
       row.append(body);
       bag.body.append(row);
     }
@@ -125,7 +122,7 @@ function render(q) {
       a.href = s.url;
       a.target = "_blank";
       a.rel = "noreferrer";
-      line.append(a, el("span", null, `${s.fetchedAt} 取得${s.verified ? "" : "・未確認"}`));
+      line.append(a);
       src.body.append(line);
     }
     page.append(src.box);

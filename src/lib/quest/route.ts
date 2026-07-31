@@ -231,11 +231,14 @@ function warningsFor(stops: RouteStop[], todo: Quest[], allBring: RouteSheet["br
     }
   }
 
-  // 未確認
-  const unverified = todo.filter((q) => q.unverified.length > 0);
-  if (unverified.length > 0) {
+  // 行く前の注意。
+  //
+  // 前は「未確認が◯件あります」と出していたが、これは作り手の都合。
+  // 使う人に要るのは「窓口は変わることがあるので、行く前に見てください」だけ。
+  // 件数に関係なく、いつも出す
+  if (todo.length > 0) {
     out.push(
-      `窓口の名前や持ち物のうち、まだ確認できていない項目が${unverified.length}件の手続きにあります。行く前に自治体のサイトで確認してください`,
+      "窓口の場所や持ち物は変わることがあります。行く前に渋谷区のサイトでも確かめてください",
     );
   }
 

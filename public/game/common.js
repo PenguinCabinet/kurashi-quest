@@ -76,7 +76,7 @@ export function param(name) {
  * icon を渡すと、見出しの横に小さな絵が付く（絵が無ければ何も出ない）。
  * 見出しの文字は消さない。絵だけにすると、どこに何があるか読めなくなるため。
  */
-export function sheet(title, right, icon, unverified) {
+export function sheet(title, right, icon) {
   const box = el("div", "sheet");
   const head = el("div", "sheet-head");
   const left = el("div", "headline");
@@ -90,12 +90,7 @@ export function sheet(title, right, icon, unverified) {
   }
   left.append(el("span", null, title));
   head.append(left);
-  if (right !== undefined && right !== null) {
-    const count = el("div", "count", right);
-    // かかる時間などが未確認のとき、その数字のとなりに出す
-    if (unverified) count.append(el("span", "yet", "未確認"));
-    head.append(count);
-  }
+  if (right !== undefined && right !== null) head.append(el("div", "count", right));
   box.append(head);
   const body = el("div", "sheet-body");
   box.append(body);
@@ -105,15 +100,12 @@ export function sheet(title, right, icon, unverified) {
 /** 「項目名：中身」の行をまとめて作る */
 export function rows(pairs) {
   const box = el("div", "rows");
-  for (const [k, v, note, unverified] of pairs) {
+  for (const [k, v, note] of pairs) {
     if (v === null || v === undefined || v === "") continue;
     const row = el("div", "r");
     row.append(el("div", "k", k));
     const val = el("div", "v");
-    const line = el("div", null, v);
-    // 確かめていない値は、その場で分かるようにする。隠さない
-    if (unverified) line.append(el("span", "yet", "未確認"));
-    val.append(line);
+    val.append(el("div", null, v));
     if (note) val.append(el("div", "note", note));
     row.append(val);
     box.append(row);
@@ -215,12 +207,9 @@ export function tagsFor(q) {
   box.append(el("span", `tag ${q.deadline.urgency}`, URGENCY_LABEL[q.deadline.urgency]));
   if (q.need.status === "unsure") box.append(el("span", "tag unsure", "判定できていない"));
   if (q.lock.locked) box.append(el("span", "tag lock", `先に「${q.lock.blockedByNames[0]}」`));
-  // 出典をまだ確かめていない項目。数だけ出して、中身はマウスを乗せると見える
-  if (q.unverified.length > 0) {
-    const t = el("span", "tag todo", `未確認 ${q.unverified.length}`);
-    t.title = q.unverified.join(" / ");
-    box.append(t);
-  }
+  // 「未確認◯件」の札は出さない。
+  // 使う人には、どの項目を作り手が確かめたかは関係がない。
+  // 代わりに「行く前に自治体のサイトで確かめてください」を1行だけ出している
   return box;
 }
 

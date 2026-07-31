@@ -105,7 +105,6 @@ for (const [i, stop] of route.stops.entries()) {
     if (!b.physical) body.append(el("div", "note", "物ではありません。忘れやすい"));
     if (b.note) body.append(el("div", "note", b.note));
     body.append(el("div", "for", `${b.neededFor.length}件の手続きで使います`));
-    if (!b.verified) body.append(el("div", "note", "出典をまだ確かめていません"));
     row.append(body);
     box.body.append(row);
   }
