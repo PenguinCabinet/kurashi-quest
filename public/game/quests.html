@@ -9,7 +9,7 @@
      Windows と Android のときだけ落ちてくる -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
 <title>クエストログ — 暮らしクエスト（確認用）</title>
-<link rel="stylesheet" href="./game.css?v=1785486976" />
+<link rel="stylesheet" href="./game.css?v=1785492195" />
 <style>
   main { max-width: 620px; }
 
@@ -21,6 +21,65 @@
   .progress .masu i[data-on="true"] { background: var(--shu); border-color: var(--shu); }
   .progress .n { font-family: var(--maru); font-size: 15px; }
   .progress .n b { font-size: 21px; color: var(--shu); }
+
+  /* ぜんぶ終わったときの結果 */
+  .clear {
+    display: flex; align-items: flex-end; gap: 20px;
+    padding: 6px 0 22px; margin-bottom: 6px;
+    border-bottom: 3px double var(--sumi);
+  }
+  .cleardog { flex: none; width: min(34vw, 170px); height: auto; }
+  .clearbody { flex: 1; min-width: 0; padding-bottom: 6px; }
+  .stampbig {
+    display: inline-block; margin-bottom: 10px;
+    border: 3px double var(--shu); color: var(--shu);
+    font-size: 21px; letter-spacing: .2em;
+    padding: 5px 12px 5px 18px; transform: rotate(-8deg);
+  }
+  .clear .big { font-size: 25px; font-weight: 700; line-height: 1.4; }
+  .clearrows { margin-top: 12px; }
+  .clearrows .r {
+    display: flex; gap: 14px; align-items: baseline;
+    padding: 5px 0; border-top: 1px solid rgba(26,26,26,.14); font-size: 13px;
+  }
+  .clearrows .r:first-child { border-top: none; }
+  .clearrows .k { flex: 1; min-width: 0; color: #55606e; }
+  .clearrows .v { flex: none; font-size: 17px; font-weight: 700; }
+  .clearrows .v.shu { color: var(--shu); }
+  .progress.hidden { display: none; }
+
+  /* 判が押される・犬が出てくる */
+  .clear[data-anime="on"] { position: relative; overflow: hidden; }
+  .clear[data-anime="on"] .cleardog { animation: dogin .5s cubic-bezier(.2,1.5,.4,1) both; }
+  .clear[data-anime="on"] .stampbig { animation: stampin .32s cubic-bezier(.3,1.6,.5,1) both .26s; }
+  .clear[data-anime="on"] .big { animation: fadein .4s ease-out both .5s; }
+  .clear[data-anime="on"] .clearrows { animation: fadein .4s ease-out both .62s; }
+  @keyframes dogin {
+    from { opacity: 0; transform: translateY(18px) scale(.9); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes stampin {
+    from { opacity: 0; transform: rotate(-8deg) scale(2.4); }
+    to   { opacity: 1; transform: rotate(-8deg) scale(1); }
+  }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* 紙吹雪 */
+  .confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .confetti i {
+    position: absolute; top: -14px; width: 8px; height: 12px;
+    animation-name: fall; animation-timing-function: linear; animation-fill-mode: forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(320px) rotate(540deg); opacity: 0; }
+  }
+
+  @media (max-width: 560px) {
+    .clear { flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+    .cleardog { width: 140px; }
+    .clearbody { width: 100%; }
+    .clearrows .k { text-align: left; }
+  }
 
   /* 章の見出し */
   .chapter {
@@ -115,10 +174,12 @@
   }
 
   /* あなたには要らないもの */
-  .off .row { display: flex; gap: 12px; padding: 8px 0; border-top: 1px solid rgba(26,26,26,.12); font-size: 13px; }
+  /* 名前を 11em の枠に押し込むと、長い名前が折り返して、
+     すぐ右の理由とくっついて読めなくなる。名前を上、理由を下にする */
+  .off .row { padding: 10px 0; border-top: 1px solid rgba(26,26,26,.12); font-size: 13px; }
   .off .row:first-child { border-top: none; }
-  .off .n { flex: none; width: 11em; color: #6b7280; }
-  .off .r { flex: 1; color: #8a8f98; }
+  .off .n { font-weight: 700; color: var(--sumi); }
+  .off .r { color: #8a8f98; margin-top: 2px; }
   .off button { font: inherit; font-size: 12px; background: none; border: none; color: #8a8f98; cursor: pointer; padding: 0; }
   .off button:hover { color: var(--shu); }
   @media (max-width: 560px) {
@@ -135,8 +196,6 @@
     .job[data-done="true"]::after { position: static; display: inline-block; margin: 6px 0 0; }
     .jcmd { gap: 10px 18px; }
     .jcmd button, .jcmd a { padding: 6px 0 6px 16px; }
-    .off .row { display: block; }
-    .off .n { width: auto; font-weight: 700; }
     .chapter { flex-wrap: wrap; gap: 8px; }
   }
 </style>
@@ -145,6 +204,6 @@
 <main>
   <div id="page"></div>
 </main>
-<script type="module" src="./page-quests.js?v=1785478907"></script>
+<script type="module" src="./page-quests.js?v=1785489108"></script>
 </body>
 </html>

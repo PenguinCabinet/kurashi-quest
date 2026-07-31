@@ -9,7 +9,7 @@
      Windows と Android のときだけ落ちてくる -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
 <title>あなたのこと — 暮らしクエスト（確認用）</title>
-<link rel="stylesheet" href="./game.css?v=1785486976" />
+<link rel="stylesheet" href="./game.css?v=1785492195" />
 <style>
   /* 何問目か。クエストログの枡と同じ形 */
   .steps { display: flex; align-items: center; gap: 5px; margin-bottom: 20px; }
@@ -37,6 +37,9 @@
   .opts.cards button.card:hover img { filter: grayscale(.15) opacity(.9); }
 
   .opts.cards button.card[aria-pressed="true"] { background: #fff; box-shadow: inset 0 0 0 3px var(--shu); }
+  /* 選んだ絵に朱の枠が付くので、カーソルの枠は絵の外に出さない */
+  .opts.cards button.card[data-key="on"] { outline: none; background: rgba(255,255,255,.62); }
+  .opts.cards button.card[data-key="on"] .cap { color: var(--sumi); text-decoration: underline; text-underline-offset: 4px; }
   .opts.cards button.card[aria-pressed="true"] img { filter: none; }
   .opts.cards button.card[aria-pressed="true"] .cap { color: var(--shu); }
   .opts.cards button.card[aria-pressed="true"] .sub { color: #6b7280; }

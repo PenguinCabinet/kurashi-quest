@@ -74,6 +74,49 @@ function move(step) {
   showHint(false);
 }
 
+/**
+ * 上下左右で動かす。
+ * 画面のどこにあるかを見て、その向きにいちばん近いものへ移る。
+ * キャラメイクのように選択肢が横に並ぶ場所では、左右で選べる必要がある。
+ */
+function moveTo(dx, dy) {
+  if (items.length === 0) return;
+  const now = items[at];
+  if (!now) return move(dx + dy > 0 ? 1 : -1);
+
+  const a = now.getBoundingClientRect();
+  const cx = a.left + a.width / 2;
+  const cy = a.top + a.height / 2;
+
+  let best = null;
+  let bestScore = Infinity;
+  for (const el of items) {
+    if (el === now) continue;
+    const b = el.getBoundingClientRect();
+    const bx = b.left + b.width / 2;
+    const by = b.top + b.height / 2;
+    const along = dx !== 0 ? (bx - cx) * dx : (by - cy) * dy;
+    if (along <= 1) continue; // その向きに無い
+
+    // 進む向きのずれは大きく数える（斜めに飛ばないように）
+    const across = dx !== 0 ? Math.abs(by - cy) : Math.abs(bx - cx);
+    const score = along + across * 3;
+    if (score < bestScore) {
+      bestScore = score;
+      best = el;
+    }
+  }
+
+  // その向きに何も無ければ、並び順で1つ動かす
+  if (!best) return move(dx + dy > 0 ? 1 : -1);
+
+  byKey = true;
+  at = items.indexOf(best);
+  paint();
+  sfx.move();
+  showHint(false);
+}
+
 function showHint(on) {
   if (!hint) return;
   if (on) hint.removeAttribute("hidden");
@@ -89,7 +132,7 @@ export function keys() {
 
   hint = document.createElement("div");
   hint.className = "keyhint";
-  hint.textContent = "↑ ↓ でえらぶ　Enter でけってい";
+  hint.textContent = "↑ ↓ ← → でえらぶ　Enter でけってい";
   document.body.append(hint);
 
   const watch = new MutationObserver(() => requestAnimationFrame(collect));
@@ -99,10 +142,16 @@ export function keys() {
   addEventListener("keydown", (e) => {
     if (inInput() || busy()) return;
     if (e.key === "ArrowDown" || e.key === "j") {
-      move(1);
+      moveTo(0, 1);
       e.preventDefault();
     } else if (e.key === "ArrowUp" || e.key === "k") {
-      move(-1);
+      moveTo(0, -1);
+      e.preventDefault();
+    } else if (e.key === "ArrowRight" || e.key === "l") {
+      moveTo(1, 0);
+      e.preventDefault();
+    } else if (e.key === "ArrowLeft" || e.key === "h") {
+      moveTo(-1, 0);
       e.preventDefault();
     } else if (e.key === "Enter" || e.key === " ") {
       const now = items[at];

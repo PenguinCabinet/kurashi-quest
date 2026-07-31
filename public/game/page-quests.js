@@ -4,6 +4,7 @@
 // この2つがロジックには入っているのに、一覧では捨てられていました。
 
 import { app, el, $, header, uses, sheet, commands, ways, tagsFor, guide } from "./common.js";
+import { sfx } from "./sound.js";
 import { toggle, dismiss, restore, hiddenLine, formatDaysLeft } from "./quest/index.js";
 
 header("quests.html");
@@ -12,6 +13,9 @@ const KANJI = ["一", "二", "三", "四", "五", "六", "七", "八"];
 
 /** いま開いている依頼。最初は「つぎにやること」を開いておく */
 let open = null;
+
+/** 前に描いたとき、全部終わっていたか。終わった瞬間だけ上へ運ぶために持つ */
+let wasCleared = null;
 
 /** 左に出す位。急ぐ・知られていない・前提待ちの順で強いものを出す */
 function rankOf(q) {
@@ -139,6 +143,96 @@ function jobCard(q) {
   return card;
 }
 
+/** ぜんぶ終わったときの画面。新しいデータは使わず、いまある数字だけで出す */
+function clearPanel(board) {
+  const s = board.stats;
+  const box = el("div", "clear");
+
+  const dog = el("img", "cleardog");
+  dog.src = "./characters/clear-shiba.png";
+  dog.alt = "";
+  // 専用の絵が無ければ、済の札を持った柴犬をそのまま使う
+  dog.addEventListener("error", () => {
+    if (dog.src.includes("clear-shiba")) dog.src = "./characters/rank-done.png";
+    else dog.remove();
+  });
+  box.append(dog);
+
+  const body = el("div", "clearbody");
+  body.append(el("div", "stampbig", "完"));
+  body.append(el("div", "big", "ぜんぶ終わりました"));
+
+  const rows = el("div", "clearrows");
+  const counters = [];
+  const row = (k, n, shu) => {
+    const r = el("div", "r");
+    r.append(el("div", "k", k));
+    const v = el("div", shu ? "v shu" : "v", "0件");
+    counters.push({ node: v, to: n });
+    r.append(v);
+    rows.append(r);
+  };
+  row("やった手続き", s.done);
+  row("知らないと調べようもなかったもの", s.hidden, s.hidden > 0);
+  if (board.notNeeded.length > 0) row("あなたには要らなかったもの", board.notNeeded.length);
+  row("期限を過ぎたもの", s.overdue, s.overdue > 0);
+  body.append(rows);
+  box.append(body);
+
+  // 動きを減らす設定の人には、いきなり出す
+  const still =
+    typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (still) {
+    for (const c of counters) c.node.textContent = `${c.to}件`;
+    return box;
+  }
+
+  box.setAttribute("data-anime", "on");
+
+  // 判が押される → 数字が数え上がる → 紙吹雪
+  setTimeout(() => sfx.stamp(), 260);
+  setTimeout(() => {
+    sfx.clear();
+    confetti(box);
+    for (const c of counters) countUp(c.node, c.to);
+  }, 620);
+
+  return box;
+}
+
+/** 0 から数え上げる。結果の画面は、数字が動くだけで手応えが変わる */
+function countUp(node, to) {
+  if (to === 0) {
+    node.textContent = "0件";
+    return;
+  }
+  const step = Math.max(1, Math.round(to / 12));
+  let n = 0;
+  const tick = () => {
+    n = Math.min(to, n + step);
+    node.textContent = `${n}件`;
+    if (n < to) setTimeout(tick, 45);
+  };
+  tick();
+}
+
+/** 紙吹雪。絵は使わず、小さな四角を降らせるだけ */
+function confetti(box) {
+  const colors = ["#b32d2e", "#2b4a6f", "#e2a52b"];
+  const sheet = el("div", "confetti");
+  for (let i = 0; i < 40; i++) {
+    const bit = el("i");
+    bit.style.left = `${Math.random() * 100}%`;
+    bit.style.background = colors[i % colors.length];
+    bit.style.animationDelay = `${Math.random() * 0.8}s`;
+    bit.style.animationDuration = `${1.6 + Math.random() * 1.4}s`;
+    bit.style.transform = `rotate(${Math.random() * 360}deg)`;
+    sheet.append(bit);
+  }
+  box.append(sheet);
+  setTimeout(() => sheet.remove(), 3600);
+}
+
 function render() {
   const page = $("page");
   page.replaceChildren();
@@ -147,8 +241,16 @@ function render() {
 
   if (open === null && board.next) open = board.next.id;
 
-  // 達成の数を、枡で
-  const prog = el("div", "progress");
+  const cleared = s.total > 0 && s.remaining === 0;
+  if (cleared) page.append(clearPanel(board));
+
+  // 最後の1件を達成した瞬間だけ、いちばん上まで運ぶ。
+  // 結果は上に出るので、下の方を見ていると気づけない
+  const justCleared = cleared && wasCleared === false;
+  wasCleared = cleared;
+
+  // 達成の数を、枡で。終わったあとは結果が主役なので出さない
+  const prog = el("div", cleared ? "progress hidden" : "progress");
   prog.append(el("div", "k", "達成"));
   const masu = el("div", "masu");
   const total = s.done + s.remaining;
@@ -168,7 +270,7 @@ function render() {
     page.append(el("div", "warn", `期限を過ぎている依頼が ${s.overdue}件あります`));
   }
   const line = hiddenLine(board);
-  if (line) page.append(guide(line));
+  if (line && !cleared) page.append(guide(line));
   if (board.missingAnswers.length > 0) {
     const a = el("a", "lead", "あなたのことを答えるほど、要るものだけに絞られます →");
     a.href = "chara.html";
@@ -213,7 +315,9 @@ function render() {
   const ready = board.missingAnswers.length === 0;
   page.append(
     commands([
-      ready
+      cleared
+        ? ["はじめから", "chara.html?new=1", "答えも達成も消して、まっさらから"]
+        : ready
         ? ["出かける準備をする", "counter.html", "かばんを用意して、市役所へ向かう"]
         : ["あなたのことを答える", "chara.html", `あと ${board.missingAnswers.length}問。答えると、この一覧があなた用になります`],
       ["回る順番を見る", "route.html"],
@@ -221,6 +325,17 @@ function render() {
     ]),
   );
   page.append(ways([]));
+
+  if (justCleared) toTop();
+}
+
+/** いちばん上へ運ぶ。キーのカーソル移動より後に動かす */
+function toTop() {
+  const still =
+    typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setTimeout(() => {
+    scrollTo({ top: 0, behavior: still ? "auto" : "smooth" });
+  }, 60);
 }
 
 render();

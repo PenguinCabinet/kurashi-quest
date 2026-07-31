@@ -225,23 +225,16 @@ export function tagsFor(q) {
 export function header(_current) {}
 
 /**
- * このページがロジックのどの関数を使っているか。
- * UI担当が「この画面では何を呼べばいいか」を見るための欄です。
+ * この画面が呼んでいるロジックの一覧。画面には出しません。
+ *
+ * 作っている途中は画面の下に出していましたが、
+ * 遊ぶ人には関係のないものが常に見えている状態になるので、やめました。
+ * 同じ内容は docs/しくみ.md に書いてあります。
+ *
+ * 各ページの呼び出しはそのまま残してあります。
+ * どの画面が何を使っているかは、コードを読めば分かるようにしておきたいためです。
  */
-export function uses(pairs) {
-  const box = el("div", "uses folded");
-  const title = el("h2", null, "この画面が呼んでいるもの");
-  title.addEventListener("click", () => box.classList.toggle("folded"));
-  box.append(title);
-  const table = el("table");
-  for (const [name, why] of pairs) {
-    const tr = el("tr");
-    tr.append(el("td", null, name), el("td", null, why));
-    table.append(tr);
-  }
-  box.append(table);
-  document.querySelector("main").append(box);
-}
+export function uses(_pairs) {}
 
 /** ?id= のクエストを取り出す。無ければ案内を出して null */
 export function questFromUrl(board) {

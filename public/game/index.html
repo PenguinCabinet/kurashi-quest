@@ -254,8 +254,9 @@
 
   // 矢印で選んで Enter。ここが「サイトではない」いちばんの差
   addEventListener("keydown", (e) => {
-    if (e.key === "ArrowDown" || e.key === "j") { move(at + 1); e.preventDefault(); }
-    else if (e.key === "ArrowUp" || e.key === "k") { move(at - 1); e.preventDefault(); }
+    // タイトルのコマンドは縦に並んでいるので、左右も同じ動きにしておく
+    if (e.key === "ArrowDown" || e.key === "ArrowRight" || e.key === "j") { move(at + 1); e.preventDefault(); }
+    else if (e.key === "ArrowUp" || e.key === "ArrowLeft" || e.key === "k") { move(at - 1); e.preventDefault(); }
     else if (e.key === "Enter" || e.key === " ") { sfx.select(); nodes[at].click(); e.preventDefault(); }
   });
 </script>
