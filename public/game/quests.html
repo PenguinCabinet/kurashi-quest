@@ -195,13 +195,18 @@
     color: #fff; background: var(--shu); padding: 2px 8px; margin-bottom: 5px;
   }
   .job .jname { font-size: 19px; }
-    /* 判子が長い名前に重なるので、絶対配置をやめて右の列に置く。
-       ただし .job は flex なので、そのままだと行の高さいっぱいに伸びる。
-       flex-start で上にそろえ、縮まないようにする */
-    .job[data-done="true"]::after {
-      position: static; display: inline-block;
-      align-self: flex-start; flex: none;
-      margin-top: 4px; font-size: 15px; padding: 3px 8px 3px 11px;
+    /* 判子。狭い画面では扱いが難しいので、回り込みにする。
+       ・絶対配置のままだと、長い名前の上に重なる
+       ・.job は flex なので、位置を static にすると判子が「列」になり、
+         行の高さいっぱいに伸びたうえ、名前の幅まで食う
+       そこで .body（ふつうのブロック）の中で右に浮かせる。
+       名前は判子を避けて流れ、判子の下からは元の幅に戻る */
+    .job[data-done="true"]::after { display: none; }
+    .job[data-done="true"] .body::before {
+      content: "達成"; float: right; margin: 2px 0 4px 10px;
+      border: 3px double var(--shu); color: var(--shu); background: rgba(255,255,255,.7);
+      font-family: var(--maru); font-size: 14px; letter-spacing: .18em;
+      padding: 2px 6px 2px 9px; transform: rotate(-11deg);
     }
     /* 指で押す場所は 44px 以上にする。
        横に2つ並べると片方に指がかかるので、1行に1つずつ縦に並べる */
