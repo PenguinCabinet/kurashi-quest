@@ -95,3 +95,36 @@ test("同じ名前なのに id が違う持ち物は警告になる（攻略シ�
   const result = validateProcedures(data);
   assert.ok(result.warnings.some((w) => w.message.includes("別の id")));
 });
+
+test("持ち物に「見せる」と書いてある手順は、そこで止まるようにしてある", () => {
+  // 手順に「本人確認書類を見せる」と書いてあるのに、そこで止まらないと、
+  // いちばん起きやすい出直し（身分証を忘れる）が再現できない
+  const data = realData();
+  const shows: string[] = [];
+
+  for (const p of data.procedures) {
+    for (const step of p.steps) {
+      if (!/を見せる|を出す$/.test(step.text)) continue;
+      // その手順で出すものが、持ち物にあるなら、止まる指定が要る
+      const named = p.bring.find((b) => step.text.includes(b.label));
+      if (!named) continue;
+      if (!step.stuckIf) shows.push(`${p.id} 手順${step.n}「${step.text}」`);
+    }
+  }
+
+  assert.deepEqual(shows, [], "止まる指定が抜けている手順");
+});
+
+test("本人確認書類は、窓口で聞かれる", () => {
+  // 転出届と郵便の転送届は、窓口で必ず身分証を見せる
+  const data = realData();
+  for (const id of ["tenshutsu-todoke", "yubin-tenso"]) {
+    const p = data.procedures.find((x) => x.id === id)!;
+    const asks = p.steps.filter((s) => s.stuckIf?.missing === "id-doc");
+    assert.equal(asks.length, 1, `${id} で本人確認書類を聞いていない`);
+    assert.ok(
+      p.bring.some((b) => (b.sameAs ?? b.id) === "id-doc"),
+      `${id} の持ち物に本人確認書類が無い`,
+    );
+  }
+});
