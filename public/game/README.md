@@ -38,12 +38,20 @@
 
 ## 直すときの注意
 
-`quest/*.js` は **`src/lib/quest/*.ts` から生成したコピー**です。
-ここを手で直すと、ロジックが二重管理になります。**直すのは `src/lib/quest` 側だけ**にしてください。
+`quest/*.js` は **`src/lib/quest/*.ts` から自動で作られるコピー**です。
+ここを手で直しても、次のビルドで上書きされます。**直すのは `src/lib/quest` 側だけ**にしてください。
+
+作り直しは `npm run build` の前に自動で走ります（`package.json` の `prebuild`）。
+手で走らせるときは、こちらです。
+
+```bash
+npm run game:build
+```
 
 やっていることは、TypeScript を JS に変換して `quest/` に置き、
 `import "./x.ts"` を `"./x.js"` に書き換えるところまでです。
 `quest/procedures.js` は `src/data/procedures.json` を `export default` で包んだものです。
+ロジックが壊れているときは、そこでビルドが止まります（古いコピーは残したまま）。
 
 ## 状態の持ち方
 

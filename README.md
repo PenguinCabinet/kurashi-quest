@@ -24,6 +24,9 @@ public/game/       確認用の画面（素の HTML/CSS/JS。本番のデザイ�
 
 中身は [public/game/README.md](public/game/README.md) を見てください。
 
+`public/game/quest/` は `src/lib/quest/` から自動で作られます（`npm run build` の前に走ります）。
+手で直さないでください。
+
 ## 初期設定
 ```bash
 npm install

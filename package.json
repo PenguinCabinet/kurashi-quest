@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "game:build": "node scripts/build-game-logic.mjs",
+    "prebuild": "npm run game:build",
     "build": "next build",
     "start": "next start",
     "test:quest": "node --test ./tests/quest/*.test.ts",
