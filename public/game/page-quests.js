@@ -13,6 +13,10 @@ const KANJI = ["一", "二", "三", "四", "五", "六", "七", "八"];
 
 /** いま開いている依頼。最初は「つぎにやること」を開いておく */
 let open = null;
+// いちばん急ぐものを最初に開くのは、画面を出したときの1回だけ。
+// 描き直すたびにやると、閉じても閉じた直後に開き直されて、
+// その1件だけ永久に閉じられなくなる
+let opened = false;
 
 /** 前に描いたとき、全部終わっていたか。終わった瞬間だけ上へ運ぶために持つ */
 let wasCleared = null;
@@ -243,7 +247,10 @@ function render() {
   const board = app.board();
   const s = board.stats;
 
-  if (open === null && board.next) open = board.next.id;
+  if (!opened) {
+    opened = true;
+    if (board.next) open = board.next.id;
+  }
 
   const cleared = s.total > 0 && s.remaining === 0;
   if (cleared) page.append(clearPanel(board));
