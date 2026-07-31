@@ -172,11 +172,11 @@ function clearPanel(board) {
 
   const rows = el("div", "clearrows");
   const counters = [];
-  const row = (k, n, shu) => {
+  const row = (k, n, shu, unit = "件") => {
     const r = el("div", "r");
     r.append(el("div", "k", k));
-    const v = el("div", shu ? "v shu" : "v", "0件");
-    counters.push({ node: v, to: n });
+    const v = el("div", shu ? "v shu" : "v", `0${unit}`);
+    counters.push({ node: v, to: n, unit });
     r.append(v);
     rows.append(r);
   };
@@ -184,6 +184,7 @@ function clearPanel(board) {
   row("知らないと調べようもなかったもの", s.hidden, s.hidden > 0);
   if (board.notNeeded.length > 0) row("あなたには要らなかったもの", board.notNeeded.length);
   row("期限を過ぎたもの", s.overdue, s.overdue > 0);
+  row("出直しでムダにした日", board.lostDays, board.lostDays > 0, "日");
   body.append(rows);
   box.append(body);
 
@@ -191,7 +192,7 @@ function clearPanel(board) {
   const still =
     typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (still) {
-    for (const c of counters) c.node.textContent = `${c.to}件`;
+    for (const c of counters) c.node.textContent = `${c.to}${c.unit}`;
     return box;
   }
 
@@ -202,23 +203,23 @@ function clearPanel(board) {
   setTimeout(() => {
     sfx.clear();
     confetti(box);
-    for (const c of counters) countUp(c.node, c.to);
+    for (const c of counters) countUp(c.node, c.to, c.unit);
   }, 620);
 
   return box;
 }
 
 /** 0 から数え上げる。結果の画面は、数字が動くだけで手応えが変わる */
-function countUp(node, to) {
+function countUp(node, to, unit = "件") {
   if (to === 0) {
-    node.textContent = "0件";
+    node.textContent = `0${unit}`;
     return;
   }
   const step = Math.max(1, Math.round(to / 12));
   let n = 0;
   const tick = () => {
     n = Math.min(to, n + step);
-    node.textContent = `${n}件`;
+    node.textContent = `${n}${unit}`;
     if (n < to) setTimeout(tick, 45);
   };
   tick();
@@ -274,6 +275,11 @@ function render() {
   prog.append(n);
   page.append(prog);
 
+  if (board.lostDays > 0) {
+    page.append(
+      el("div", "warn", `出直しで ${board.lostDays}日ムダになっています。そのぶん期限が近づいています`),
+    );
+  }
   if (s.overdue > 0) {
     page.append(el("div", "warn", `期限を過ぎている依頼が ${s.overdue}件あります`));
   }

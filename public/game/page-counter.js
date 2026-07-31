@@ -21,6 +21,7 @@ import {
   isBrought,
   broughtCount,
   toggle,
+  loseDay,
 } from "./quest/index.js";
 
 header(null);
@@ -340,6 +341,14 @@ function renderCounter() {
 
   // 断られた・全部終わった、は音でも分かるようにする
   if (s.status === "turnedAway") sfx.deny();
+
+  // 出直しが確定した瞬間に、1日ムダにする。
+  // 同じ画面を描き直しても二重に数えないよう、この来庁で一度だけ
+  if (visit.status === "wentHome" && !visit.charged) {
+    visit.charged = true;
+    app.progress = loseDay(app.progress);
+    app.save();
+  }
   else if (visit.status === "finished") sfx.clear();
 
   const img = el("img");
@@ -388,7 +397,8 @@ function renderCounter() {
 
   if (visit.status === "wentHome") {
     const v = el("div", "verdict ng");
-    v.append(el("div", null, "持ち物が足りず、今日は帰ることになりました"));
+    v.append(el("div", "big", "持ち物が足りず、今日は帰ることになりました"));
+    v.append(el("div", "lost", `1日ムダになりました　ムダにした日数 ${app.progress.lostDays}日`));
     v.append(
       el("div", "note", `終わった手続き ${visit.done.length}件 / 残り ${visit.plan.length - visit.done.length}件`),
     );

@@ -2,7 +2,7 @@
 // 完了は true/false ではなく日付で持つ（「転入届の90日後」の起算に要るため）。
 import { isDateString } from "./dates.js";
 export function emptyProgress() {
-    return { doneAt: {}, dismissed: [], brought: [] };
+    return { doneAt: {}, dismissed: [], brought: [], lostDays: 0 };
 }
 /** 保存されていた値を読む。壊れていたら捨てて空にする（古い形で画面が落ちないように） */
 export function normalizeProgress(raw) {
@@ -28,7 +28,18 @@ export function normalizeProgress(raw) {
                 out.brought.push(id);
         }
     }
+    // 古い保存には無い項目。無ければ 0 として読む
+    if (typeof r.lostDays === "number" && Number.isFinite(r.lostDays) && r.lostDays >= 0) {
+        out.lostDays = Math.floor(r.lostDays);
+    }
     return out;
+}
+/**
+ * 出直しで1日ムダにする。
+ * 「1回で終わらせる」に意味を持たせるための、ただ1つの罰。
+ */
+export function loseDay(progress) {
+    return { ...progress, lostDays: (progress.lostDays ?? 0) + 1 };
 }
 /** 終わったことにする。today は呼ぶ側が渡す（期限の起算日になるので、実際に終えた日を入れる） */
 export function complete(progress, id, today) {
@@ -102,6 +113,7 @@ export function pruneProgress(progress, knownIds) {
     }
     // brought は手続きではなく持ち物の id なので、ここでは触らない
     return {
+        ...progress,
         doneAt,
         dismissed: progress.dismissed.filter((id) => known.has(id)),
         brought: progress.brought,
