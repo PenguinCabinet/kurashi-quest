@@ -84,7 +84,18 @@ export function purposeChoices(
     .slice(0, Math.max(0, limit - 1))
     .map((p) => ({ text: p.sayThis.text, correct: false }));
 
-  return [{ text: target.sayThis.text, correct: true }, ...wrong];
+  // 正解の位置を混ぜる。いつも1番目だと、読まずに1番目を押すだけの画面になる
+  return shuffle([{ text: target.sayThis.text, correct: true }, ...wrong]);
+}
+
+/** 並びを混ぜる。元の配列は変えない */
+function shuffle<T>(list: T[]): T[] {
+  const out = [...list];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }
 
 /** 用件を選ぶ */
