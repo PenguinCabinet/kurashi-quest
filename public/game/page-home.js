@@ -2,7 +2,7 @@
 // 1問ずつ聞いて、答えるたびに「何が変わったか」を見せる。
 // QUESTIONS / answer / buildBoard をそのまま呼んでいます。
 
-import { app, data, el, $, header, uses, param, ways } from "./common.js";
+import { app, data, el, $, header, uses, param, ways, forgetCode } from "./common.js";
 import {
   addDays,
   QUESTIONS,
@@ -20,10 +20,15 @@ header("chara.html");
 // タイトルの「はじめから」で来たときは、前の記録を消して1問目にもどす。
 // 答えだけ消すと、達成の判とかばんの中身が残って、
 // 「何も答えていないのに6件ぜんぶ達成」という状態になってしまう。
+//
+// 合言葉も手放す。持ったままにすると、まっさらな状態で預け直したときに
+// 前の合言葉の中身がからっぽで上書きされ、前の記録が消えてしまう。
+// サーバに預けたものはそのまま残るので、合言葉を控えてあれば戻せる。
 if (param("new")) {
   app.profile = emptyProfile();
   app.progress = emptyProgress();
   app.save();
+  forgetCode();
 }
 
 let step = QUESTIONS.findIndex((q) => app.profile[q.key] === undefined);

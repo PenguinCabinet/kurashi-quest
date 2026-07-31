@@ -3,7 +3,7 @@
 // パソコンで準備して、スマホを持って窓口へ行く。それだけのための画面です。
 // ログインはありません。合言葉が鍵そのものなので、なくすと戻せません。
 
-import { app, el, $, sheet, commands, ways, guide } from "./common.js";
+import { app, el, $, sheet, commands, ways, guide, myCode, rememberCode, forgetCode } from "./common.js";
 import { sfx } from "./sound.js";
 import {
   PASSPHRASE_LENGTH,
@@ -16,23 +16,6 @@ import {
 } from "./quest/index.js";
 
 const page = $("page");
-const CODE_KEY = "kurashi-quest.code.v1";
-
-/** 前に受け取った合言葉。同じものに預け直せるように覚えておく */
-function myCode() {
-  try {
-    return localStorage.getItem(CODE_KEY);
-  } catch {
-    return null;
-  }
-}
-function rememberCode(code) {
-  try {
-    localStorage.setItem(CODE_KEY, code);
-  } catch {
-    // 覚えられなくても、その場では使える
-  }
-}
 
 page.append(el("div", "title", "べつの端末でつづける"));
 page.append(
@@ -52,18 +35,25 @@ if (has) {
 }
 
 const getBtn = el("button", null, has ? "いまの続きを預け直す" : "合言葉を受け取る");
-getBtn.className = "";
+// 前の合言葉を残したまま、新しい方に移りたいとき用。
+// 預け直すと前の合言葉の中身が入れ替わるので、分けられる道が要る
+const newBtn = el("button", null, "別の合言葉にする");
+
 const giveRow = el("div", "enter");
 giveRow.append(getBtn);
+if (has) giveRow.append(newBtn);
 
-getBtn.addEventListener("click", async () => {
+/** 預ける。fresh なら、いまの合言葉を使わずに新しくもらう */
+async function deposit(fresh) {
   sfx.select();
   getBtn.disabled = true;
+  newBtn.disabled = true;
   said.removeAttribute("data-ng");
   said.textContent = "預けています…";
 
-  const r = await pushSave(fetch, app.profile, app.progress, myCode());
+  const r = await pushSave(fetch, app.profile, app.progress, fresh ? null : myCode());
   getBtn.disabled = false;
+  newBtn.disabled = false;
 
   if (!r.ok) {
     said.setAttribute("data-ng", "true");
@@ -74,12 +64,25 @@ getBtn.addEventListener("click", async () => {
   rememberCode(r.code);
   code.textContent = formatPassphrase(r.code);
   codeNote.textContent = "この6文字を、もう一方の端末で打ちこんでください";
-  said.textContent = "預かりました";
+  said.textContent = fresh ? "新しい合言葉にしました" : "預かりました";
   getBtn.textContent = "いまの続きを預け直す";
+  if (!giveRow.contains(newBtn)) giveRow.append(newBtn);
   sfx.stamp();
-});
+}
+
+getBtn.addEventListener("click", () => deposit(false));
+newBtn.addEventListener("click", () => deposit(true));
 
 give.body.append(code, codeNote, giveRow, said);
+if (has) {
+  give.body.append(
+    el(
+      "div",
+      "have",
+      "「預け直す」は、いまの合言葉の中身を入れ替えます。前の状態を残しておきたいときは「別の合言葉にする」を押してください。",
+    ),
+  );
+}
 page.append(give.box);
 
 // ── ② 合言葉を打ちこむ ──

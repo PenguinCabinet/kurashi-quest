@@ -254,5 +254,40 @@ function boot() {
   keys();
   listen();
 }
+
+// ── 合言葉 ────────────────────────────────────────────────────
+//
+// 「はじめから」でも消す必要があるので、この画面だけの話にせず、
+// ここに置いて page-home.js と page-carry.js の両方から呼ぶ。
+// 前は page-carry.js の中だけに持っていて、はじめからやり直しても
+// 前の合言葉が残り、預け直すと前の記録がからっぽで上書きされていた。
+
+const CODE_KEY = "kurashi-quest.code.v1";
+
+/** いま持っている合言葉。無ければ null */
+export function myCode() {
+  try {
+    return localStorage.getItem(CODE_KEY) || null;
+  } catch {
+    return null;
+  }
+}
+
+export function rememberCode(code) {
+  try {
+    localStorage.setItem(CODE_KEY, code);
+  } catch {
+    // 覚えられなくても、その場では使える
+  }
+}
+
+/** 合言葉を手放す。前の記録は消さないので、合言葉を控えてあれば戻せる */
+export function forgetCode() {
+  try {
+    localStorage.removeItem(CODE_KEY);
+  } catch {
+    // 消せなくても進める
+  }
+}
 if (typeof document !== "undefined" && document.body) boot();
 else if (typeof document !== "undefined") addEventListener("DOMContentLoaded", boot);
