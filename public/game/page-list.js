@@ -80,7 +80,7 @@ if (lines.length > 0) {
   for (const l of lines) {
     const row = el("div", "row");
     row.append(el("b", null, `「${l.say}」`));
-    row.append(el("span", null, `　${l.place}／${l.name}`));
+    row.append(el("span", null, `${l.place}　${l.name}`));
     say.append(row);
   }
   page.append(say);

@@ -35,10 +35,23 @@
 
   .say { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(26,26,26,.16); }
   .say .k { font-size: 11px; letter-spacing: .2em; color: #6b7280; margin-bottom: 6px; }
-  .say .row { font-size: 14px; padding: 4px 0; }
-  .say .row b { font-family: var(--maru); font-weight: 700; }
+  /* セリフと、どこで言うかを別の行にする。
+     1行に押し込むと、狭い画面で途中で折り返して読めなくなる */
+  .say .row { font-size: 14px; padding: 6px 0; border-top: 1px solid rgba(26,26,26,.1); }
+  .say .row:first-of-type { border-top: none; }
+  .say .row b { display: block; font-family: var(--maru); font-weight: 700; }
+  .say .row span { display: block; font-size: 12px; color: #55606e; margin-top: 1px; }
 
   .foot { margin-top: 22px; font-size: 11px; color: #8a8f98; }
+
+  @media (max-width: 560px) {
+    main { padding: 20px 16px 32px; }
+    .memo-head .t { font-size: 21px; }
+    .li { padding: 12px 0; }
+    .li img { width: 30px; height: 30px; }
+    .li .label { font-size: 15px; }
+    .where .h { font-size: 11px; }
+  }
 
   /* 印刷するとき。余計なものを消す */
   @media print {

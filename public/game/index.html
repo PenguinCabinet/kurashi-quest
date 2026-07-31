@@ -86,12 +86,7 @@
   }
   /* 指で触る端末には、キーの案内を出さない */
   @media (pointer: coarse) { .hint { display: none; } }
-  @media (max-width: 560px) {
-    .stage { padding: 16px; }
-    .win { margin-top: 26px; width: 100%; }
-    .cmd { padding: 14px 8px 14px 32px; }
-    .catch { margin-bottom: 14px; }
-  }
+
   .foot { position: fixed; left: 12px; bottom: 9px; font-size: 10px; color: #8a8f98; }
 
   /* 柴犬のひとこと。何も言わない絵は、ただの飾りになる */
@@ -155,6 +150,13 @@
   .soundtoggle[data-on="true"] { color: #6b7280; }
   .soundtoggle[data-on="false"] { color: #b32d2e; border-color: rgba(179,45,46,.5); }
   .soundtoggle:hover { background: #fff; }
+
+  @media (max-width: 560px) {
+    .stage { padding: 16px; }
+    .win { margin-top: 26px; width: 100%; }
+    .cmd { padding: 14px 8px 14px 32px; }
+    .catch { margin-bottom: 14px; }
+  }
 </style>
 </head>
 <body data-keys="off">
