@@ -2,10 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // public/game/ に置いた確認用の画面。
-  // public の中は「そのままのファイル名」でしか配られないので、
-  // /game で index.html が開くようにここで結び直す。
-  async rewrites() {
-    return [{ source: "/game", destination: "/game/index.html" }];
+  // /game のままだと、中の ./common.js などが1つ上を指してしまうので、
+  // アドレスごと /game/index.html に送る（rewrite ではなく redirect）。
+  async redirects() {
+    return [
+      { source: "/game", destination: "/game/index.html", permanent: false },
+      { source: "/game/", destination: "/game/index.html", permanent: false },
+    ];
   },
 };
 
