@@ -84,6 +84,7 @@ export {
   emptyProgress,
   isBrought,
   isDone,
+  loseDay,
   normalizeProgress,
   pruneProgress,
   reset,

@@ -263,6 +263,11 @@ export type Progress = {
   dismissed: string[];
   /** そろえた持ち物の id。攻略シートの「準備 2/4 そろった」に使う */
   brought: string[];
+  /**
+   * 出直しでムダになった日数。持ち物が足りずに窓口で断られると1日増える。
+   * 記録として画面に出すだけで、期限の計算には使いません（本物の日付を狂わせないため）。
+   */
+  lostDays: number;
 };
 
 export type Quest = {
@@ -343,6 +348,11 @@ export type BoardStats = {
 /** クエストログ画面がこれ1つで描ける、という単位 */
 export type Board = {
   today: string;
+  /**
+   * 出直しでムダにした日数。記録として画面に出すだけで、期限の計算には使いません。
+   * 実際に使える道具でもあるので、残り日数が本物とずれてはいけないためです。
+   */
+  lostDays: number;
   targetCity: string;
   dataVersion: string;
   profile: Profile;

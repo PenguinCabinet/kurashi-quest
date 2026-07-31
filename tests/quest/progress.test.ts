@@ -62,8 +62,12 @@ test("古い保存データが壊れていても落ちない", () => {
       dismissed: ["x", 3],
       brought: ["id-doc", 7],
     }),
-    { doneAt: { a: "2026-07-28" }, dismissed: ["x"], brought: ["id-doc"] },
+    // lostDays が無い古い保存は 0 として読む
+    { doneAt: { a: "2026-07-28" }, dismissed: ["x"], brought: ["id-doc"], lostDays: 0 },
   );
+  assert.equal(normalizeProgress({ lostDays: 3 }).lostDays, 3);
+  assert.equal(normalizeProgress({ lostDays: -1 }).lostDays, 0, "ありえない値は 0");
+  assert.equal(normalizeProgress({ lostDays: "2" }).lostDays, 0, "文字列は受け取らない");
 });
 
 test("データから消えた手続きの進捗は捨てる", () => {
@@ -71,11 +75,13 @@ test("データから消えた手続きの進捗は捨てる", () => {
     doneAt: { a: "2026-07-28", zzz: "2026-07-28" },
     dismissed: ["zzz"],
     brought: ["id-doc"],
+    lostDays: 2,
   };
   assert.deepEqual(pruneProgress(p, ["a"]), {
     doneAt: { a: "2026-07-28" },
     dismissed: [],
     brought: ["id-doc"],
+    lostDays: 2,
   });
 });
 

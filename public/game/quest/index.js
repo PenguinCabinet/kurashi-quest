@@ -5,7 +5,7 @@ export { ASKED_KEYS, QUESTIONS, answer, clearAnswer, emptyProfile, isComplete, l
 export { PHASE_LABELS, buildQuests, decideNeed, describeCond, groupByPhase, lockOf, notNeededQuests, pickNext, resolveDeadline, sortQuests, statsOf, toQuest, visibleQuests, } from "./quests.js";
 export { bringFor, isReady, mergeBring, nonPhysical, notNeededBring, unverifiedBring } from "./bring.js";
 export { buildRoute, placeKeyOf, sortByRequires } from "./route.js";
-export { broughtCount, clearBrought, complete, confirmBeforeComplete, dismiss, emptyProgress, isBrought, isDone, normalizeProgress, pruneProgress, reset, restore, toggle, toggleBrought, uncomplete, } from "./progress.js";
+export { broughtCount, clearBrought, complete, confirmBeforeComplete, dismiss, emptyProgress, isBrought, isDone, loseDay, normalizeProgress, pruneProgress, reset, restore, toggle, toggleBrought, uncomplete, } from "./progress.js";
 export { KEYS, browserStorage, clearAll, loadProfile, loadProgress, memoryStorage, saveProfile, saveProgress, } from "./storage.js";
 export { advance, answerItem, predictStuck, ratio, resetSimulation, restart, startSimulation, stuckPoints, totalSteps, } from "./simulation.js";
 export { addDays, diffDays, formatDaysLeft, formatJa, isDateString } from "./dates.js";

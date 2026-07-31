@@ -25,11 +25,17 @@ export function buildBoard(
   if (!isDateString(today)) {
     throw new Error(`today は "YYYY-MM-DD" で渡してください（今: ${String(today)}）`);
   }
+  // 出直した日数は、期限の計算には使いません。
+  //
+  // このアプリは実際に窓口へ持っていける道具でもあるので、
+  // 残り日数が本物とずれると、そこで嘘をつくことになります。
+  // 出直しの重さは「記録」として画面に出すだけにとどめます。
   const quests = buildQuests(data, profile, progress, today);
   const shown = visibleQuests(quests);
 
   return {
     today,
+    lostDays: progress.lostDays ?? 0,
     targetCity: data.targetCity,
     dataVersion: data.dataVersion,
     profile,
