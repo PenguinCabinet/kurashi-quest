@@ -165,8 +165,12 @@
 
   /* 達成した依頼 */
   .job[data-done="true"] .jname, .job[data-done="true"] .jwhen { color: #9ca3af; }
-  .job[data-done="true"]::after {
-    content: "達成"; position: absolute; right: 6px; top: 18px;
+  /* 達成の判子。
+     絶対配置にすると、右にある手続きの絵に重なる。
+     .body（ふつうのブロック）の中で右に浮かせると、名前が判子を避けて流れ、
+     絵とも重ならない。パソコンでもスマホでも同じ作りにしてある */
+  .job[data-done="true"] .body::before {
+    content: "達成"; float: right; margin: 0 0 4px 12px;
     border: 3px double var(--shu); color: var(--shu); background: rgba(255,255,255,.7);
     font-family: var(--maru); font-size: 17px; letter-spacing: .2em;
     padding: 4px 10px 4px 14px; transform: rotate(-11deg);
@@ -195,18 +199,10 @@
     color: #fff; background: var(--shu); padding: 2px 8px; margin-bottom: 5px;
   }
   .job .jname { font-size: 19px; }
-    /* 判子。狭い画面では扱いが難しいので、回り込みにする。
-       ・絶対配置のままだと、長い名前の上に重なる
-       ・.job は flex なので、位置を static にすると判子が「列」になり、
-         行の高さいっぱいに伸びたうえ、名前の幅まで食う
-       そこで .body（ふつうのブロック）の中で右に浮かせる。
-       名前は判子を避けて流れ、判子の下からは元の幅に戻る */
-    .job[data-done="true"]::after { display: none; }
+    /* 狭い画面では、判子を少し小さくする */
     .job[data-done="true"] .body::before {
-      content: "達成"; float: right; margin: 2px 0 4px 10px;
-      border: 3px double var(--shu); color: var(--shu); background: rgba(255,255,255,.7);
-      font-family: var(--maru); font-size: 14px; letter-spacing: .18em;
-      padding: 2px 6px 2px 9px; transform: rotate(-11deg);
+      margin: 2px 0 4px 10px; font-size: 14px; letter-spacing: .18em;
+      padding: 2px 6px 2px 9px;
     }
     /* 指で押す場所は 44px 以上にする。
        横に2つ並べると片方に指がかかるので、1行に1つずつ縦に並べる */
