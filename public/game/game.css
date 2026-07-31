@@ -348,7 +348,9 @@ body.bare [data-key="on"] { background: rgba(255,255,255,.62); }
   background: rgba(255,255,255,.8); border: 1px solid rgba(26,26,26,.2);
   color: #6b7280; padding: 4px 10px; cursor: pointer;
 }
-.soundtoggle[data-on="true"] { color: var(--shu); border-color: rgba(179,45,46,.4); }
+.soundtoggle[data-on="true"] { color: #6b7280; border-color: rgba(26,26,26,.2); }
+/* 止まっているときの方を目立たせる。押せば戻ることが分かるように */
+.soundtoggle[data-on="false"] { color: var(--shu); border-color: var(--shu); }
 .soundtoggle:hover { background: #fff; }
 
 /* ── スマホ ────────────────────────────────────────────

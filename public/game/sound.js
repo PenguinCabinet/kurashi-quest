@@ -162,8 +162,11 @@ export const sfx = {
 // ── 画面につなぐ ────────────────────────────────────────────
 function paintToggle() {
   if (!toggle) return;
-  toggle.textContent = sound.on ? "音　入" : "音　切";
+  // 「音　入」だと、いまの状態なのか押したときの動きなのか読めない。
+  // 押すとどうなるかを書く
+  toggle.textContent = sound.on ? "音を止める" : "音を出す";
   toggle.setAttribute("data-on", String(sound.on));
+  toggle.title = sound.on ? "いま音は出ています" : "いま音は止まっています";
 }
 
 /**
