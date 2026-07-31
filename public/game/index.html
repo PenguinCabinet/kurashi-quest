@@ -15,6 +15,9 @@
   /* 「4」と「件」の間で折れないようにする */
   body, body * { line-break: strict; overflow-wrap: anywhere; }
   html, body { height: 100%; margin: 0; }
+  /* 背景は position: fixed なので、body の overflow では切れない。
+     拡大したぶんが画面からはみ出して、横に動いてしまう。ここで止める */
+  html { overflow-x: hidden; }
   body { min-height: 100dvh; }   /* スマホのアドレスバーで下が切れないように */
   body {
     font-family: var(--maru);

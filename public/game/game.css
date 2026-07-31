@@ -454,3 +454,13 @@ body.bare .item .note,
 body.bare .verdict .note,
 body.bare .cmds .small { color: #55606e; }
 
+
+/* ── 指で押す場所は 44px 以上 ──
+   このかたまりは、必ずファイルのいちばん下に置くこと。
+   前に、上に書いたせいで下の規則に上書きされて効かなかったことがある */
+@media (max-width: 560px) {
+  .back {
+    display: inline-flex; align-items: center;
+    min-height: 44px; padding-right: 12px; margin-bottom: 4px;
+  }
+}
