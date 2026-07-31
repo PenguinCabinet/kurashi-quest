@@ -9,7 +9,11 @@ const data = realData();
 test("画面1つ分がまとめて出てくる", () => {
   const board = buildBoard(data, student, emptyProgress(), TODAY);
 
-  assert.equal(board.quests.length, 6);
+  // ひとり暮らし・乗り物なしなので、世帯主の届と原付は出ない
+  const forStudent = data.procedures.filter(
+    (p) => !["setai-henko", "genki-hyoshiki"].includes(p.id),
+  );
+  assert.deepEqual(board.quests.map((q) => q.id).sort(), forStudent.map((p) => p.id).sort());
   assert.equal(board.phases.length, 2); // 引越し前 と 14日以内
   assert.equal(board.phases[0].label, "引越し前");
   assert.equal(board.stats.hidden, 4);
@@ -27,7 +31,7 @@ test("キャラメイクの途中でも画面が作れる（残りの質問が�
     "vehicle",
     "age",
   ]);
-  assert.equal(board.quests.length, 6);
+  assert.equal(board.quests.length, data.procedures.length, "答えていなくても、消さずに出す");
   assert.ok(board.stats.unsure > 0);
 });
 

@@ -168,3 +168,14 @@ test("項目名は、全部が日本語になっている", () => {
     assert.notEqual(labelOf(key), key, `${key} の日本語名が無い`);
   }
 });
+
+test("答えても何も出ない選択肢には、その理由を書いてある", () => {
+  // 「車」を選んでも手続きは増えない。市区町村の管轄ではないため。
+  // 黙って何も出さないと「答えたのに何も起きない」になるので、選択肢に理由を書く
+  const vehicle = QUESTIONS.find((q) => q.key === "vehicle")!;
+  if (vehicle.kind !== "choice") throw new Error("選択式のはず");
+
+  const car = vehicle.options.find((o) => o.value === "car")!;
+  assert.ok(car.note, "車を選んだときの説明が無い");
+  assert.match(car.note!, /陸運局/);
+});

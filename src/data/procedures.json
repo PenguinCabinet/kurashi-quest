@@ -184,9 +184,9 @@
       },
       "requires": [],
       "where": {
-        "text": "郵便局の窓口。または e転居（オンライン）",
+        "text": "郵便局の窓口。ポスト投函、e転居（Web・郵便局アプリ）でも出せる",
         "placeKey": "post-office",
-        "verified": false
+        "verified": true
       },
       "sayThis": {
         "text": "転居届を出したいです",
@@ -196,19 +196,21 @@
         "value": 10,
         "verified": false
       },
-      "result": "1年間、新住所に転送される",
+      "result": "届出日から1年間、新住所に転送される",
       "bring": [
         {
           "id": "id-doc",
           "label": "本人確認書類",
-          "verified": false,
-          "category": "home"
+          "verified": true,
+          "category": "home",
+          "note": "運転免許証、健康保険証の資格確認書など"
         },
         {
           "id": "old-address-proof",
           "label": "旧住所が確認できるもの",
           "verified": false,
-          "category": "home"
+          "category": "home",
+          "note": "旧住所が書かれた免許証など。日本郵便のページに明記がないため、念のため"
         }
       ],
       "showIf": {
@@ -240,10 +242,10 @@
       ],
       "sources": [
         {
-          "name": "日本郵便 公式サイト",
-          "url": "",
-          "fetchedAt": "",
-          "verified": false
+          "name": "日本郵便 転居・転送サービス",
+          "url": "https://www.post.japanpost.jp/service/receive/relocation/",
+          "fetchedAt": "2026-07-31",
+          "verified": true
         }
       ]
     },
@@ -589,6 +591,197 @@
           "name": "日本年金機構 国民年金保険料の学生納付特例制度",
           "url": "https://www.nenkin.go.jp/service/kokunen/menjo/20150514.html",
           "fetchedAt": "2026-07-26",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "genki-hyoshiki",
+      "phase": "within14",
+      "order": 4,
+      "officialName": "軽自動車税申告（報告）書兼標識交付申請",
+      "displayName": "原付のナンバープレートを取り直す",
+      "what": "125cc以下の原付を、渋谷区のナンバーに変える",
+      "ifNot": "前の市のナンバーのままになり、軽自動車税の通知が前の住所に届く",
+      "littleKnown": true,
+      "littleKnownReason": "車と同じで陸運局だと思われがちですが、125cc以下は市区町村の窓口です",
+      "deadline": {
+        "kind": "afterMove",
+        "days": 15,
+        "label": "引越してから15日以内",
+        "note": "渋谷区のページに日数の明記がないため、道路運送車両法の届出期間（15日）を目安にしています"
+      },
+      "requires": [],
+      "where": {
+        "text": "渋谷区役所 本庁舎6階 税務課 税務管理係",
+        "placeKey": "city-hall",
+        "hours": "平日 8:30〜17:00",
+        "verified": true
+      },
+      "sayThis": {
+        "text": "原付のナンバーを取りたいです",
+        "verified": false,
+        "todo": "実際に窓口で通じるか確認"
+      },
+      "minutes": {
+        "value": 15,
+        "verified": false
+      },
+      "result": "新しいナンバープレートと標識交付証明書をもらう",
+      "bring": [
+        {
+          "id": "haisha-uketsuke",
+          "label": "廃車申告受付書",
+          "note": "前の市でナンバーを返してきた場合。返していないなら、前のナンバープレートと標識交付証明書を持っていく",
+          "verified": true,
+          "category": "home"
+        },
+        {
+          "id": "id-doc",
+          "label": "本人確認書類",
+          "verified": true,
+          "category": "home"
+        }
+      ],
+      "showIf": {
+        "vehicle": "moped"
+      },
+      "skipIf": null,
+      "steps": [
+        {
+          "n": 1,
+          "text": "渋谷区役所の6階、税務課の窓口へ行く"
+        },
+        {
+          "n": 2,
+          "text": "「原付のナンバーを取りたいです」と言う"
+        },
+        {
+          "n": 3,
+          "text": "軽自動車税申告（報告）書兼標識交付申請書を書く"
+        },
+        {
+          "n": 4,
+          "text": "廃車申告受付書を出す",
+          "stuckIf": {
+            "missing": "haisha-uketsuke",
+            "message": "前の市でナンバーを返した証明が無いと、ここで止まります。返していない場合は、前のナンバープレートと標識交付証明書が要ります"
+          }
+        },
+        {
+          "n": 5,
+          "text": "本人確認書類を見せる",
+          "stuckIf": {
+            "missing": "id-doc",
+            "message": "本人確認書類が無いと、ここで止まります"
+          }
+        },
+        {
+          "n": 6,
+          "text": "新しいナンバープレートをもらって完了"
+        }
+      ],
+      "sources": [
+        {
+          "name": "渋谷区 引っ越し 原動機付自転車・ミニカーなど",
+          "url": "https://www.city.shibuya.tokyo.jp/kurashi/kobai/keiji/hikkoshi_bike.html",
+          "fetchedAt": "2026-07-31",
+          "verified": true
+        },
+        {
+          "name": "渋谷区 原動機付自転車の標識（ナンバープレート）の交付",
+          "url": "https://www.city.shibuya.tokyo.jp/kurashi/kobai/keiji/na_ko.html",
+          "fetchedAt": "2026-07-31",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "setai-henko",
+      "phase": "within14",
+      "order": 5,
+      "officialName": "世帯変更届",
+      "displayName": "世帯主を決める届を出す",
+      "what": "誰が世帯主かを届け出る。家族と住み始めるときに要る",
+      "ifNot": "住民票の世帯主が実際と合わなくなる。届出が遅れると過料がかかる場合がある",
+      "littleKnown": true,
+      "littleKnownReason": "転入届を出せば済むと思われがちですが、世帯主が変わるときは別の届が要ります",
+      "deadline": {
+        "kind": "afterMove",
+        "days": 14,
+        "label": "変更があった日から14日以内",
+        "note": "届出が遅れると過料がかかる場合があります"
+      },
+      "requires": [
+        "tennyu-todoke"
+      ],
+      "where": {
+        "text": "渋谷区役所 本庁舎3階 住民戸籍課（転入届と同じフロア）",
+        "placeKey": "city-hall",
+        "hours": "平日 8:30〜17:00",
+        "verified": true
+      },
+      "sayThis": {
+        "text": "世帯変更届を出したいです",
+        "verified": false,
+        "todo": "実際に窓口で通じるか確認"
+      },
+      "minutes": {
+        "value": 10,
+        "verified": false
+      },
+      "result": "住民票の世帯主が変わる",
+      "bring": [
+        {
+          "id": "id-doc",
+          "label": "本人確認書類",
+          "note": "マイナンバーカード・運転免許証・パスポートなど",
+          "verified": true,
+          "category": "home"
+        },
+        {
+          "id": "kokuho-hoken",
+          "label": "国民健康保険証",
+          "note": "持っている人だけ",
+          "verified": true,
+          "category": "home"
+        }
+      ],
+      "showIf": {
+        "livingAlone": false
+      },
+      "skipIf": null,
+      "steps": [
+        {
+          "n": 1,
+          "text": "転入届と同じ3階の窓口で、続けてお願いする"
+        },
+        {
+          "n": 2,
+          "text": "「世帯変更届を出したいです」と言う"
+        },
+        {
+          "n": 3,
+          "text": "用紙を渡されるので書く"
+        },
+        {
+          "n": 4,
+          "text": "本人確認書類を見せる",
+          "stuckIf": {
+            "missing": "id-doc",
+            "message": "本人確認書類が無いと、ここで止まります"
+          }
+        },
+        {
+          "n": 5,
+          "text": "完了。住民票の世帯主が変わる"
+        }
+      ],
+      "sources": [
+        {
+          "name": "渋谷区 世帯変更届（世帯合併・世帯分離・世帯主変更など）",
+          "url": "https://www.city.shibuya.tokyo.jp/kurashi/jumin/ido/setai_henko.html",
+          "fetchedAt": "2026-07-31",
           "verified": true
         }
       ]

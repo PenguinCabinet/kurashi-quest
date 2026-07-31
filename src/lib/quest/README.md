@@ -229,7 +229,7 @@ verdictLine(verdict);   // 「受付できました。ただし3日、余分に�
 
 ## 手続きを調べる人へ
 
-- `verified: false` の項目は画面に「要確認」と出ます。確認できたら `true` にしてください。残りは `validateProcedures(raw).unverified` で一覧になります（いま21件）
+- `verified: false` の項目は画面に「要確認」と出ます。確認できたら `true` にしてください。残りは `validateProcedures(raw).unverified` で一覧になります（いま22件）
 - **未確認のままでも動きます。**画面に「要確認」と出るだけなので、埋まる前でも作業は止まりません
 - `where.placeKey` は「同じ場所でまとめる」判定に使います（`city-hall` / `prev-city-hall` / `post-office` / `online`）。無いと攻略シートの精度が落ちます
 - `steps` の `stuckIf.missing` は、その手続きの `bring` にある id しか書けません（テストで落ちます）
@@ -245,7 +245,7 @@ verdictLine(verdict);   // 「受付できました。ただし3日、余分に�
 
 ```bash
 npm install          # 初回だけ
-npm run test:quest   # 161件（Node 24 以上）
+npm run test:quest   # 164件（Node 24 以上）
 ```
 
 型チェックは Next.js プロジェクトに入れたあと `npx tsc --noEmit` で通ります（strict で確認済み）。

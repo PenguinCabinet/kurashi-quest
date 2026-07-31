@@ -10,7 +10,8 @@ function raw(): any {
 
 test("本物の procedures.json が読める", () => {
   const data = realData();
-  assert.equal(data.procedures.length, 6);
+  // 件数は増えるので、数そのものは見ない。中身が揃っているかだけ見る
+  assert.ok(data.procedures.length > 0);
   assert.ok(data.procedures.every((p) => p.id));
 });
 

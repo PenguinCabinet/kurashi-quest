@@ -8,9 +8,16 @@ const data = realData();
 const find = <T extends { id: string }>(list: T[], id: string): T =>
   list.find((q) => q.id === id)!;
 
-test("学生には6件ぜんぶ出る", () => {
+test("学生には、その人に当てはまるものが全部出る", () => {
   const quests = visibleQuests(buildQuests(data, student, emptyProgress(), TODAY));
-  assert.equal(quests.length, 6);
+  // ひとり暮らしなので、世帯主の届は出ない。乗り物なしなので、原付も出ない
+  assert.deepEqual(
+    quests.map((q) => q.id).sort(),
+    data.procedures
+      .filter((p) => !["setai-henko", "genki-hyoshiki"].includes(p.id))
+      .map((p) => p.id)
+      .sort(),
+  );
 });
 
 test("社会人には学生納付特例が出ない。ただし消さずに理由を出す", () => {
@@ -47,7 +54,7 @@ test("まだ答えていない項目があるときは、消さずに unsure で
 
   // 年齢を聞いていないので、年金も消さずに出す
   assert.equal(find(all, "gakusei-nofu-tokurei").need.status, "unsure");
-  assert.equal(visibleQuests(all).length, 6);
+  assert.equal(visibleQuests(all).length, data.procedures.length, "答えていないものは消さない");
 });
 
 test("期限が実際の日付になる", () => {

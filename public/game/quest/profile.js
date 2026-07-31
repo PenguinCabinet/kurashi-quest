@@ -42,10 +42,14 @@ export const QUESTIONS = [
         key: "vehicle",
         kind: "choice",
         title: "車やバイクは持っていますか？",
+        help: "125cc以下の原付だけ、市区町村の窓口で手続きします",
         options: [
             { value: "none", label: "持っていません", art: "walk" },
-            { value: "moped", label: "原付・バイク", art: "moped" },
-            { value: "car", label: "車", art: "car" },
+            { value: "moped", label: "原付・バイク", note: "125cc以下は市区町村の窓口です", art: "moped" },
+            // 車は陸運局・軽自動車検査協会の管轄で、市区町村ではやりません。
+            // 選べるようにしたうえで、その場で伝えます（黙って何も出さないと、
+            // 「答えたのに何も起きない」になるため）
+            { value: "car", label: "車", note: "車は陸運局です。この中では扱いません", art: "car" },
         ],
     },
     {
