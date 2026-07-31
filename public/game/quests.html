@@ -165,15 +165,12 @@
 
   /* 達成した依頼 */
   .job[data-done="true"] .jname, .job[data-done="true"] .jwhen { color: #9ca3af; }
-  .job[data-done="true"]::after, .job[data-done="true"] .jwhen::after {
-    content: "達成";
+  .job[data-done="true"]::after {
+    content: "達成"; position: absolute; right: 6px; top: 18px;
     border: 3px double var(--shu); color: var(--shu); background: rgba(255,255,255,.7);
     font-family: var(--maru); font-size: 17px; letter-spacing: .2em;
     padding: 4px 10px 4px 14px; transform: rotate(-11deg);
   }
-  /* 広い画面は右上に重ねる。狭い画面では下の @media で入れ替える */
-  .job[data-done="true"]::after { position: absolute; right: 6px; top: 18px; }
-  .job[data-done="true"] .jwhen::after { display: none; }
 
   /* あなたには要らないもの */
   /* 名前を 11em の枠に押し込むと、長い名前が折り返して、
@@ -198,13 +195,13 @@
     color: #fff; background: var(--shu); padding: 2px 8px; margin-bottom: 5px;
   }
   .job .jname { font-size: 19px; }
-    /* 判子が長い名前に重なるので、下に置く。
-       ただし .job は flex なので、::after を静的に置くとフレックス項目になり、
-       行の高さいっぱいに縦へ伸びてしまう。期限の行の中に、自分の幅だけで出す */
-    .job[data-done="true"]::after { content: none; }
-    .job[data-done="true"] .jwhen::after {
-      display: block; width: fit-content; margin-top: 8px;
-      font-size: 15px; padding: 3px 9px 3px 13px; transform: rotate(-6deg);
+    /* 判子が長い名前に重なるので、絶対配置をやめて右の列に置く。
+       ただし .job は flex なので、そのままだと行の高さいっぱいに伸びる。
+       flex-start で上にそろえ、縮まないようにする */
+    .job[data-done="true"]::after {
+      position: static; display: inline-block;
+      align-self: flex-start; flex: none;
+      margin-top: 4px; font-size: 15px; padding: 3px 8px 3px 11px;
     }
     /* 指で押す場所は 44px 以上にする。
        横に2つ並べると片方に指がかかるので、1行に1つずつ縦に並べる */
