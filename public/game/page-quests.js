@@ -277,7 +277,7 @@ function render() {
 
   if (board.lostDays > 0) {
     page.append(
-      el("div", "warn", `出直しで ${board.lostDays}日ムダになっています。そのぶん期限が近づいています`),
+      el("div", "warn", `出直しで 現実だと${board.lostDays}日ムダになっています`),
     );
   }
   if (s.overdue > 0) {
