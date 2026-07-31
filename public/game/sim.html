@@ -3,8 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Mac と iPhone はヒラギノ丸ゴが最初から入っているので、これは読み込まれない。
+     Windows と Android のときだけ落ちてくる -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
 <title>窓口の練習 — 暮らしクエスト（確認用）</title>
-<link rel="stylesheet" href="./game.css?v=1785471232" />
+<link rel="stylesheet" href="./game.css?v=1785478907" />
 <style>
   main { max-width: 720px; }
 
@@ -22,19 +27,19 @@
   }
   .say {
     flex: 1; min-width: 0; padding-bottom: 6px;
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-family: var(--maru);
     font-size: 20px; line-height: 1.9;
   }
   .say .who {
     display: block; font-family: -apple-system, "Hiragino Sans", sans-serif;
     font-size: 11px; letter-spacing: .18em; color: #6b7280; margin-bottom: 4px;
   }
-  .say .sub { display: block; font-size: 13px; font-family: -apple-system, sans-serif; color: #55606e; margin-top: 4px; }
+  .say .sub { display: block; font-size: 13px; font-family: var(--maru); color: #55606e; margin-top: 4px; }
   .say .ng { color: var(--shu); }
 
   /* 何回目の来庁か */
   .tally { display: flex; gap: 22px; padding: 0 0 6px; font-size: 12px; color: #55606e; }
-  .tally b { font-family: "Hiragino Mincho ProN", serif; font-size: 17px; color: var(--sumi); margin-left: 4px; }
+  .tally b { font-family: var(--maru); font-size: 17px; color: var(--sumi); margin-left: 4px; }
   .tally .shu b { color: var(--shu); }
   @media (max-width: 560px) {
     .stage { flex-direction: column; align-items: flex-start; gap: 6px; }
@@ -45,6 +50,6 @@
 </head>
 <body class="bare" data-place="counter">
 <main id="page"></main>
-<script type="module" src="./page-sim.js?v=1785436480"></script>
+<script type="module" src="./page-sim.js?v=1785478907"></script>
 </body>
 </html>

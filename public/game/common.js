@@ -71,11 +71,24 @@ export function param(name) {
   return new URL(location.href).searchParams.get(name);
 }
 
-/** 台帳の一区切り。見出しと中身を返す */
-export function sheet(title, right) {
+/**
+ * 台帳の一区切り。見出しと中身を返す。
+ * icon を渡すと、見出しの横に小さな絵が付く（絵が無ければ何も出ない）。
+ * 見出しの文字は消さない。絵だけにすると、どこに何があるか読めなくなるため。
+ */
+export function sheet(title, right, icon) {
   const box = el("div", "sheet");
   const head = el("div", "sheet-head");
-  head.append(el("div", null, title));
+  const left = el("div", "headline");
+  if (icon) {
+    const img = el("img", "headicon");
+    img.src = `./characters/${icon}.png`;
+    img.alt = "";
+    img.addEventListener("error", () => img.remove());
+    left.append(img);
+  }
+  left.append(el("span", null, title));
+  head.append(left);
   if (right !== undefined && right !== null) head.append(el("div", "count", right));
   box.append(head);
   const body = el("div", "sheet-body");
@@ -157,6 +170,22 @@ export function termNotes(text, marked) {
     row.append(el("div", "p", t.plain));
     box.append(row);
   }
+  return box;
+}
+
+/**
+ * 案内役の柴犬のひとこと。
+ * 画面の隅に貼り付けると、サイトのチャットの吹き出しになってしまうので、
+ * その画面の説明文を、そのまま犬に言わせる形にしています。
+ */
+export function guide(text) {
+  const box = el("div", "guide");
+  const img = el("img", "guideface");
+  img.src = "./characters/shiba-face.png";
+  img.alt = "";
+  img.addEventListener("error", () => img.remove());
+  box.append(img);
+  box.append(el("div", "say", text));
   return box;
 }
 

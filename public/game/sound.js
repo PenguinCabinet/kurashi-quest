@@ -38,7 +38,11 @@ export const sound = {
 };
 
 function ready() {
-  if (ctx) return ctx;
+  // 一度作ったあとでも、止まっていることがある（タブを離れたときなど）
+  if (ctx) {
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  }
   if (!canPlay()) return null;
   const Ctx = window.AudioContext ?? window.webkitAudioContext;
   ctx = new Ctx();

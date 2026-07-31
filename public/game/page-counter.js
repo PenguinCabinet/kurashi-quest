@@ -2,7 +2,7 @@
 // 家で準備 → 市役所へ → 受付で手続き → 足りなければ家に帰る。
 // visit.ts / counter.ts / glossary.ts をそのまま呼んでいます。
 
-import { app, data, el, $, header, uses, sheet, ways, termNotes } from "./common.js";
+import { app, data, el, $, header, uses, sheet, ways, termNotes, guide } from "./common.js";
 import { sfx } from "./sound.js";
 import { walkTo } from "./walk.js";
 import {
@@ -48,6 +48,15 @@ function stopOf(placeKey = "city-hall") {
 const KANJI = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
 const kanji = (n) => KANJI[n] ?? String(n);
 
+/** 絵があれば出す。無ければ何も出さない */
+function art(src, cls) {
+  const img = el("img", cls);
+  img.src = src;
+  img.alt = "";
+  img.addEventListener("error", () => img.remove());
+  return img;
+}
+
 /** 「どちらか一方でよい」持ち物を1行にまとめる */
 function groupBring(lines) {
   const alt = new Map();   // 代わりの id → 本体の id
@@ -92,7 +101,7 @@ function renderHome() {
   const left = notAnswered();
   if (left > 0) {
     page.append(el("div", "title", "出かける準備"));
-    const box = sheet("【 今日の目的 】", "市役所");
+    const box = sheet("【 今日の目的 】", "市役所", "place-city-hall");
     box.body.append(el("div", "goal", "先に、あなたのことを答えてください"));
     box.body.append(
       el(
@@ -120,7 +129,7 @@ function renderHome() {
   // 市役所でやることが残っていないとき
   if (todo.length === 0) {
     page.append(el("div", "title", "出かける準備"));
-    const box = sheet("【 今日の目的 】", "市役所");
+    const box = sheet("【 今日の目的 】", "市役所", "place-city-hall");
     box.body.append(el("div", "goal", "市役所でやることは、もう残っていません"));
     box.body.append(
       el("div", "note", "終わっていない手続きが出てくると、またここに並びます"),
@@ -145,10 +154,14 @@ function renderHome() {
   //
   // 同じことを何度も書かない。1件のときは、手続きの名前をそのまま目的にする。
   // （前は「この一件を片づける」と書いた下に、その一件の名前をまた並べていた）
-  page.append(el("div", "title", "出かける準備"));
+  const head = el("div", "title titleart");
+  head.append(art("./characters/place-home.png", "titleicon"));
+  head.append(el("span", null, "出かける準備"));
+  page.append(head);
+  page.append(guide("かばんに入れたものだけ、窓口で出せます。押して入れてください。"));
 
   const hours = stop.quests[0]?.procedure.where.hours;
-  const goal = sheet("【 今日の目的 】", stop.place);
+  const goal = sheet("【 今日の目的 】", stop.place, `place-${stop.placeKey}`);
 
   if (todo.length === 1) {
     const only = todo[0];
@@ -188,12 +201,13 @@ function renderHome() {
   page.append(goal.box);
 
   // ② そのために何を持っていくか
-  const bring = sheet("【 かばん 】", `${ready.length} / ${rows.length} そろった`);
+  const bring = sheet("【 かばん 】", `${ready.length} / ${rows.length} そろった`, "icon-bag");
   for (const { main, others } of rows) {
     const all = [main, ...others];
     const on = all.some((l) => isBrought(app.progress, l.id));
     const row = el("div", `item ${on ? "on" : "off"}`);
     row.append(el("div", "mark", on ? "■" : "□"));
+    row.append(art(`./characters/item-${main.id}.png`, "itemart"));
 
     const body = el("div");
     const title = el("div", "label", main.label);
@@ -305,6 +319,11 @@ function renderCounter() {
   page.append(leave);
 
   page.append(el("div", "title", `${visit.place}の窓口`));
+  if (visit.status === "wentHome") {
+    page.append(guide("足りないものをそろえて、もう一度いきましょう。"));
+  } else if (visit.status === "finished") {
+    page.append(guide("おつかれさまでした。これで終わりです。"));
+  }
 
   const head = sheet(
     "【 受付 】",
@@ -354,15 +373,8 @@ function renderCounter() {
       render();
     });
     cmds.append(b);
-    cmds.append(
-      el(
-        "div",
-        "hint",
-        isBrought(app.progress, s.asking.itemId)
-          ? "かばんに入れてあります"
-          : "かばんに入れていません",
-      ),
-    );
+    // 入れてあるかどうかは、ここでは言わない。
+    // 先に答えを見せると、出すまでの緊張が消えるうえ、押せる文に見えてしまう
   }
   win.append(cmds);
   head.body.append(win);

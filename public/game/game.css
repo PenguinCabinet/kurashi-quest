@@ -3,6 +3,10 @@
    角丸・影・グラデーション・絵文字は使わない。色は 墨・朱・藍 の3色。 */
 
 :root {
+  /* 丸ゴシック。Mac と iPhone には最初から入っている。
+     Windows と Android 用に、Google のフォントを後ろに置いている */
+  --maru: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "M PLUS Rounded 1c", "Zen Maru Gothic", -apple-system, sans-serif;
+
   --sumi: #1a1a1a;
   --shu: #b32d2e;
   --ai: #2b4a6f;
@@ -14,7 +18,7 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  font-family: var(--maru);
   color: var(--sumi);
   background: #dcd8d0;
   line-height: 1.7;
@@ -32,6 +36,8 @@ main { max-width: 560px; margin: 0 auto; padding: 22px 16px 60px; position: rela
   font-weight: 700; letter-spacing: .06em;
 }
 .sheet-head .count { color: var(--shu); font-variant-numeric: tabular-nums; }
+.sheet-head .headline { display: flex; align-items: center; gap: 8px; }
+.headicon { width: 22px; height: 22px; object-fit: contain; display: block; }
 .sheet-body {
   padding: 14px;
   /* うっすら方眼。紙らしさ */
@@ -46,7 +52,7 @@ main { max-width: 560px; margin: 0 auto; padding: 22px 16px 60px; position: rela
 
 /* 問い */
 .ask {
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-family: var(--maru);
   font-size: 24px; line-height: 1.6; letter-spacing: .02em;
   padding: 2px 0 8px;
 }
@@ -110,7 +116,7 @@ main { max-width: 560px; margin: 0 auto; padding: 22px 16px 60px; position: rela
 .terms .t { display: flex; gap: 14px; align-items: baseline; padding: 3px 0; }
 .terms .w {
   flex: none; max-width: 46%; font-size: 13px; color: var(--shu);
-  font-family: "Hiragino Mincho ProN", serif;
+  font-family: var(--maru);
 }
 .terms .p { flex: 1; min-width: 0; font-size: 13px; color: #4b5563; }
 .terms .p::before { content: "＝ "; color: #9ca3af; }
@@ -131,13 +137,38 @@ body[data-place="counter"] { --bg: url("./characters/bg-counter.jpg"); }
 
 /* 見出し。画面のいちばん上に1つだけ */
 .title {
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-family: var(--maru);
   font-size: 27px; font-weight: 700; line-height: 1.4;
   padding: 2px 0 4px; margin: 2px 0 4px;
 }
 .lead { font-size: 13px; color: #55606e; margin: 0 0 14px; }
 .back { display: inline-block; font-size: 13px; color: #55606e; text-decoration: none; margin-bottom: 10px; }
 .back:hover { color: var(--shu); }
+
+/* 案内役のひとこと */
+.guide { display: flex; align-items: center; gap: 12px; margin: 2px 0 16px; }
+.guideface { flex: none; width: 46px; height: 46px; object-fit: contain; }
+.guide .say {
+  flex: 1; min-width: 0; position: relative;
+  background: rgba(255,255,255,.75); border: 1px solid rgba(26,26,26,.2);
+  padding: 9px 13px; font-size: 13px; line-height: 1.7; color: #4b5563;
+}
+.guide .say::after {
+  content: ""; position: absolute; left: -7px; top: 50%; margin-top: -6px;
+  width: 0; height: 0;
+  border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+  border-right: 7px solid rgba(26,26,26,.2);
+}
+.guide .say::before {
+  content: ""; position: absolute; left: -5px; top: 50%; margin-top: -5px; z-index: 1;
+  width: 0; height: 0;
+  border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+  border-right: 6px solid #fbfaf8;
+}
+@media (max-width: 560px) {
+  .guideface { width: 38px; height: 38px; }
+  .guide .say { font-size: 12px; padding: 8px 11px; }
+}
 
 /* 札 */
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 5px 0 2px; }
@@ -165,7 +196,7 @@ body[data-place="counter"] { --bg: url("./characters/bg-counter.jpg"); }
 .step .n {
   flex: none; width: 26px; height: 26px; border: 1px solid var(--keisen);
   text-align: center; line-height: 24px; font-size: 13px; color: #6b7280;
-  font-family: "Hiragino Mincho ProN", serif;
+  font-family: var(--maru);
 }
 .step .t { flex: 1; font-size: 15px; }
 .step .caution { font-size: 12px; color: var(--shu); margin-top: 2px; }
@@ -303,7 +334,7 @@ body.bare [data-key="on"] { background: rgba(255,255,255,.62); }
     rgba(255,255,255,.8) 70%, rgba(255,255,255,0));
 }
 .walk-say .to {
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-family: var(--maru);
   font-size: clamp(19px, 3vw, 30px); font-weight: 700; letter-spacing: .06em;
 }
 .walk-say .line { width: min(300px, 60vw); height: 2px; margin: 16px auto 0; background: rgba(26,26,26,.16); }

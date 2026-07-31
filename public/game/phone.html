@@ -3,22 +3,28 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Mac と iPhone はヒラギノ丸ゴが最初から入っているので、これは読み込まれない。
+     Windows と Android のときだけ落ちてくる -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
 <title>スマホでの見え方 — 暮らしクエスト</title>
 <style>
   /* この画面は「確認用の台」なので、ゲーム本体の見た目の決まり（角丸なし）は当てはめない。
      スマホは角が丸いものなので、丸くしないと逆に嘘になる。 */
+  :root { --maru: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "M PLUS Rounded 1c", "Zen Maru Gothic", -apple-system, sans-serif; }
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; }
   body {
     background: #1a1a1a; color: #e8e4dc;
-    font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    font-family: var(--maru);
     display: flex; flex-direction: column; align-items: center;
     gap: 12px; padding: 14px 16px 20px; overflow: auto;
   }
 
   .head { display: flex; align-items: baseline; gap: 14px; }
   h1 {
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-family: var(--maru);
     font-size: 17px; font-weight: 600; margin: 0; letter-spacing: .08em;
   }
   .lead { font-size: 12px; color: #9ca3af; margin: 0; }
@@ -60,6 +66,16 @@
   }
 
   .size { font-size: 11px; color: #6b7280; letter-spacing: .1em; }
+
+  /* 音の入切。game.css を読んでいないので、ここにも同じものを置く */
+  .soundtoggle {
+    position: fixed; left: 14px; bottom: 30px; z-index: 5;
+    font: inherit; font-size: 11px; letter-spacing: .14em;
+    background: rgba(255,255,255,.85); border: 1px solid rgba(26,26,26,.25);
+    color: #6b7280; padding: 4px 10px; cursor: pointer;
+  }
+  .soundtoggle[data-on="true"] { color: #b32d2e; border-color: rgba(179,45,46,.45); }
+  .soundtoggle:hover { background: #fff; }
 </style>
 </head>
 <body>

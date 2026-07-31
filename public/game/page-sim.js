@@ -4,7 +4,7 @@
 // 違いは、⑥が複数の手続きを続けて回るのに対し、こちらは1件だけということ。
 // 持ち物も、練習なのでその場で「出す・持っていない」を答えます。
 
-import { app, data, el, $, header, uses, questFromUrl, sheet, ways, termNotes } from "./common.js";
+import { app, data, el, $, header, uses, questFromUrl, sheet, ways, termNotes, guide } from "./common.js";
 import { sfx } from "./sound.js";
 import {
   startCounter,
@@ -61,9 +61,7 @@ if (quest) {
     page.append(back);
 
     page.append(el("div", "title", `${quest.name}　の練習`));
-    page.append(
-      el("div", "lead", "本番と同じ会話です。持ち物が足りないと、その場で出直しになります。"),
-    );
+    page.append(guide("本番と同じ会話です。持ち物が足りないと、その場で出直しになります。"));
 
     // 聞かれる持ち物のうち、どこまで進んだか
     const asked = questionsOf(target, me);
@@ -129,7 +127,7 @@ if (quest) {
         render();
       });
       cmds.append(yes, no);
-      if (s.asking?.note) cmds.append(el("div", "hint", s.asking.note));
+      // 持ち物の説明は、上の「この言葉は」に出ているので、ここでは繰り返さない
     } else if (s.status === "turnedAway") {
       const again = el("button", null, "出直す");
       again.append(el("span", "small", "もう一度はじめから並び直します"));

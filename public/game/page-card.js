@@ -1,7 +1,7 @@
 // ③ やり方カード（1手続き1ページ）。
 // クエスト1件の中身を、そのまま並べているだけです。
 
-import { app, el, $, header, tagsFor, uses, questFromUrl, sheet, rows, commands, ways } from "./common.js";
+import { app, el, $, header, tagsFor, uses, questFromUrl, sheet, rows, commands, ways, guide } from "./common.js";
 import { toggle, dismiss, formatDaysLeft, stuckPoints } from "./quest/index.js";
 
 header(null);
@@ -18,9 +18,16 @@ function render(q) {
   back.href = "quests.html";
   page.append(back);
 
-  page.append(el("div", "title", q.name));
+  const head0 = el("div", "title titleart");
+  const qart = el("img", "titleicon");
+  qart.src = `./characters/quest-${q.id}.png`;
+  qart.alt = "";
+  qart.addEventListener("error", () => qart.remove());
+  head0.append(qart);
+  head0.append(el("span", null, q.name));
+  page.append(head0);
   page.append(tagsFor(q));
-  page.append(el("div", "lead", `${q.what}。やらないと ${q.ifNot}`));
+  page.append(guide(`${q.what}。やらないと ${q.ifNot}`));
   if (q.hidden && q.hiddenReason) page.append(el("div", "warn", q.hiddenReason));
 
   // ── どこで、何て言う ──
@@ -66,6 +73,11 @@ function render(q) {
     for (const b of q.bring) {
       const row = el("div", "bring");
       row.append(el("div", "box"));
+      const bart = el("img", "itemart");
+      bart.src = `./characters/item-${b.id}.png`;
+      bart.alt = "";
+      bart.addEventListener("error", () => bart.remove());
+      row.append(bart);
       const body = el("div");
       body.append(el("div", "label", b.label));
       if (!b.physical) body.append(el("div", "kind", "物ではありません。忘れやすい"));

@@ -3,7 +3,7 @@
 // 1枚の依頼札に「何を得るか（result）」と「放っておくとどうなるか（ifNot）」を出します。
 // この2つがロジックには入っているのに、一覧では捨てられていました。
 
-import { app, el, $, header, uses, sheet, commands, ways } from "./common.js";
+import { app, el, $, header, uses, sheet, commands, ways, tagsFor, guide } from "./common.js";
 import { toggle, dismiss, restore, hiddenLine, formatDaysLeft } from "./quest/index.js";
 
 header("quests.html");
@@ -15,12 +15,23 @@ let open = null;
 
 /** 左に出す位。急ぐ・知られていない・前提待ちの順で強いものを出す */
 function rankOf(q) {
-  if (q.done) return { kind: "済", sub: "おわり" };
-  if (q.deadline.urgency === "overdue") return { kind: "急", sub: "期限切れ" };
-  if (q.deadline.urgency === "today" || q.deadline.urgency === "soon") return { kind: "急", sub: "まもなく" };
-  if (q.lock.locked) return { kind: "封", sub: "前提あり" };
-  if (q.hidden) return { kind: "秘", sub: "見落としがち" };
-  return { kind: "要", sub: "やる" };
+  if (q.done) return { kind: "済", sub: "おわり", art: "done" };
+  if (q.deadline.urgency === "overdue") return { kind: "急", sub: "期限切れ", art: "hurry" };
+  if (q.deadline.urgency === "today" || q.deadline.urgency === "soon") {
+    return { kind: "急", sub: "まもなく", art: "hurry" };
+  }
+  if (q.lock.locked) return { kind: "封", sub: "前提あり", art: "locked" };
+  if (q.hidden) return { kind: "秘", sub: "見落としがち", art: "hidden" };
+  return { kind: "要", sub: "やる", art: "normal" };
+}
+
+/** 絵があれば出す。無ければ何も出さない（文字だけで成り立つように作ってある） */
+function art(src, cls) {
+  const img = el("img", cls);
+  img.src = src;
+  img.alt = "";
+  img.addEventListener("error", () => img.remove());
+  return img;
 }
 
 function jobCard(q) {
@@ -29,16 +40,20 @@ function jobCard(q) {
   const isOpen = open === q.id;
   card.setAttribute("data-open", String(isOpen));
 
-  // 位
+  // 位。看板を持ったキャラの絵があれば、四角い判子の代わりに出す
   const rank = rankOf(q);
   const left = el("div", "rank");
   const badge = el("div", "badge", rank.kind);
   badge.setAttribute("data-kind", rank.kind);
+  badge.append(art(`./characters/rank-${rank.art}.png`, "rankart"));
   left.append(badge);
   if (rank.sub) left.append(el("div", "sub", rank.sub));
   card.append(left);
 
   const body = el("div", "body");
+
+  // 手続きそのものの絵。右側に置く
+  card.append(art(`./characters/quest-${q.id}.png`, "jart"));
 
   const name = el("div", "jname", q.name);
   name.addEventListener("click", () => {
@@ -153,7 +168,7 @@ function render() {
     page.append(el("div", "warn", `期限を過ぎている依頼が ${s.overdue}件あります`));
   }
   const line = hiddenLine(board);
-  if (line) page.append(el("div", "lead", line));
+  if (line) page.append(guide(line));
   if (board.missingAnswers.length > 0) {
     const a = el("a", "lead", "あなたのことを答えるほど、要るものだけに絞られます →");
     a.href = "chara.html";

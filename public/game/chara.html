@@ -3,8 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Mac と iPhone はヒラギノ丸ゴが最初から入っているので、これは読み込まれない。
+     Windows と Android のときだけ落ちてくる -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
 <title>あなたのこと — 暮らしクエスト（確認用）</title>
-<link rel="stylesheet" href="./game.css?v=1785471232" />
+<link rel="stylesheet" href="./game.css?v=1785478907" />
 <style>
   /* 何問目か。クエストログの枡と同じ形 */
   .steps { display: flex; align-items: center; gap: 5px; margin-bottom: 20px; }
@@ -12,7 +17,7 @@
   .steps i[data-state="done"] { background: var(--keisen); border-color: var(--keisen); cursor: pointer; }
   .steps i[data-state="done"]:hover { background: var(--shu); border-color: var(--shu); }
   .steps i[data-state="now"] { background: var(--shu); border-color: var(--shu); }
-  .steps .n { margin-left: 8px; font-family: "Hiragino Mincho ProN", serif; font-size: 13px; color: #6b7280; }
+  .steps .n { margin-left: 8px; font-family: var(--maru); font-size: 13px; color: #6b7280; }
 
   /* 絵で選ぶ */
   .opts.cards { display: flex; border-top: 1px solid var(--keisen); }
@@ -63,7 +68,7 @@
   .change .del { color: var(--shu); }
 
   /* できあがり */
-  .card-name { font-family: "Hiragino Mincho ProN", serif; font-size: 21px; font-weight: 700; padding: 2px 0 10px; }
+  .card-name { font-family: var(--maru); font-size: 21px; font-weight: 700; padding: 2px 0 10px; }
   .stat { display: flex; border-top: 1px solid var(--keisen); padding: 7px 0; font-size: 14px; }
   .stat .k { width: 11em; color: #6b7280; }
   .stat .v { font-weight: 700; }
@@ -101,6 +106,6 @@
 <main>
   <div id="page"></div>
 </main>
-<script type="module" src="./page-home.js?v=1785435649"></script>
+<script type="module" src="./page-home.js?v=1785478907"></script>
 </body>
 </html>

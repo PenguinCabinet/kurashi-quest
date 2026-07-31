@@ -3,8 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Mac と iPhone はヒラギノ丸ゴが最初から入っているので、これは読み込まれない。
+     Windows と Android のときだけ落ちてくる -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
 <title>クエストログ — 暮らしクエスト（確認用）</title>
-<link rel="stylesheet" href="./game.css?v=1785471232" />
+<link rel="stylesheet" href="./game.css?v=1785478907" />
 <style>
   main { max-width: 620px; }
 
@@ -14,7 +19,7 @@
   .progress .masu { display: flex; gap: 4px; }
   .progress .masu i { width: 15px; height: 15px; border: 1px solid var(--keisen); }
   .progress .masu i[data-on="true"] { background: var(--shu); border-color: var(--shu); }
-  .progress .n { font-family: "Hiragino Mincho ProN", serif; font-size: 15px; }
+  .progress .n { font-family: var(--maru); font-size: 15px; }
   .progress .n b { font-size: 21px; color: var(--shu); }
 
   /* 章の見出し */
@@ -23,10 +28,10 @@
     border-bottom: 1px solid rgba(26,26,26,.25); padding-bottom: 7px;
   }
   .chapter .no {
-    font-family: "Hiragino Mincho ProN", serif; font-size: 12px; letter-spacing: .2em;
+    font-family: var(--maru); font-size: 12px; letter-spacing: .2em;
     color: #fff; background: var(--sumi); padding: 2px 9px;
   }
-  .chapter .name { font-family: "Hiragino Mincho ProN", serif; font-size: 17px; font-weight: 700; }
+  .chapter .name { font-family: var(--maru); font-size: 17px; font-weight: 700; }
   .chapter .count { margin-left: auto; font-size: 12px; color: #6b7280; }
 
   /* 依頼札 1枚 */
@@ -39,16 +44,30 @@
   .rank .badge {
     width: 42px; height: 42px; border: 2px solid var(--keisen); color: #8a8f98;
     display: flex; align-items: center; justify-content: center;
-    font-family: "Hiragino Mincho ProN", serif; font-size: 21px;
+    font-family: var(--maru); font-size: 21px;
   }
   .rank .badge[data-kind="急"] { border-color: var(--shu); color: #fff; background: var(--shu); }
   .rank .badge[data-kind="秘"] { border-color: var(--ai); color: var(--ai); }
   .rank .badge[data-kind="封"] { border-style: dashed; }
   .rank .sub { font-size: 10px; text-align: center; color: #8a8f98; margin-top: 3px; letter-spacing: .04em; }
 
+  /* 看板を持ったキャラの絵。あるときは、四角い判子を消して絵だけにする */
+  .rank .badge:has(.rankart) {
+    border: none; background: none; width: 52px; height: 52px;
+    font-size: 0;   /* 下の漢字を隠す */
+  }
+  .rank:has(.rankart) { width: 52px; }
+  .rankart { width: 52px; height: auto; display: block; }
+
+  /* 手続きそのものの絵 */
+  .jart {
+    flex: none; width: 64px; height: 64px; object-fit: contain;
+    align-self: flex-start; margin-top: 2px; order: 3;
+  }
+
   .job .body { flex: 1; min-width: 0; }
   .job .jname {
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-family: var(--maru);
     font-size: 21px; font-weight: 700; line-height: 1.45; cursor: pointer;
   }
   .job .jname:hover { color: var(--shu); }
@@ -67,7 +86,7 @@
   .detail .d .v { flex: 1; min-width: 0; }
   .detail .d.gain .v { color: var(--ai); }
   .detail .d.risk .v { color: var(--shu); }
-  .detail .say { font-family: "Hiragino Mincho ProN", serif; }
+  .detail .say { font-family: var(--maru); }
 
 
   .jcmd {
@@ -91,7 +110,7 @@
   .job[data-done="true"]::after {
     content: "達成"; position: absolute; right: 6px; top: 18px;
     border: 3px double var(--shu); color: var(--shu); background: rgba(255,255,255,.7);
-    font-family: "Hiragino Mincho ProN", serif; font-size: 17px; letter-spacing: .2em;
+    font-family: var(--maru); font-size: 17px; letter-spacing: .2em;
     padding: 4px 10px 4px 14px; transform: rotate(-11deg);
   }
 
@@ -108,6 +127,9 @@
     .job { gap: 10px; }
     .rank, .rank .badge { width: 34px; }
     .rank .badge { height: 34px; font-size: 17px; }
+    .rank:has(.rankart), .rank .badge:has(.rankart) { width: 40px; height: 40px; }
+    .rankart { width: 40px; }
+    .jart { width: 46px; height: 46px; }
     .job .jname { font-size: 19px; }
     /* 判子が長い名前に重なるので、下に置く */
     .job[data-done="true"]::after { position: static; display: inline-block; margin: 6px 0 0; }
@@ -123,6 +145,6 @@
 <main>
   <div id="page"></div>
 </main>
-<script type="module" src="./page-quests.js?v=1785470242"></script>
+<script type="module" src="./page-quests.js?v=1785478907"></script>
 </body>
 </html>

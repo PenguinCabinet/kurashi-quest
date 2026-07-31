@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Mac と iPhone はヒラギノ丸ゴが最初から入っているので、これは読み込まれない。
+     Windows と Android のときだけ落ちてくる -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
 <title>窓口 — 暮らしクエスト（確認用）</title>
-<link rel="stylesheet" href="./game.css?v=1785471232" />
+<link rel="stylesheet" href="./game.css?v=1785478907" />
 <style>
   main { max-width: 720px; }
 
+  /* 絵 */
+  .titleart { display: flex; align-items: center; gap: 12px; }
+  .titleicon { width: 34px; height: 34px; object-fit: contain; }
+  .todoart { flex: none; width: 34px; height: 34px; object-fit: contain; margin-top: 1px; }
+  .itemart { flex: none; width: 36px; height: 36px; object-fit: contain; margin-top: 1px; }
+
   /* 今日の目的。ここだけ大きく */
   .goal {
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-family: var(--maru);
     font-size: 22px; font-weight: 700; line-height: 1.5;
     padding: 2px 0 12px; margin-bottom: 4px;
     border-bottom: 1px solid rgba(26,26,26,.16);
@@ -31,7 +42,7 @@
   }
   .say {
     flex: 1; min-width: 0; padding-bottom: 6px;
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-family: var(--maru);
     font-size: 20px; line-height: 1.9;
   }
   .say .who {
@@ -46,7 +57,7 @@
     font-weight: 400; vertical-align: 2px;
   }
   .note.hint { color: #8a8f98; }
-  .item .mark { font-family: "Hiragino Mincho ProN", serif; }
+  .item .mark { font-family: var(--maru); }
 
   /* どちらか一方でよい持ち物 */
   .alt { margin-top: 5px; font-size: 14px; color: #4b5563; cursor: pointer; }
@@ -69,6 +80,6 @@
 <main>
   <div id="page"></div>
 </main>
-<script type="module" src="./page-counter.js?v=1785470242"></script>
+<script type="module" src="./page-counter.js?v=1785478907"></script>
 </body>
 </html>
