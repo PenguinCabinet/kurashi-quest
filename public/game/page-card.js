@@ -2,7 +2,7 @@
 // クエスト1件の中身を、そのまま並べているだけです。
 
 import { app, el, $, header, tagsFor, uses, questFromUrl, sheet, rows, commands, ways, guide } from "./common.js";
-import { toggle, dismiss, formatDaysLeft, stuckPoints, isAtHomeProcedure } from "./quest/index.js";
+import { toggle, dismiss, formatDaysLeft, stuckPoints } from "./quest/index.js";
 
 header(null);
 
@@ -134,10 +134,10 @@ function render(q) {
   // ── コマンド ──
   page.append(
     commands([
-      // 家でできるもの（Web・電話）に窓口の練習は要らない
-      q.procedure.steps.length > 0 && !isAtHomeProcedure(q.procedure)
-        ? ["窓口を練習する", `sim.html?id=${encodeURIComponent(q.id)}`, "行く前に、ここで一度ためす"]
-        : [],
+      // 窓口の「練習」はやめた。
+      // 同じ会話を2回することになり、本番で覚えているのが当たり前になる。
+      // それと、練習だけは持ち物を「持っている」と嘘をつけたので、
+      // 「家でかばんに入れたものしか出せない」という決まりと食い違っていた
       [
         q.done ? "終わっていないことにする" : "終わったことにする",
         () => {

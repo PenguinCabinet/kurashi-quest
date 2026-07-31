@@ -5,7 +5,7 @@
 
 import { app, el, $, header, uses, sheet, commands, ways, tagsFor, guide } from "./common.js";
 import { sfx } from "./sound.js";
-import { toggle, dismiss, restore, hiddenLine, formatDaysLeft, isAtHomeProcedure } from "./quest/index.js";
+import { toggle, dismiss, restore, hiddenLine, formatDaysLeft } from "./quest/index.js";
 
 header("quests.html");
 
@@ -130,12 +130,7 @@ function jobCard(q, isNext) {
     card2.href = `card.html?id=${encodeURIComponent(q.id)}`;
     cmd.append(card2);
 
-    // 家でできるもの（Web・電話）に窓口の練習は要らない
-    if (q.procedure.steps.length > 0 && !isAtHomeProcedure(q.procedure)) {
-      const sim = el("a", null, "窓口を練習する");
-      sim.href = `sim.html?id=${encodeURIComponent(q.id)}`;
-      cmd.append(sim);
-    }
+    // 窓口の「練習」はやめた。理由は page-card.js に書いてある
 
     const drop = el("button", "quiet", "一覧から外す");
     drop.addEventListener("click", () => {
