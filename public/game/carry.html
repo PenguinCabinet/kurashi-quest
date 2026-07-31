@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Mac と iPhone はヒラギノ丸ゴが最初から入っているので、これは読み込まれない。
+     Windows と Android のときだけ落ちてくる -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
+<title>合言葉 — 暮らしクエスト</title>
+<link rel="stylesheet" href="./game.css?v=1785512000" />
+<style>
+  main { max-width: 640px; }
+
+  /* 受け取った合言葉。この画面の主役なので、大きく出す */
+  .code {
+    font-family: var(--maru);
+    font-size: 46px; font-weight: 700; letter-spacing: .22em;
+    color: var(--shu); padding: 10px 0 4px;
+  }
+  .code-note { font-size: 13px; color: #55606e; }
+
+  /* 打ちこむところ */
+  .enter { display: flex; gap: 10px; align-items: stretch; padding: 4px 0; }
+  .enter input {
+    flex: 1; min-width: 0; font: inherit;
+    font-family: var(--maru); font-size: 26px; font-weight: 700;
+    letter-spacing: .18em; text-align: center; text-transform: uppercase;
+    background: rgba(255,255,255,.6); color: var(--sumi);
+    border: 2px solid var(--keisen); padding: 10px 8px; min-height: 56px;
+  }
+  .enter input:focus { outline: none; border-color: var(--shu); }
+  .enter button {
+    flex: none; font: inherit; font-size: 15px; cursor: pointer;
+    background: none; border: 2px solid var(--sumi); color: var(--sumi);
+    padding: 0 20px; min-height: 56px;
+  }
+  .enter button:hover { border-color: var(--shu); color: var(--shu); }
+  .enter button[disabled] { color: #9ca3af; border-color: #d6d3cd; cursor: default; }
+
+  /* 結果の一行 */
+  .said { font-size: 14px; padding: 8px 0 2px; min-height: 1.6em; }
+  .said[data-ng="true"] { color: var(--shu); }
+
+  /* いま預けてあるもの */
+  .have { font-size: 13px; color: #55606e; padding: 6px 0; }
+
+  @media (max-width: 560px) {
+    .code { font-size: 34px; letter-spacing: .16em; }
+    .enter { flex-direction: column; }
+    .enter button { min-height: 48px; padding: 12px; }
+  }
+</style>
+</head>
+<body class="bare" data-place="home">
+<main>
+  <div id="page"></div>
+</main>
+<script type="module" src="./page-carry.js?v=1785512000"></script>
+</body>
+</html>

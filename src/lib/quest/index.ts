@@ -94,6 +94,18 @@ export {
   uncomplete,
 } from "./progress.ts";
 
+export {
+  LENGTH as PASSPHRASE_LENGTH,
+  browserRandom,
+  formatPassphrase,
+  isPassphrase,
+  makePassphrase,
+  normalizePassphrase,
+} from "./passphrase.ts";
+
+export type { Fetcher, LoadResult, SaveData, SaveResult } from "./sync.ts";
+export { ENDPOINT, pullSave, pushSave, readSave, syncLine } from "./sync.ts";
+
 export type { StorageLike } from "./storage.ts";
 export {
   KEYS,
