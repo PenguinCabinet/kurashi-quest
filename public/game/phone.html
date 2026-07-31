@@ -60,23 +60,23 @@
   .phone::after {
     content: ""; position: absolute; z-index: 2;
     bottom: 7px; left: 50%; transform: translateX(-50%);
-    width: 116px; height: 4px; background: #6b7280; border-radius: 2px;
+    width: 116px; height: 4px; background: #4b5563; border-radius: 2px;
   }
   .phone iframe {
     display: block; border: none; border-radius: 34px;
     background: #dcd8d0;
   }
 
-  .size { font-size: 11px; color: #6b7280; letter-spacing: .1em; }
+  .size { font-size: 11px; color: #4b5563; letter-spacing: .1em; }
 
   /* 音の入切。game.css を読んでいないので、ここにも同じものを置く */
   .soundtoggle {
     position: fixed; left: 14px; bottom: 30px; z-index: 5;
     font: inherit; font-size: 11px; letter-spacing: .14em;
     background: rgba(255,255,255,.85); border: 1px solid rgba(26,26,26,.25);
-    color: #6b7280; padding: 4px 10px; cursor: pointer;
+    color: #4b5563; padding: 4px 10px; cursor: pointer;
   }
-  .soundtoggle[data-on="true"] { color: #6b7280; }
+  .soundtoggle[data-on="true"] { color: #4b5563; }
   .soundtoggle[data-on="false"] { color: #b32d2e; border-color: rgba(179,45,46,.5); }
   .soundtoggle:hover { background: #fff; }
   @media (max-width: 560px) { .soundtoggle { display: none; } }

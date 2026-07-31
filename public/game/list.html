@@ -9,7 +9,7 @@
      Windows と Android のときだけ落ちてくる -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet" />
 <title>持ち物メモ — 暮らしクエスト</title>
-<link rel="stylesheet" href="./game.css?v=1785497291" />
+<link rel="stylesheet" href="./game.css?v=1785498732" />
 <style>
   /* この画面だけは、背景の絵を出さない。
      スクリーンショットを撮って、当日そのまま見るための紙なので */
@@ -17,15 +17,15 @@
   main { max-width: 520px; padding: 26px 20px 40px; }
 
   .memo-head { border-bottom: 3px double var(--sumi); padding-bottom: 12px; margin-bottom: 4px; }
-  .memo-head .t { font-size: 24px; font-weight: 700; letter-spacing: .04em; }
+  .memo-head .t { font-size: 25px; font-weight: 700; letter-spacing: .04em; }
   .memo-head .s { font-size: 13px; color: #55606e; margin-top: 4px; }
 
   .where { padding: 14px 0 6px; }
-  .where .k { font-size: 11px; letter-spacing: .2em; color: #6b7280; }
+  .where .k { font-size: 11px; letter-spacing: .2em; color: #4b5563; }
   .where .v { font-size: 16px; font-weight: 700; margin-top: 2px; }
   .where .h { font-size: 12px; color: #55606e; }
 
-  .li { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; border-top: 1px solid rgba(26,26,26,.16); }
+  .li { display: flex; gap: 12px; align-items: center; padding: 11px 0; border-top: 1px solid rgba(26,26,26,.16); }
   .li:first-child { border-top: none; }
   .li .box { flex: none; width: 22px; height: 22px; border: 2px solid var(--sumi); margin-top: 2px; }
   .li img { flex: none; width: 34px; height: 34px; object-fit: contain; }
@@ -34,7 +34,7 @@
   .li .kind { font-size: 11px; color: var(--shu); border: 1px solid rgba(179,45,46,.4); padding: 1px 6px; margin-left: 8px; font-weight: 400; }
 
   .say { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(26,26,26,.16); }
-  .say .k { font-size: 11px; letter-spacing: .2em; color: #6b7280; margin-bottom: 6px; }
+  .say .k { font-size: 11px; letter-spacing: .2em; color: #4b5563; margin-bottom: 6px; }
   /* セリフと、どこで言うかを別の行にする。
      1行に押し込むと、狭い画面で途中で折り返して読めなくなる */
   .say .row { font-size: 14px; padding: 6px 0; border-top: 1px solid rgba(26,26,26,.1); }
@@ -42,14 +42,14 @@
   .say .row b { display: block; font-family: var(--maru); font-weight: 700; }
   .say .row span { display: block; font-size: 12px; color: #55606e; margin-top: 1px; }
 
-  .foot { margin-top: 22px; font-size: 11px; color: #8a8f98; }
+  .foot { margin-top: 22px; font-size: 11px; color: #55606e; }
 
   @media (max-width: 560px) {
     main { padding: 20px 16px 32px; }
     .memo-head .t { font-size: 21px; }
     .li { padding: 12px 0; }
-    .li img { width: 30px; height: 30px; }
-    .li .label { font-size: 15px; }
+    .li img { width: 30px; height: 30px; }   /* スマホだけ少し小さく */
+    .li .label { font-size: 14px; }
     .where .h { font-size: 11px; }
   }
 

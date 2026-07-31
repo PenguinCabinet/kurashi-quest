@@ -39,7 +39,7 @@ function art(src, cls) {
   return img;
 }
 
-function jobCard(q) {
+function jobCard(q, isNext) {
   const card = el("div", "job");
   card.setAttribute("data-done", String(q.done));
   const isOpen = open === q.id;
@@ -59,6 +59,13 @@ function jobCard(q) {
 
   // 手続きそのものの絵。右側に置く
   card.append(art(`./characters/quest-${q.id}.png`, "jart"));
+
+  // 最初に開いているものには、理由を書く。
+  //
+  // 「つぎにやること」とは書かない。一覧は手続きの順番で並んでいるので、
+  // その上に別の依頼があると「なぜこれが つぎ なのか」と矛盾して見える。
+  // ここが選ばれている理由は「期限がいちばん早い」なので、そう書く。
+  if (isNext) body.append(el("div", "nexttag", "期限がいちばん早い"));
 
   const name = el("div", "jname", q.name);
   name.addEventListener("click", () => {
@@ -287,7 +294,7 @@ function render() {
     head.append(el("div", "name", group.label));
     head.append(el("div", "count", `${doneCount} / ${group.quests.length} 達成`));
     page.append(head);
-    for (const q of group.quests) page.append(jobCard(q));
+    for (const q of group.quests) page.append(jobCard(q, q.id === board.next?.id));
   });
 
   // あなたには要らないもの

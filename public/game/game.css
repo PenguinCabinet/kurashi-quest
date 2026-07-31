@@ -58,10 +58,10 @@ main { max-width: 560px; margin: 0 auto; padding: 22px 16px 60px; position: rela
 /* 問い */
 .ask {
   font-family: var(--maru);
-  font-size: 24px; line-height: 1.6; letter-spacing: .02em;
+  font-size: 25px; line-height: 1.6; letter-spacing: .02em;
   padding: 2px 0 8px;
 }
-.ask-why { font-size: 12px; color: #6b7280; padding: 0 0 12px; }
+.ask-why { font-size: 12px; color: #4b5563; padding: 0 0 12px; }
 
 /* 記入欄（日付） */
 .write { padding: 6px 0 10px; }
@@ -71,17 +71,17 @@ main { max-width: 560px; margin: 0 auto; padding: 22px 16px 60px; position: rela
   background: none; padding: 6px 4px;
   font-variant-numeric: tabular-nums;
 }
-.write .unit { font-size: 12px; color: #6b7280; margin-left: 8px; }
+.write .unit { font-size: 12px; color: #4b5563; margin-left: 8px; }
 
 /* 一覧の行 */
-.item { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--keisen); cursor: pointer; }
+.item { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--keisen); cursor: pointer; }
 .item:first-child { border-top: none; }
 .item .mark { font-weight: 700; width: 1.5em; text-align: center; color: var(--shu); }
 .item.on .mark { color: var(--ai); }
 .item .label { font-weight: 700; }
-.item .note { font-size: 12px; color: #6b7280; }
+.item .note { font-size: 12px; color: #4b5563; }
 .item .for { font-size: 12px; color: var(--ai); }
-.item.off .label { color: #6b7280; }
+.item.off .label { color: #4b5563; }
 .item:hover { background: var(--usu); }
 
 /* コマンド（選択肢・ボタン） */
@@ -96,8 +96,8 @@ main { max-width: 560px; margin: 0 auto; padding: 22px 16px 60px; position: rela
 }
 .cmds button:hover, .cmds a:hover { background: var(--usu); }
 .cmds button:hover::before, .cmds a:hover::before { color: var(--shu); }
-.cmds .small { display: block; font-size: 12px; color: #6b7280; margin-top: 1px; }
-.cmds .hint { font-size: 12px; color: #6b7280; padding: 0 10px 8px 34px; }
+.cmds .small { display: block; font-size: 12px; color: #4b5563; margin-top: 1px; }
+.cmds .hint { font-size: 12px; color: #4b5563; padding: 0 10px 8px 34px; }
 
 /* 判子 */
 .stamp {
@@ -108,7 +108,7 @@ main { max-width: 560px; margin: 0 auto; padding: 22px 16px 60px; position: rela
 .verdict { padding: 13px; border-top: 2px solid var(--sumi); background: #fff; }
 .verdict.ng { background: #f7ece9; }
 .verdict .big { font-size: 16px; font-weight: 700; }
-.verdict .note { font-size: 12px; color: #6b7280; }
+.verdict .note { font-size: 12px; color: #4b5563; }
 
 /* 役所の言葉。印を付けて、意味は下に出す（吹き出しにしない） */
 .term { border-bottom: 1px dashed var(--shu); color: var(--shu); }
@@ -117,7 +117,7 @@ main { max-width: 560px; margin: 0 auto; padding: 22px 16px 60px; position: rela
   border-top: 1px dashed rgba(179,45,46,.4);
   padding: 10px 0 4px; margin-top: 4px;
 }
-.terms .k { font-size: 10px; letter-spacing: .2em; color: var(--shu); margin-bottom: 5px; }
+.terms .k { font-size: 11px; letter-spacing: .2em; color: var(--shu); margin-bottom: 5px; }
 .terms .t { display: flex; gap: 14px; align-items: baseline; padding: 3px 0; }
 .terms .w {
   flex: none; max-width: 46%; font-size: 13px; color: var(--shu);
@@ -143,7 +143,7 @@ body[data-place="counter"] { --bg: url("./characters/bg-counter.jpg"); }
 /* 見出し。画面のいちばん上に1つだけ */
 .title {
   font-family: var(--maru);
-  font-size: 27px; font-weight: 700; line-height: 1.4;
+  font-size: 25px; font-weight: 700; line-height: 1.4;
   padding: 2px 0 4px; margin: 2px 0 4px;
 }
 .lead { font-size: 13px; color: #55606e; margin: 0 0 14px; }
@@ -185,28 +185,28 @@ body[data-place="counter"] { --bg: url("./characters/bg-counter.jpg"); }
 .tag.soon { border-color: var(--shu); color: var(--shu); }
 .tag.hidden { border-color: var(--ai); color: #fff; background: var(--ai); }
 .tag.lock, .tag.unsure { border-style: dashed; }
-.tag.todo { border-style: dotted; color: #8a8f98; }
+.tag.todo { border-style: dotted; color: #55606e; }
 
 /* 帳簿の行（項目名：中身） */
 .rows { }
-.rows .r { display: flex; gap: 16px; padding: 9px 0; border-top: 1px solid rgba(26,26,26,.16); font-size: 15px; }
+.rows .r { display: flex; gap: 16px; padding: 9px 0; border-top: 1px solid rgba(26,26,26,.16); font-size: 14px; }
 .rows .r:first-child { border-top: none; }
-.rows .k { flex: none; width: 7em; font-size: 12px; color: #6b7280; padding-top: 3px; letter-spacing: .08em; white-space: nowrap; }
+.rows .k { flex: none; width: 7em; font-size: 12px; color: #4b5563; padding-top: 3px; letter-spacing: .08em; white-space: nowrap; }
 .rows .v { flex: 1; min-width: 0; }
-.rows .v .note { font-size: 12px; color: #6b7280; }
+.rows .v .note { font-size: 12px; color: #4b5563; }
 
 /* 手順。番号を打った縦の並び */
 .step { display: flex; gap: 12px; padding: 9px 0; border-top: 1px solid rgba(26,26,26,.12); }
 .step:first-child { border-top: none; }
 .step .n {
   flex: none; width: 26px; height: 26px; border: 1px solid var(--keisen);
-  text-align: center; line-height: 24px; font-size: 13px; color: #6b7280;
+  text-align: center; line-height: 24px; font-size: 13px; color: #4b5563;
   font-family: var(--maru);
 }
-.step .t { flex: 1; font-size: 15px; }
+.step .t { flex: 1; font-size: 14px; }
 .step .caution { font-size: 12px; color: var(--shu); margin-top: 2px; }
 .step[data-state="done"] .n { border-color: var(--ai); color: var(--ai); }
-.step[data-state="done"] .t { color: #8a8f98; }
+.step[data-state="done"] .t { color: #55606e; }
 .step[data-state="now"] .n { border-color: var(--shu); background: var(--shu); color: #fff; }
 .step[data-state="now"] .t { font-weight: 700; }
 
@@ -228,7 +228,7 @@ body[data-place="counter"] { --bg: url("./characters/bg-counter.jpg"); }
 /* 下線は引かない。引くと、その瞬間にWebページの見た目になる */
 .ways a::before {
   content: "◀"; position: absolute; left: 0; top: 2px;
-  font-size: 10px; color: #b0b6bd;
+  font-size: 11px; color: #9ca3af;
 }
 .ways a:hover, .ways a:hover::before { color: var(--shu); }
 .ways a:visited { color: #55606e; }
@@ -250,7 +250,7 @@ body.bare [data-key="on"] { background: rgba(255,255,255,.62); }
 /* キーで動かせることの案内。一度でも使ったら出さない */
 .keyhint {
   position: fixed; right: 14px; bottom: 12px; z-index: 5;
-  font-size: 11px; letter-spacing: .14em; color: #6b7280;
+  font-size: 11px; letter-spacing: .14em; color: #4b5563;
   background: rgba(255,255,255,.8); padding: 5px 10px;
 }
 .keyhint[hidden] { display: none; }
@@ -352,9 +352,9 @@ body.bare [data-key="on"] { background: rgba(255,255,255,.62); }
   position: fixed; left: 14px; bottom: 12px; z-index: 5;
   font: inherit; font-size: 11px; letter-spacing: .14em;
   background: rgba(255,255,255,.8); border: 1px solid rgba(26,26,26,.2);
-  color: #6b7280; padding: 4px 10px; cursor: pointer;
+  color: #4b5563; padding: 4px 10px; cursor: pointer;
 }
-.soundtoggle[data-on="true"] { color: #6b7280; border-color: rgba(26,26,26,.2); }
+.soundtoggle[data-on="true"] { color: #4b5563; border-color: rgba(26,26,26,.2); }
 /* 止まっているときの方を目立たせる。押せば戻ることが分かるように */
 .soundtoggle[data-on="false"] { color: var(--shu); border-color: var(--shu); }
 .soundtoggle:hover { background: #fff; }
@@ -372,9 +372,17 @@ body.bare [data-key="on"] { background: rgba(255,255,255,.62); }
   /* 手順の番号は小さくしない。押す場所なので */
   .step { gap: 10px; }
 
-  /* いちばん下の行き先。指で押せる高さにする */
-  .ways { gap: 4px 20px; }
-  .ways a { padding: 8px 0 8px 16px; }
+  /* いちばん下の行き先。指で押せる高さ（44px）にする */
+  .ways { display: block; }
+  .ways a {
+    display: block; min-height: 44px; padding: 13px 0 13px 18px;
+    border-top: 1px solid rgba(26,26,26,.1);
+  }
+  .ways a:first-child { border-top: none; }
+  .ways a::before { top: 16px; }
+
+  /* かばんや持ち物の行も */
+  .item { padding: 11px 0; }
 
   /* キーの案内も、音の入切も、指で触る端末では出さない。
      置き場所が無く、どこに置いても中身と重なる */
